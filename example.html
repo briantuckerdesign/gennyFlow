@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <script src="./jquery.min.js"></script>
+    <script src="./html2canvas.min.js"></script>
+    <script src="./jszip.min.js"></script>
+    <script src="./filesaver.min.js"></script>
+    <link rel="stylesheet" href="example.css" />
+</head>
+
+<body>
+    <div>
+        Scale
+        <select id="gen_scale-id" name="genScale">
+            <option value="1">@1x</option>
+            <option value="2">@2x</option>
+            <option value="3">@3x</option>
+            <option value="4">@4x</option>
+            <option value="5">@5x</option>
+            <option value="6">@6x</option>
+            <option value="7">@7x</option>
+            <option value="8">@8x</option>
+        </select>
+        <br /><br />
+        Folder Name
+        <input type="text" id="gen_folder-name" name="genFolderName" value="Folder Name" />
+        <br /><br />
+        <input type='button' id='generate' value='Download' onclick='genGenerate();' class="button">
+        <br /><br />
+    </div>
+    <div id="gen_wrapper">
+        <div class="gen_capture">
+            <span class="gen_slug">slug-1</span>
+            Capture Content Here
+        </div>
+        <div class="gen_capture">
+            <span class="gen_slug">slug-2</span>
+            Another One
+        </div>
+        <div class="gen_capture">
+            <span class="gen_slug">slug-3</span>
+            Last but not least
+        </div>
+    </div>
+    <div id="gen_images"></div>
+    <script src="generator-v1.0.js" defer></script>
+</body>
+
+</html>
