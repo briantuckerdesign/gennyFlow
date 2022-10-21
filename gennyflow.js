@@ -1,8 +1,7 @@
-// GennyFlow v1.0.2
+// GennyFlow v1.0.3
 // Created by Brian Tucker
 // With contributions from Industry Dive, futuredivision, and hamza_teamalif
-// Build on top of html2canvas, jszip, and filesaver.js
-//
+// Built on top of html2canvas, jszip, filesaver.js, and inline-svg
 
 // This function runs HTML2Canvas on each [.gen_capture] element inside of [#gen_wrapper].
 // It then converts the canvas into a dataURL PNG and labels it using [.gen_slug]. This must be inside of the [.gen_capture] element and can be hidden.
@@ -11,8 +10,25 @@
 // Then it creates a zip file and saves it to the user's computer.
 // The zip file is named using the user's input from [#gen_folder-name] and the date.
 
+// Converts all <img> SVGs to inline SVGs so they can be captured correctly by HTML2Canvas
+// Fixes issue where svgs are not rendered correctly in the canvas.
+inlineSVG.init({
+    svgSelector: 'img.gen_svg', // the class attached to all images that should be inlined
+    initClass: 'js-inlinesvg', // class added to <html>
+}, function () {
+    console.log('All SVGs inlined');
+});
+
 function genGenerate() {
 
+    // Sets height/width for all svgs on the page.
+    var svgElements = document.body.querySelectorAll('svg');
+    svgElements.forEach(function (item) {
+        item.setAttribute("width", item.getBoundingClientRect().width);
+        item.setAttribute("height", item.getBoundingClientRect().height);
+    });
+
+    // Starts JSZip
     let zip = new JSZip();
 
     // Finds each [.gen_capture]
