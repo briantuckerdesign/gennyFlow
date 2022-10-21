@@ -7,6 +7,7 @@ It was designed to be used with the Webflow CMS to allow for rapid and dynamic i
  - HTML2Canvas
  - jszip
  - filesaver.js
+ - inline-svg
 
 ### Required elements
  - #gen_wrapper
