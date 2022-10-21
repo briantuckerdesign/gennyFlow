@@ -1,4 +1,4 @@
-// GennyFlow v1.0.1
+// GennyFlow v1.0.2
 // Created by Brian Tucker
 // With contributions from Industry Dive, futuredivision, and hamza_teamalif
 // Build on top of html2canvas, jszip, and filesaver.js
@@ -44,60 +44,77 @@ function genGenerate() {
         var genFolderName = "export";
     }
 
-    // Creates a temporary staging area for generated images and appends it to the body
-    let genStagingGround = document.createElement("div");
-    genStagingGround.setAttribute("id", "gen_staging-ground");
-    document.body.appendChild(genStagingGround);
+    // If capturelist only has one item, it runs a new function that doesn't require a loop.
+    if (capturelist.length == 1) {
+        for (let i = 0; i < capturelist.length; i++) {
+            var label = 0;
+            html2canvas(capturelist[i], {
+                scale: genScale,
+                allowTaint: true,
+                useCORS: true,
+            }).then(canvas => {
+                var label = capturelist[i].querySelector(".gen_slug").innerHTML + "_@" + genScale + "x" + ".png";
+                canvas.toBlob(function (blob) {
+                    window.saveAs(blob, label);
+                });
+            });
+        }
+    } else {
+        // Creates a temporary staging area for generated images and appends it to the body
+        let genStagingGround = document.createElement("div");
+        genStagingGround.setAttribute("id", "gen_staging-ground");
+        document.body.appendChild(genStagingGround);
 
-    // Loops through capturelist and runs html2canvas to convert each div to a canvas
-    for (let i = 0; i < capturelist.length + 1; i++) {
-        html2canvas(capturelist[i], {
-            // Sets scale based on input
-            scale: genScale,
-            allowTaint: true,
-            useCORS: true,
-        }).then((canvas) => {
-            // Labels each file using [.gen_slug] and genScale
-            let label = capturelist[i].querySelector(".gen_slug").innerHTML + "_" + genDate + "-@" + genScale + "x";
+        // Loops through capturelist and runs html2canvas to convert each div to a canvas
+        for (let i = 0; i < capturelist.length + 1; i++) {
+            html2canvas(capturelist[i], {
+                // Sets scale based on input
+                scale: genScale,
+                allowTaint: true,
+                useCORS: true,
+            }).then((canvas) => {
+                // Labels each file using [.gen_slug] and genScale
+                let label = capturelist[i].querySelector(".gen_slug").innerHTML + "_" + genDate + "-@" + genScale + "x";
 
-            let imgdata = canvas.toDataURL("image/png");
-            let obj = document.createElement("img");
-            obj.src = imgdata;
-            zip.file(
-                label + ".png",
-                obj.src.substr(obj.src.indexOf(",") + 1),
-                {
-                    base64: true,
+                let imgdata = canvas.toDataURL("image/png");
+                let obj = document.createElement("img");
+                obj.src = imgdata;
+                zip.file(
+                    label + ".png",
+                    obj.src.substr(obj.src.indexOf(",") + 1),
+                    {
+                        base64: true,
+                    }
+                );
+
+
+                // This will append the image to the #gen_staging-ground div.
+                $("#gen_staging-ground").append('<img src="' + obj.src + '"/>');
+                // stops adding to the zip file once it's done
+                let v = document.querySelector("#gen_staging-ground").children.length;
+                console.log(v);
+                if (v == document.querySelector("#gen_wrapper").children.length) {
+                    zip
+                        .generateAsync(
+                            {
+                                type: "blob",
+                            },
+                            function updateCallback(metadata) { }
+                        )
+                        .then(function (content) {
+                            saveAs(
+                                content,
+                                genFolderName + "_" + genDate + "_@" + genScale + "x" + ".zip"
+                            );
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+
+                    // Removes the temporary staging area
+                    document.body.removeChild(genStagingGround);
                 }
-            );
-
-
-            // This will append the image to the #gen_staging-ground div.
-            $("#gen_staging-ground").append('<img src="' + obj.src + '"/>');
-            // stops adding to the zip file once it's done
-            let v = document.querySelector("#gen_staging-ground").children.length;
-            console.log(v);
-            if (v == document.querySelector("#gen_wrapper").children.length) {
-                zip
-                    .generateAsync(
-                        {
-                            type: "blob",
-                        },
-                        function updateCallback(metadata) { }
-                    )
-                    .then(function (content) {
-                        saveAs(
-                            content,
-                            genFolderName + "_" + genDate + "_@" + genScale + "x" + ".zip"
-                        );
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-
-                // Removes the temporary staging area
-                document.body.removeChild(genStagingGround);
-            }
-        });
+            });
+        }
     }
 }
