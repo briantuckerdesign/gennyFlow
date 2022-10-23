@@ -1,75 +1,142 @@
-// GennyFlow v1.0.3
+/*
+
+
+Ending today on an L
+Looks like you can't define define the settings when calling the function so that you could call
+it more than once... but no dice. I think I thought I could do it because of python.
+I'm going to have to figure out how to do this in a different way.
+
+The bones are probably fine though.
+
+
+
+
+*/
+
+// GennyFlow v1.1.0
 // Created by Brian Tucker
+// I only vaguely know what I'm doing. Care to help?
+// 
 // With contributions from Industry Dive, futuredivision, and hamza_teamalif
 // Built on top of html2canvas, jszip, filesaver.js, and inline-svg
 
-// This function runs HTML2Canvas on each [.gen_capture] element inside of [#gen_wrapper].
-// It then converts the canvas into a dataURL PNG and labels it using [.gen_slug]. This must be inside of the [.gen_capture] element and can be hidden.
-// It appends the image to the [#gen_images] div, which can be hidden.
-// It continues doing this until the number of items in [#gen_images] is equal to the number of items in [#gen_wrapper].
-// Then it creates a zip file and saves it to the user's computer.
-// The zip file is named using the user's input from [#gen_folder-name] and the date.
+
+
+/********************Default Settings*********************/
+let debugSVG = true;
+let debugAllowTaint = true;
+let debugUseCORS = true;
+let tempFilesID = "genny_temp"
+
+
+/********************Misc tasks*********************/
 
 // Converts all <img> SVGs to inline SVGs so they can be captured correctly by HTML2Canvas
-// Fixes issue where svgs are not rendered correctly in the canvas.
-inlineSVG.init({
-    svgSelector: 'img.gen_svg', // the class attached to all images that should be inlined
-    initClass: 'js-inlinesvg', // class added to <html>
-}, function () {
-    console.log('All SVGs inlined');
-});
-
-function genGenerate() {
-
-    // Sets height/width for all svgs on the page.
-    var svgElements = document.body.querySelectorAll('svg');
-    svgElements.forEach(function (item) {
-        item.setAttribute("width", item.getBoundingClientRect().width);
-        item.setAttribute("height", item.getBoundingClientRect().height);
+// I wish I could put  gennyInlineSVG()  in the main function, but I can't get it to work there.
+function gennyInlineSVG(gennySVGclass) {
+    let svgClass = 'img.' + gennySVGclass;
+    inlineSVG.init({
+        svgSelector: svgClass, // the class attached to all images that should be inlined
+        initClass: 'js-inlinesvg', // class added to <html>
     });
+}
 
-    // Starts JSZip
-    let zip = new JSZip();
-
-    // Finds each [.gen_capture]
-    const capturelist = document.querySelectorAll(".gen_capture");
-
-    // Gets date, formats it to MMDDYY
+// Gets date and formats it to MMDDYY.
+function formatDate() {
     let genDate = new Date();
     let genDD = String(genDate.getDate()).padStart(2, "0");
     let genMM = String(genDate.getMonth() + 1).padStart(2, "0");
     let genYYYY = genDate.getFullYear();
     let genYY = genYYYY.toString().substr(-2);
     genDate = genMM + genDD + genYY;
+    return genDate;
+}
 
-    // Defines scale of image export (@1x @2x etc) based on user input.
-    // If genScale is not defined, it defaults to 1.
-    var genScale = document.getElementById("gen_scale-id");
-    if (genScale) {
-        var genScale = genScale.value;
-    } else {
-        var genScale = 1;
+
+/********************Main Function*********************/
+
+function gennyFlow(
+    captureContainerID,
+    captureClass,
+    slugClass,
+    setScale,
+    userScaleID,
+    userZipNameID,
+    setZipName,
+    fileLabelDate,
+    fileLabelScale,
+    zipLabelDate,
+    zipLabelScale,
+    debugSVG,
+    debugAllowTaint,
+    debugUseCORS,
+    tempFilesID
+) {
+
+    /********************SVG Issues*********************/
+
+    // Sets height/width for all svgs on the page. Can fix an svg sizing issue.
+    if (debugSVG) {
+        var svgElements = document.body.querySelectorAll('svg');
+        svgElements.forEach(function (item) {
+            item.setAttribute("width", item.getBoundingClientRect().width);
+            item.setAttribute("height", item.getBoundingClientRect().height);
+        });
     }
 
-    // Defines folder name based on user input.
-    // If genFolderName is not defined, it defaults to "export".
-    var genFolderName = document.getElementById("gen_folder-name");
-    if (genFolderName) {
-        var genFolderName = genFolderName.value;
-    } else {
-        var genFolderName = "export";
-    }
+
+
+    /********************User Input and File Labeling*********************/
+
+    // Gets formatted date (MMDDYY)
+    let exportDate = formatDate();
+
+
+    /*      Scale Things      */
+
+    // If userScaleID is set, use it, otherwise use the init setScale, otherwise use 1.
+    // I think you can combine these ternary operators but I'm not smart enough.
+    const jsSetScale = setScale ? setScale : 1;
+    const finalScale = userScaleID ? document.getElementById(userScaleID) : jsSetScale;
+
+    // When enabled, includes date (MMDDYY) in individual file names (e.g. 'slug_102222.png')
+    const finalFileDate = fileLabelDate ? '_' + exportDate : '';
+
+    // When enabled, includes scale in individual file names (e.g. 'slug_102222_@2x.png')
+    const finalFileScale = fileLabelScale ? '_@' + finalScale + "x" : '';
+
+    // When enabled, includes date (MMDDYY) in zip file name (e.g. 'images_102222.zip')
+    const finalZipDate = zipLabelDate ? '_' + exportDate : '';
+
+    // When enabled, includes scale in zip file name (e.g. 'images_102222_@2x.zip')
+    const finalZipScale = zipLabelScale ? '_@' + finalScale + "x" : '';
+
+
+    // If userZipNameID is set, use it, otherwise use the init setZipName, otherwise use 'images'.
+    const jsSetZipName = setZipName ? setZipName : 'images';
+    const finalZipName = userZipNameID ? document.getElementById(userFolderNameID) : jsSetZipName;
+
+
+
+    /********************Where things actually happen*********************/
+
+    // Starts JSZip
+    let zip = new JSZip();
+
+    // Finds each element to be captured
+    const captureList = document.querySelectorAll(captureClass);
 
     // If capturelist only has one item, it runs a new function that doesn't require a loop.
-    if (capturelist.length == 1) {
-        for (let i = 0; i < capturelist.length; i++) {
+    if (captureList.length == 1) {
+        for (let i = 0; i < captureList.length; i++) {
             var label = 0;
-            html2canvas(capturelist[i], {
-                scale: genScale,
-                allowTaint: true,
-                useCORS: true,
+            html2canvas(captureList[i], {
+                scale: finalScale,
+                allowTaint: debugAllowTaint,
+                useCORS: debugUseCORS,
             }).then(canvas => {
-                var label = capturelist[i].querySelector(".gen_slug").innerHTML + "_@" + genScale + "x" + ".png";
+                let exportSlug = captureList[i].querySelector(slugClass).innerHTML;
+                let label = exportSlug + finalFileDate + finalFileScale + ".png";
                 canvas.toBlob(function (blob) {
                     window.saveAs(blob, label);
                 });
@@ -77,20 +144,19 @@ function genGenerate() {
         }
     } else {
         // Creates a temporary staging area for generated images and appends it to the body
-        let genStagingGround = document.createElement("div");
-        genStagingGround.setAttribute("id", "gen_staging-ground");
-        document.body.appendChild(genStagingGround);
+        let tempFiles = document.createElement("div");
+        tempFiles.setAttribute("id", tempFilesID);
+        document.body.appendChild(tempFiles);
 
-        // Loops through capturelist and runs html2canvas to convert each div to a canvas
-        for (let i = 0; i < capturelist.length + 1; i++) {
-            html2canvas(capturelist[i], {
-                // Sets scale based on input
-                scale: genScale,
-                allowTaint: true,
-                useCORS: true,
+        // Loops through captureList and runs html2canvas to convert each div to a canvas
+        for (let i = 0; i < captureList.length + 1; i++) {
+            html2canvas(captureList[i], {
+                scale: finalScale,
+                allowTaint: debugAllowTaint,
+                useCORS: debugUseCORS,
             }).then((canvas) => {
-                // Labels each file using [.gen_slug] and genScale
-                let label = capturelist[i].querySelector(".gen_slug").innerHTML + "_" + genDate + "-@" + genScale + "x";
+                let exportSlug = captureList[i].querySelector(slugClass).innerHTML;
+                let label = exportSlug + finalFileDate + finalFileScale;
 
                 let imgdata = canvas.toDataURL("image/png");
                 let obj = document.createElement("img");
@@ -104,12 +170,12 @@ function genGenerate() {
                 );
 
 
-                // This will append the image to the #gen_staging-ground div.
-                $("#gen_staging-ground").append('<img src="' + obj.src + '"/>');
+                // This will append the image to the temporary staging div.
+                $(tempFiles).append('<img src="' + obj.src + '"/>');
                 // stops adding to the zip file once it's done
-                let v = document.querySelector("#gen_staging-ground").children.length;
+                let v = document.querySelector(tempFiles).children.length;
                 console.log(v);
-                if (v == document.querySelector("#gen_wrapper").children.length) {
+                if (v == document.querySelector(captureContainerID).children.length) {
                     zip
                         .generateAsync(
                             {
@@ -120,7 +186,7 @@ function genGenerate() {
                         .then(function (content) {
                             saveAs(
                                 content,
-                                genFolderName + "_" + genDate + "_@" + genScale + "x" + ".zip"
+                                finalZipName + finalZipDate + finalZipScale + ".zip"
                             );
                         })
                         .catch((err) => {
@@ -128,7 +194,7 @@ function genGenerate() {
                         });
 
                     // Removes the temporary staging area
-                    document.body.removeChild(genStagingGround);
+                    document.body.removeChild(tempFiles);
                 }
             });
         }

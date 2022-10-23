@@ -1,13 +1,13 @@
 body{
     font-family: sans-serif;
 }
-#gen_wrapper {
+#genny_wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
-.gen_capture {
+.genny_capture {
     padding: 1rem;
     background-color: #ececec;
     display: flex;
@@ -17,6 +17,6 @@ body{
     min-height: 100px;
 }
 
-.gen_slug {
+.genny_slug {
     font-size: 1rem;
 }
