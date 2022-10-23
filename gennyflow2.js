@@ -13,8 +13,9 @@ function gfInlineSVG(gfSVGclass = 'gf_svg') {
         svgSelector: svgClass, // the class attached to all images that should be inlined
         initClass: 'js-inlinesvg', // class added to <html>
     });
-    console.log('SVGs inlined');
+    console.log('SVG Bugfix Part 1: Inline SVGs. Class - .' + gfSVGclass);
 }
+gfInlineSVG();
 
 /*       Date MMDDYY       */
 function formatDate() {
@@ -24,66 +25,78 @@ function formatDate() {
     let genYYYY = genDate.getFullYear();
     let genYY = genYYYY.toString().substr(-2);
     genDate = genMM + genDD + genYY;
-    console.log('Date formatted');
     return genDate;
 }
-let gfGetDate = formatDate();
 
-
-// let captureContainerID = 'gf_container';
-// let captureClass = 'gf_capture';
-// let slugClass = 'gf_slug';
-// let setScale = 1;
-// let setZipName = 'images';
-// let getScaleID = 'gf_scale';
-// let getZipNameID = 'gf_zip_name';
-// let imgLabelDate = true;
-// let imgLabelScale = true;
-// let zipLabelDate = true;
-// let zipLabelScale = true;
-// let debugSVG = true;
-// let debugAllowTaint = true;
-// let debugUseCORS = true;
-// let tempFilesID = 'gf_temp_files';
-
-
-/*         gfFlow main function         */
+/*         gennyFlow main function         */
 
 function gennyFlow(gf) {
-    // captureContainerID = 'gf_container',
-    // captureClass = 'gf_capture',
-    // slugClass = 'gf_slug',
-    // setScale = 1,
-    // setZipName = 'images',
-    // getScaleID = 'gf_scale',
-    // getZipNameID = 'gf_zip_name',
-    // imgLabelDate = true,
-    // imgLabelScale = true,
-    // zipLabelDate = true,
-    // zipLabelScale = true,
-    // debugSVG = true,
-    // debugAllowTaint = true,
-    // debugUseCORS = true,
-    // tempFilesID = 'gf_temp_files'
-    // ) {
+    i = 0;
     gf = gf || {};
-    let captureContainerID = gf.container || 'gf_container';
-    let captureClass = gf.cature || 'gf_capture';
-    let slugClass = gf.slug || 'gf_slug';
-    let setScale = gf.setScale || 1;
-    let setZipName = 'images';
-    let getScaleID = gf.getScale || 'gf_scale';
-    let getZipNameID = 'gf_zip_name';
-    let imgLabelDate = true;
-    let imgLabelScale = true;
-    let zipLabelDate = true;
-    let zipLabelScale = true;
-    let debugSVG = gf.debugSVG || true;
-    let debugAllowTaint = true;
-    let debugUseCORS = true;
-    let tempFilesID = 'gf_temp_files';
-    console.log(setScale);
 
+    const gfDate = formatDate();
+    console.log('Date: ' + gfDate);
+    const tempFiles = 'gf_temp_files';
+    const captureWrapperID = gf.captureWrapperID || 'gf_wrapper';
+    const captureClass = gf.captureClass || 'gf_capture';
+    const slugClass = gf.slugClass || 'gf_slug';
+    console.log('Capture class: .' + captureClass + '. Wrapper ID: #' + captureWrapperID + '. Slug class: .' + slugClass);
+
+    let debugSVG = gf.debugSVG == false ? false : true;
+    let debugAllowTaint = gf.debugAllowTaint == false ? false : true;
+    let debugUseCORS = gf.debugUseCORS == false ? false : true;
+    console.log('Debug SVG: ' + debugSVG + '. AllowTaint: ' + debugAllowTaint + '. UseCORS: ' + debugUseCORS);
+
+    /**************gfZipName*************/
+    let getZipNameID = gf.getZipNameID || 'gf_zip_name';
+    let setZipName = gf.setZipName ? gf.setZipName : 'images';
+    let gfZipName = gf.getZipNameID ? document.getElementById(getZipNameID).value : setZipName;
+    console.log('Zip name: ' + setZipName + ' ' + gfZipName + ' ' + getZipNameID);
+    /************************************/
+
+
+    let zip = new JSZip();    // Starts JSZip
+
+
+
+    /**************gfScale*************/
+    let getScaleID = gf.getScale || 'gf_scale';
+    let setScale = gf.setScale || 3;
+    // Order of priority: getScaleID -> setScale -> default (1)
+    let gfScale = document.getElementById(getScaleID) ?
+        document.getElementById(getScaleID).value :
+        setScale;
+    console.log('Final scale - ' + gfScale);
+    /************************************/
+
+
+    /**************imgLabelScale*************/
+    let imgLabelScale = gf.imgLabelScale == false ? false : true;
+    let gfScaleImg = imgLabelScale ? '_@' + gfScale + 'x' : '';
+    console.log("imgLabelScale enabled: " + imgLabelScale + '. Formatted: ' + gfScaleImg);
+    /************************************/
+
+
+    /**************imgLabelDate*************/
+
+    let imgLabelDate = gf.imgLabelDate == false ? false : true;
+    let gfDateImg = imgLabelDate ? '_' + gfDate : '';
+    console.log("imgLabelDate enabled: " + imgLabelDate + '. Formatted: ' + gfDateImg);
+    /************************************/
+
+
+    /**************zipLabelScale*************/
+    let zipLabelScale = gf.zipLabelScale == false ? false : true;
+    let gfScaleZip = zipLabelScale ? '_@' + gfScale + 'x' : '';
+    console.log("zipLabelScale enabled: " + zipLabelScale + '. Formatted: ' + gfScaleZip);
+    /************************************/
+
+
+    /**************zipLabelDate*************/
+    let zipLabelDate = gf.zipLabelDate == false ? false : true;
+    let gfDateZip = zipLabelDate ? '_' + gfDate : '';
+    console.log("zipLabelDate enabled: " + zipLabelDate + '. Formatted: ' + gfDateZip);
+    /************************************/
 
 
     /*       Set SVG Height/Width bug fix pt 2       */
@@ -93,17 +106,93 @@ function gennyFlow(gf) {
             item.setAttribute("width", item.getBoundingClientRect().width);
             item.setAttribute("height", item.getBoundingClientRect().height);
         });
-        console.log('SVGs fixed');
+        console.log('SVG Bugfix Part 2: SVGs height/width set');
     }
-    const gfDate = gfGetDate;
 
-    const gfScale = getScaleID ? "_@" + document.getElementById(getScaleID).value + 'x' : "_@" + setScale + 'x';
-    console.log('gfScale = ' + gfScale);
+    const captureList = document.getElementsByClassName(captureClass);
+    console.log('Capture list length: ' + captureList.length);
 
-    const gfFileLabel = gfDate + gfScale;
-    console.log('gfFileLabel = ' + gfFileLabel);
 
-    const gfZipLabel = gfDate + gfScale;
-    console.log('gfZipLabel = ' + gfZipLabel);
+/* ENDING TONIGHT HERE
+Current state:
+Vars all set up
+everything functioning until here
 
+Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is not working.
+
+    // // If capturelist only has one item, it runs a new function that doesn't require a loop.
+    if (captureList.length == 1) {
+        for (let i = 0; i < captureList.length; i++) {
+            var label = 0;
+            html2canvas(captureList[i], {
+                scale: gfScale,
+                allowTaint: debugAllowTaint,
+                useCORS: debugUseCORS,
+            }).then(canvas => {
+                let exportSlug = captureList[i].querySelector(slugClass).innerHTML;
+                console.log(exportSlug);
+                let label = exportSlug + imgLabelDate + imgLabelScale + ".png";
+                canvas.toBlob(function (blob) {
+                    window.saveAs(blob, label);
+                });
+            });
+        }
+    } else {
+        // Creates a temporary staging area for generated images and appends it to the body
+        let tempFiles = document.createElement("div");
+        tempFiles.setAttribute("id", tempFiles);
+        document.body.appendChild(tempFiles);
+
+        // Loops through captureList and runs html2canvas to convert each div to a canvas
+        for (let i = 0; i < captureList.length + 1; i++) {
+            html2canvas(captureList[i], {
+                scale: gfScale,
+                allowTaint: debugAllowTaint,
+                useCORS: debugUseCORS,
+            }).then((canvas) => {
+                let exportSlug = captureList[i].getElementsByClassName(slugClass).innerHTML;
+                let label = exportSlug + imgLabelDate + imgLabelScale + ".png";
+
+                let imgdata = canvas.toDataURL("image/png");
+                let obj = document.createElement("img");
+                obj.src = imgdata;
+                zip.file(
+                    label,
+                    obj.src.substr(obj.src.indexOf(",") + 1),
+                    {
+                        base64: true,
+                    }
+                );
+
+
+                // This will append the image to the temporary staging div.
+                $(tempFiles).append('<img src="' + obj.src + '"/>');
+                // stops adding to the zip file once it's done
+                let v = document.getElementById(tempFiles).children.length;
+                console.log(v);
+                if (v == document.getElementById(captureWrapperID).children.length) {
+                    zip
+                        .generateAsync(
+                            {
+                                type: "blob",
+                            },
+                            function updateCallback(metadata) { }
+                        )
+                        .then(function (content) {
+                            saveAs(
+                                content,
+                                gsZipLabel() + ".zip"
+                            );
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+
+                    // Removes the temporary staging area
+                    document.body.removeChild(tempFiles);
+                    console.log('Zip Downloaded ');
+                }
+            });
+        }
+    }
 }

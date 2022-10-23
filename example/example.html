@@ -13,7 +13,7 @@
 <body>
     <div>
         Scale
-        <select id="gf_scale" name="gfScale">
+        <select id="gf_scale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
@@ -21,7 +21,7 @@
         </select>
         <br /><br />
         Folder Name
-        <input type="text" id="gf_zip-name" name="gfFolderName" value="Folder Name" />
+        <input type="text" id="gf_zip-name" value="Folder Name" />
         <br /><br />
         <input type="button" id="gf_trigger" value="Download" class="button">
         <br /><br />
@@ -31,23 +31,32 @@
             <span class="gf_slug">slug-1</span>
             Capture Content Here
         </div>
-        <div class="gf_capture">
+        <!--<div class="gf_capture">
             <span class="gf_slug">slug-2</span>
             Another One
         </div>
         <div class="gf_capture">
             <span class="gf_slug">slug-3</span>
             Last but not least <img src="poll-h.svg" class="gf_svg">
-        </div>
+        </div>-->
     </div>
     <script>
-        // Inlines SVG to avoid scaling issues.
-        gfInlineSVG();
 
-        gennyFlow({
-            setScale: 2,
-        })
+        gennyFlow();
 
+        // setScale: 2, // WORKS
+        // captureClass: 'capturetest', // WORKS
+        // captureWrapperID: 'containertest', // WORKS
+        // slugClass: 'slugtest', // WORKS
+        // imgLabelScale: true, // WORKS
+        // imgLabelDate: true, // WORKS
+        // zipLabelScale: true, // WORKS
+        // zipLabelDate: true, // WORKS
+        // setZipName: 'zipnametest', // WORKS
+        // getZipNameID: 'gf_zip-name', // WORKS
+        // debugSVG: true, // WORKS
+        // debugAllowTaint: true, // WORKS
+        // debugUseCORS: true, // WORKS
     </script>
 </body>
 
