@@ -6,14 +6,14 @@
     <script src="../dependencies/jszip.min.js"></script>
     <script src="../dependencies/filesaver.min.js"></script>
     <script src="../dependencies/inline-svg.js"></script>
-    <script src="../gennyflow.js"></script>
+    <script src="../gennyflow2.js"></script>
     <link rel="stylesheet" href="example.css" />
 </head>
 
 <body>
     <div>
         Scale
-        <select id="genny_scale" name="gennyScale">
+        <select id="gf_scale" name="gfScale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
@@ -21,60 +21,32 @@
         </select>
         <br /><br />
         Folder Name
-        <input type="text" id="genny_folder-name" name="gennyFolderName" value="Folder Name" />
+        <input type="text" id="gf_zip-name" name="gfFolderName" value="Folder Name" />
         <br /><br />
-        <input type='button' id='genny_trigger2' value='Download' class="button">
+        <input type="button" id="gf_trigger" value="Download" class="button">
         <br /><br />
     </div>
-    <div id="genny_wrapper">
-        <div class="genny_capture">
-            <span class="genny_slug">slug-1</span>
+    <div id="gf_wrapper">
+        <div class="gf_capture">
+            <span class="gf_slug">slug-1</span>
             Capture Content Here
         </div>
-        <div class="genny_capture">
-            <span class="genny_slug">slug-2</span>
+        <div class="gf_capture">
+            <span class="gf_slug">slug-2</span>
             Another One
         </div>
-        <div class="genny_capture">
-            <span class="genny_slug">slug-3</span>
-            Last but not least
+        <div class="gf_capture">
+            <span class="gf_slug">slug-3</span>
+            Last but not least <img src="poll-h.svg" class="gf_svg">
         </div>
     </div>
     <script>
         // Inlines SVG to avoid scaling issues.
-        gennyInlineSVG(
-            gennySVGClass = 'genny_svg' // SVGs with this class are inlined
-        );
+        gfInlineSVG();
 
-        document.getElementById('genny_trigger2').addEventListener('click', function (name = 'brian') { console.log('hello' = name) });
-
-        // runs function when html element #generate is clicked
-        document.getElementById('genny_trigger').addEventListener('click',
-            gennyFlow(
-                // All items you want to capture go in this div. Note it's an ID, not a class.
-                captureContainerID = 'genny_wrapper',
-                // Class of the item(s) you want to capture.
-                captureClass = 'genny_capture',
-                // Class of the div that contains your slug. Must be inside of captureClass.
-                slugClass = 'genny_slug',
-                // sets scale and zip folder name from init
-                //setScale = 1,
-                //setZipName = 'images',
-                // sets scale and zip folder name from user input. This overrides the init values.
-                //userScaleID = 'genny_scale',
-                //userZipNameID = 'genny_folder-name',
-                // Adds date and/or scale to individual file names
-                //fileLabelDate = true,
-                //fileLabelScale = true,
-                // Adds date and/or scale to zip folder name
-                //zipLabelDate = true,
-                //zipLabelScale = true,
-                // Debug options
-                //debugSVG = true,
-                //debugAllowTaint = true,
-                //debugUseCORS = true,
-            ));
-
+        gennyFlow({
+            setScale: 2,
+        })
 
     </script>
 </body>
