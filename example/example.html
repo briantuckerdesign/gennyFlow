@@ -6,24 +6,23 @@
     <script src="../dependencies/jszip.min.js"></script>
     <script src="../dependencies/filesaver.min.js"></script>
     <script src="../dependencies/inline-svg.js"></script>
-    <script src="../gennyflow2.js"></script>
     <link rel="stylesheet" href="example.css" />
 </head>
 
 <body>
     <div>
         Scale
-        <select id="gf_scale">
+        <!--<select id="gf_scale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
             <option value="4">@4x</option>
-        </select>
+        </select>-->
         <br /><br />
         Folder Name
         <input type="text" id="gf_zip-name" value="Folder Name" />
         <br /><br />
-        <input type="button" id="gf_trigger" value="Download" class="button">
+        <input type="button" id="gf_trigger" value="Download" onclick="" class="button">
         <br /><br />
     </div>
     <div id="gf_wrapper">
@@ -31,19 +30,18 @@
             <span class="gf_slug">slug-1</span>
             Capture Content Here
         </div>
-        <!--<div class="gf_capture">
+        -<div class="gf_capture">
             <span class="gf_slug">slug-2</span>
             Another One
         </div>
         <div class="gf_capture">
             <span class="gf_slug">slug-3</span>
             Last but not least <img src="poll-h.svg" class="gf_svg">
-        </div>-->
+        </div>
     </div>
+    <script src="../gennyflow2.js"></script>
     <script>
-
-        gennyFlow();
-
+        gennyFlow({})
         // setScale: 2, // WORKS
         // captureClass: 'capturetest', // WORKS
         // captureWrapperID: 'containertest', // WORKS

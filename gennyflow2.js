@@ -31,14 +31,17 @@ function formatDate() {
 /*         gennyFlow main function         */
 
 function gennyFlow(gf) {
+    console.log('Running gennyFlow');
     i = 0;
     gf = gf || {};
+
+
 
     const gfDate = formatDate();
     console.log('Date: ' + gfDate);
     const tempFiles = 'gf_temp_files';
     const captureWrapperID = gf.captureWrapperID || 'gf_wrapper';
-    const captureClass = gf.captureClass || 'gf_capture';
+    const captureClass = gf.captureClass || '.gf_capture';
     const slugClass = gf.slugClass || 'gf_slug';
     console.log('Capture class: .' + captureClass + '. Wrapper ID: #' + captureWrapperID + '. Slug class: .' + slugClass);
 
@@ -61,7 +64,7 @@ function gennyFlow(gf) {
 
     /**************gfScale*************/
     let getScaleID = gf.getScale || 'gf_scale';
-    let setScale = gf.setScale || 3;
+    let setScale = gf.setScale || 1;
     // Order of priority: getScaleID -> setScale -> default (1)
     let gfScale = document.getElementById(getScaleID) ?
         document.getElementById(getScaleID).value :
@@ -109,16 +112,18 @@ function gennyFlow(gf) {
         console.log('SVG Bugfix Part 2: SVGs height/width set');
     }
 
-    const captureList = document.getElementsByClassName(captureClass);
+
+
+    /* ENDING TONIGHT HERE
+    Current state:
+    Vars all set up
+    everything functioning until here
+    
+    Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is not working.*/
+
+    const captureList = document.querySelectorAll('.gf_capture');
     console.log('Capture list length: ' + captureList.length);
-
-
-/* ENDING TONIGHT HERE
-Current state:
-Vars all set up
-everything functioning until here
-
-Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is not working.
+    console.log(captureList[0].querySelector(".gf_slug").innerHTML);
 
     // // If capturelist only has one item, it runs a new function that doesn't require a loop.
     if (captureList.length == 1) {
@@ -129,9 +134,9 @@ Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is 
                 allowTaint: debugAllowTaint,
                 useCORS: debugUseCORS,
             }).then(canvas => {
-                let exportSlug = captureList[i].querySelector(slugClass).innerHTML;
+                let exportSlug = captureList[i].querySelector(".gf_slug").innerHTML;
                 console.log(exportSlug);
-                let label = exportSlug + imgLabelDate + imgLabelScale + ".png";
+                let label = exportSlug + gfDateImg + gfScaleImg + ".png";
                 canvas.toBlob(function (blob) {
                     window.saveAs(blob, label);
                 });
@@ -142,6 +147,7 @@ Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is 
         let tempFiles = document.createElement("div");
         tempFiles.setAttribute("id", tempFiles);
         document.body.appendChild(tempFiles);
+        console.log('Temp files div created');
 
         // Loops through captureList and runs html2canvas to convert each div to a canvas
         for (let i = 0; i < captureList.length + 1; i++) {
@@ -150,8 +156,10 @@ Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is 
                 allowTaint: debugAllowTaint,
                 useCORS: debugUseCORS,
             }).then((canvas) => {
-                let exportSlug = captureList[i].getElementsByClassName(slugClass).innerHTML;
-                let label = exportSlug + imgLabelDate + imgLabelScale + ".png";
+                let exportSlug = captureList[i].querySelector(".gf_slug").innerHTML;
+                console.log(exportSlug);
+                let label = exportSlug + gfDateImg + gfScaleImg + ".png";
+                console.log('HTML2Canvas run on:' + label);
 
                 let imgdata = canvas.toDataURL("image/png");
                 let obj = document.createElement("img");
@@ -179,10 +187,13 @@ Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is 
                             function updateCallback(metadata) { }
                         )
                         .then(function (content) {
+                            let gfZipLabel = gfZipName + gfDateZip + gfScaleZip;
                             saveAs(
                                 content,
-                                gsZipLabel() + ".zip"
+                                gfZipLabel + ".zip"
                             );
+
+                            console.log('Zip Downloaded ');
                         })
                         .catch((err) => {
                             console.log(err);
@@ -190,7 +201,7 @@ Next steps: figure out why captureList[i].querySelector(slugClass).innerHTML is 
 
                     // Removes the temporary staging area
                     document.body.removeChild(tempFiles);
-                    console.log('Zip Downloaded ');
+                    console.log('Temp files div removed');
                 }
             });
         }
