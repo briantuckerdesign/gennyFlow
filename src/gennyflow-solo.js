@@ -1,4 +1,4 @@
-// gennyFlow v1.2.0
+// gennyFlow v1.5.0
 // Created by Brian Tucker
 // I only vaguely know what I'm doing. Care to help?
 // 
@@ -7,16 +7,25 @@
 
 // dependencies not included on this version
 
-/**************inlineSVGs*************/
-function gfInlineSVG(gfSVGclass = 'gf_svg') {
-    let svgClass = 'img.' + gfSVGclass;
+/**************SVG bug fixes*************/
+function gfInlineSVG() {
+    let svgClass = 'img.gf_svg';
     inlineSVG.init({
         svgSelector: svgClass, // the class attached to all images that should be inlined
         initClass: 'js-inlinesvg', // class added to <html>
     });
-    console.log('GennyFlow: SVGs with class .' + gfSVGclass + ' have been inlined.');
+    console.log('GennyFlow: img SVGs with class .gf_svg have been inlined.');
 }
-gfInlineSVG();
+
+function setSVGdimensions() {
+    var svgElements = document.body.querySelectorAll('svg.gf_svg');
+    svgElements.forEach(function (item) {
+        item.setAttribute("width", item.getBoundingClientRect().width);
+        item.setAttribute("height", item.getBoundingClientRect().height);
+    });
+    console.log('GennyFlow: SVGs with .gf_svg height/width set');
+}
+
 
 /**************get date MMDDYY*************/
 function formatDate() {
@@ -29,10 +38,11 @@ function formatDate() {
     return genDate;
 }
 
+
 /***************************************gennyFlow function*************************************/
 
 function gennyFlow(gf) {
-    console.log('GennyFlow : running...');
+    console.log('GennyFlow: running...');
     i = 0;
     gf = gf || {};
 
@@ -48,48 +58,39 @@ function gennyFlow(gf) {
     let zip = new JSZip();    // Starts JSZip
 
     /**************gfZipName*************/
-    let getZipNameID = gf.getZipNameID ? gf.getZipNameID : 'gf_zip-name';
-    let setZipName = gf.setZipName ? gf.setZipName : 'images';
-    let gfZipName = document.getElementById(getZipNameID) ? document.getElementById(getZipNameID).value : setZipName;
+    let zipNameInputID = gf.zipNameInputID ? gf.zipNameInputID : 'gf_zip-name';
+    let zipName = gf.zipName ? gf.zipName : 'images';
+    let gfZipName = document.getElementById(zipNameInputID) ? document.getElementById(zipNameInputID).value : zipName;
 
     /**************gfScale*************/
-    // Order of priority: getScaleID -> setScale -> default (1)
-    let getScaleID = gf.getScale || 'gf_scale';
-    let setScale = gf.setScale || 1;
-    let gfScale = document.getElementById(getScaleID) ? document.getElementById(getScaleID).value : setScale;
+    // Order of priority: scaleInputID -> scaleManual -> default (1)
+    let scaleInputID = gf.getScale || 'gf_scale';
+    let scaleManual = gf.scale || 1;
+    let gfScale = document.getElementById(scaleInputID) ? document.getElementById(scaleInputID).value : scaleManual;
 
-    /**************imgLabelScale*************/
-    let imgLabelScale = gf.imgLabelScale == false ? false : true;
-    let gfScaleImg = imgLabelScale ? '_@' + gfScale + 'x' : '';
+    /**************labelImgScale*************/
+    let labelImgScale = gf.labelImgScale == false ? false : true;
+    let gfScaleImg = labelImgScale ? '_@' + gfScale + 'x' : '';
 
-    /**************imgLabelDate*************/
-    let imgLabelDate = gf.imgLabelDate == false ? false : true;
-    let gfDateImg = imgLabelDate ? '_' + gfDate : '';
+    /**************labelImgDate*************/
+    let labelImgDate = gf.labelImgDate == false ? false : true;
+    let gfDateImg = labelImgDate ? '_' + gfDate : '';
 
-    /**************zipLabelScale*************/
-    let zipLabelScale = gf.zipLabelScale == false ? false : true;
-    let gfScaleZip = zipLabelScale ? '_@' + gfScale + 'x' : '';
+    /**************labelZipScale*************/
+    let labelZipScale = gf.labelZipScale == false ? false : true;
+    let gfScaleZip = labelZipScale ? '_@' + gfScale + 'x' : '';
 
-    /**************zipLabelDate*************/
-    let zipLabelDate = gf.zipLabelDate == false ? false : true;
-    let gfDateZip = zipLabelDate ? '_' + gfDate : '';
+    /**************labelZipDate*************/
+    let labelZipDate = gf.labelZipDate == false ? false : true;
+    let gfDateZip = labelZipDate ? '_' + gfDate : '';
 
-    /**************debugSVG - sets <svg> height/width*************/
+
     if (debugSVG) {
-        var svgElements = document.body.querySelectorAll('svg');
-        svgElements.forEach(function (item) {
-            item.setAttribute("width", item.getBoundingClientRect().width);
-            item.setAttribute("height", item.getBoundingClientRect().height);
-        });
-        console.log('GennyFlow: SVG height/width set');
+        gfInlineSVG();
+        setSVGdimensions();
     }
-
-    // Gets list of elements to capture. 
-    const captureList = document.getElementById(captureWrapperID).querySelectorAll('.gf_capture');
-    console.log('GennyFlow: ' + captureList.length + ' images to capture');
-
-    // If capturelist only has one item, it runs a new function that doesn't require a loop.
-    if (captureList.length == 1) {
+    /**************capture 1 item*************/
+    function soloCapture() {
         for (let i = 0; i < captureList.length; i++) {
             var label = 0;
             html2canvas(captureList[i], {
@@ -105,7 +106,10 @@ function gennyFlow(gf) {
                 });
             });
         }
-    } else {
+    }
+
+    /**************capture multiple items*************/
+    function multiCapture() {
         // Creates a temporary staging area for generated images and appends it to the body
         let tempFiles = document.createElement("div");
         tempFiles.setAttribute("id", tempFiles);
@@ -163,5 +167,18 @@ function gennyFlow(gf) {
                 }
             });
         }
+    }
+
+
+    // Gets list of elements to capture. 
+    const captureList = document.getElementById(captureWrapperID).querySelectorAll('.gf_capture');
+    console.log('GennyFlow: ' + captureList.length + ' images to capture');
+
+    // If capturelist only has one item, it runs a new function that doesn't require a loop.
+    if (captureList.length == 1) {
+        soloCapture();
+    } else {
+        multiCapture();
+
     }
 }

@@ -5,7 +5,11 @@
     <link rel="stylesheet" href="example.css" />
 
 
-    <script src="../src/gennyflow.js"></script>
+    <script src="../src//dependencies/filesaver.min.js"></script>
+    <script src="../src//dependencies/html2canvas.min.js"></script>
+    <script src="../src//dependencies/inline-svg.js"></script>
+    <script src="../src//dependencies/jszip.min.js"></script>
+    <script src="../src/gennyflow-solo.js"></script>
 </head>
 
 <body>
@@ -40,25 +44,18 @@
     </div>
     <script>
         document.getElementById("gf_trigger").onclick = () => gennyFlow({
-            zipLabelDate: true,
-            zipLabelScale: true,
-            imgLabelDate: true,
-            imgLabelScale: true,
-            setScale: 5, //overridden by user input
-            setZipName: 'test', //overridden by user input
+            labelZipDate: true, // done
+            labelZipScale: true, // done
+            zipName: 'testzipname', // done // overridden by user input
+            zipNameInputID: 'zipid', // done 
+            scaleInputID: 'scaleid', // done
+            scale: 5, // done // overridden by user input
+            labelImgDate: true, // done
+            labelImgScale: true, // done
+            debugSVG: true, // done
+            debugAllowTaint: true, // done
+            debugUseCORS: true, // done
         });
-        // setScale: 2, // WORKS
-        //     captureWrapperID: 'containertest', // WORKS
-        //     slugClass: 'slugtest', // WORKS
-        //     imgLabelScale: true, // WORKS
-        //     imgLabelDate: true, // WORKS
-        //     zipLabelScale: true, // WORKS
-        //     zipLabelDate: true, // WORKS
-        //     setZipName: 'zipnametest', // WORKS
-        //     getZipNameID: 'gf_zip-name', // WORKS
-        //     debugSVG: true, // WORKS
-        //     debugAllowTaint: true, // WORKS
-        //     debugUseCORS: true, // WORKS
     </script>
 </body>
 

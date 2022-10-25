@@ -11,7 +11,7 @@ It was designed to be used with the Webflow CMS to allow for rapid and dynamic i
  - jszip
  - filesaver.js
  - inline-svg
- These are included in GennyFlow.js, but not in GennyFlowSolo.js
+ These are included in gennyflow.js, but not in gennyflow-solo.js
 
 ### Required elements
  - #gen_wrapper
