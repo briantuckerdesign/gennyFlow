@@ -1,28 +1,27 @@
 <html>
 
 <head>
-    <script src="../dependencies/jquery.min.js"></script>
-    <script src="../dependencies/html2canvas.min.js"></script>
-    <script src="../dependencies/jszip.min.js"></script>
-    <script src="../dependencies/filesaver.min.js"></script>
-    <script src="../dependencies/inline-svg.js"></script>
+    <script src="../src/dependencies/jquery.min.js"></script>
     <link rel="stylesheet" href="example.css" />
+
+
+    <script src="../src/gennyflow.js"></script>
 </head>
 
 <body>
     <div>
         Scale
-        <!--<select id="gf_scale">
+        <select id="gf_scale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
             <option value="4">@4x</option>
-        </select>-->
+        </select>
         <br /><br />
         Folder Name
         <input type="text" id="gf_zip-name" value="Folder Name" />
         <br /><br />
-        <input type="button" id="gf_trigger" value="Download" onclick="" class="button">
+        <div class="button" id="gf_trigger">Download</div>
         <br /><br />
     </div>
     <div id="gf_wrapper">
@@ -30,7 +29,7 @@
             <span class="gf_slug">slug-1</span>
             Capture Content Here
         </div>
-        -<div class="gf_capture">
+        <div class="gf_capture">
             <span class="gf_slug">slug-2</span>
             Another One
         </div>
@@ -39,22 +38,27 @@
             Last but not least <img src="poll-h.svg" class="gf_svg">
         </div>
     </div>
-    <script src="../gennyflow2.js"></script>
     <script>
-        gennyFlow({})
+        document.getElementById("gf_trigger").onclick = () => gennyFlow({
+            zipLabelDate: true,
+            zipLabelScale: true,
+            imgLabelDate: true,
+            imgLabelScale: true,
+            setScale: 5, //overridden by user input
+            setZipName: 'test', //overridden by user input
+        });
         // setScale: 2, // WORKS
-        // captureClass: 'capturetest', // WORKS
-        // captureWrapperID: 'containertest', // WORKS
-        // slugClass: 'slugtest', // WORKS
-        // imgLabelScale: true, // WORKS
-        // imgLabelDate: true, // WORKS
-        // zipLabelScale: true, // WORKS
-        // zipLabelDate: true, // WORKS
-        // setZipName: 'zipnametest', // WORKS
-        // getZipNameID: 'gf_zip-name', // WORKS
-        // debugSVG: true, // WORKS
-        // debugAllowTaint: true, // WORKS
-        // debugUseCORS: true, // WORKS
+        //     captureWrapperID: 'containertest', // WORKS
+        //     slugClass: 'slugtest', // WORKS
+        //     imgLabelScale: true, // WORKS
+        //     imgLabelDate: true, // WORKS
+        //     zipLabelScale: true, // WORKS
+        //     zipLabelDate: true, // WORKS
+        //     setZipName: 'zipnametest', // WORKS
+        //     getZipNameID: 'gf_zip-name', // WORKS
+        //     debugSVG: true, // WORKS
+        //     debugAllowTaint: true, // WORKS
+        //     debugUseCORS: true, // WORKS
     </script>
 </body>
 

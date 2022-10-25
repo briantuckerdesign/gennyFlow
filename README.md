@@ -4,10 +4,14 @@ GennyFlow is a web-based image generator.
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but can be used outside of webflow too.
 
 ### Requirements
+ - jquery
+
+### Built using
  - HTML2Canvas
  - jszip
  - filesaver.js
  - inline-svg
+ These are included in GennyFlow.js, but not in GennyFlowSolo.js
 
 ### Required elements
  - #gen_wrapper
