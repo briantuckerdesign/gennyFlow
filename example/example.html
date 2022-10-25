@@ -1,18 +1,21 @@
 <html>
 
 <head>
-    <script src="../dependencies/jquery.min.js"></script>
-    <script src="../dependencies/html2canvas.min.js"></script>
-    <script src="../dependencies/jszip.min.js"></script>
-    <script src="../dependencies/filesaver.min.js"></script>
-    <script src="../dependencies/inline-svg.js"></script>
+    <script src="../src/dependencies/jquery.min.js"></script>
     <link rel="stylesheet" href="example.css" />
+
+
+    <script src="../src//dependencies/filesaver.min.js"></script>
+    <script src="../src//dependencies/html2canvas.min.js"></script>
+    <script src="../src//dependencies/inline-svg.js"></script>
+    <script src="../src//dependencies/jszip.min.js"></script>
+    <script src="../src/gennyflow-solo.js"></script>
 </head>
 
 <body>
     <div>
         Scale
-        <select id="gen_scale-id" name="genScale">
+        <select id="gf_scale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
@@ -20,26 +23,40 @@
         </select>
         <br /><br />
         Folder Name
-        <input type="text" id="gen_folder-name" name="genFolderName" value="Folder Name" />
+        <input type="text" id="gf_zip-name" value="Folder Name" />
         <br /><br />
-        <input type='button' id='generate' value='Download' onclick='genGenerate();' class="button">
+        <div class="button" id="gf_trigger">Download</div>
         <br /><br />
     </div>
-    <div id="gen_wrapper">
-        <div class="gen_capture">
-            <span class="gen_slug">slug-1</span>
+    <div id="gf_wrapper">
+        <div class="gf_capture">
+            <span class="gf_slug">slug-1</span>
             Capture Content Here
         </div>
-        <div class="gen_capture">
-            <span class="gen_slug">slug-2</span>
+        <div class="gf_capture">
+            <span class="gf_slug">slug-2</span>
             Another One
         </div>
-        <div class="gen_capture">
-            <span class="gen_slug">slug-3</span>
-            Last but not least
+        <div class="gf_capture">
+            <span class="gf_slug">slug-3</span>
+            Last but not least <img src="poll-h.svg" class="gf_svg">
         </div>
     </div>
-    <script src="../gennyflow.js"></script>
+    <script>
+        document.getElementById("gf_trigger").onclick = () => gennyFlow({
+            labelZipDate: true, // done
+            labelZipScale: true, // done
+            zipName: 'testzipname', // done // overridden by user input
+            zipNameInputID: 'zipid', // done 
+            scaleInputID: 'scaleid', // done
+            scale: 5, // done // overridden by user input
+            labelImgDate: true, // done
+            labelImgScale: true, // done
+            debugSVG: true, // done
+            debugAllowTaint: true, // done
+            debugUseCORS: true, // done
+        });
+    </script>
 </body>
 
 </html>
