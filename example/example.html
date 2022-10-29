@@ -14,6 +14,12 @@
 
 <body>
     <div>
+        File Format
+        <select id="gf_file-format">
+            <option value="jpg">JPG</option>
+            <option value="png">PNG</option>
+        </select>
+        <br /><br />
         Scale
         <select id="gf_scale">
             <option value="1">@1x</option>
@@ -44,12 +50,16 @@
     </div>
     <script>
         document.getElementById("gf_trigger").onclick = () => gennyFlow({
+            fileFormat: 'jpg', // done
+            fileFormatInputID: 'gf_file-format', // overridden by user input
+            jpgQuality: 0.5, // overridden by user input
+            //jpgQualityInputID: 'gf_jpg-quality',
             labelZipDate: true, // done
             labelZipScale: true, // done
             zipName: 'testzipname', // done // overridden by user input
-            zipNameInputID: 'zipid', // done 
-            scaleInputID: 'scaleid', // done
-            scale: 5, // done // overridden by user input
+            zipNameInputID: 'gf_zip-name', // done 
+            scaleInputID: 'gf_scale', // done
+            scale: 1, // done // overridden by user input
             labelImgDate: true, // done
             labelImgScale: true, // done
             debugSVG: true, // done

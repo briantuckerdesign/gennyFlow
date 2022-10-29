@@ -1,4 +1,4 @@
-// gennyFlow v1.5.0
+// gennyFlow v1.6.0
 // Created by Brian Tucker
 // I only vaguely know what I'm doing. Care to help?
 // 
@@ -64,7 +64,7 @@ function gennyFlow(gf) {
 
     /**************gfScale*************/
     // Order of priority: scaleInputID -> scaleManual -> default (1)
-    let scaleInputID = gf.getScale || 'gf_scale';
+    let scaleInputID = gf.scaleInputID || 'gf_scale';
     let scaleManual = gf.scale || 1;
     let gfScale = document.getElementById(scaleInputID) ? document.getElementById(scaleInputID).value : scaleManual;
 
@@ -75,6 +75,22 @@ function gennyFlow(gf) {
     /**************labelImgDate*************/
     let labelImgDate = gf.labelImgDate == false ? false : true;
     let gfDateImg = labelImgDate ? '_' + gfDate : '';
+
+    /**************jpg quality*************/
+    let jpgQualityInputID = gf.jpgQualityInputID || 'gf_jpg-quality';
+    let jpgQuality = gf.jpgQuality || 1;
+    let gfJPGquality = document.getElementById(jpgQualityInputID) ? document.getElementById(jpgQualityInputID).value : jpgQuality;
+
+
+
+    /**************fileFormat*************/
+    let fileFormatInputID = gf.fileFormatInputID || 'gf_file-format';
+    let fileFormat = gf.fileFormat || 'png';
+    let gfFileFormat = document.getElementById(fileFormatInputID) ? document.getElementById(fileFormatInputID).value : fileFormat;
+    let gfJPGsettings = "'image/jpeg', " + jpgQuality;
+    let gfPNGsettings = "image/png";
+    let gfFileFormatSettings = (gfFileFormat == 'png') ? gfPNGsettings : gfJPGsettings;
+
 
     /**************labelZipScale*************/
     let labelZipScale = gf.labelZipScale == false ? false : true;
@@ -89,6 +105,7 @@ function gennyFlow(gf) {
         gfInlineSVG();
         setSVGdimensions();
     }
+    console.log(gfFileFormatSettings + ' ' + gfFileFormat);
     /**************capture 1 item*************/
     function soloCapture() {
         for (let i = 0; i < captureList.length; i++) {
@@ -99,11 +116,11 @@ function gennyFlow(gf) {
                 useCORS: debugUseCORS,
             }).then(canvas => {
                 let exportSlug = captureList[i].querySelector(".gf_slug").innerHTML;
-                let label = exportSlug + gfDateImg + gfScaleImg + ".png";
+                let label = exportSlug + gfDateImg + gfScaleImg + "." + gfFileFormat;
                 console.log('GennyFlow: Generating ' + label);
                 canvas.toBlob(function (blob) {
                     window.saveAs(blob, label);
-                });
+                }, gfFileFormatSettings);
             });
         }
     }
@@ -123,10 +140,11 @@ function gennyFlow(gf) {
                 useCORS: debugUseCORS,
             }).then((canvas) => {
                 let exportSlug = captureList[i].querySelector(".gf_slug").innerHTML;
-                let label = exportSlug + gfDateImg + gfScaleImg + ".png";
+                let label = exportSlug + gfDateImg + gfScaleImg + "." + gfFileFormat;
                 console.log('GennyFlow: Generating ' + label);
 
-                let imgdata = canvas.toDataURL("image/png");
+                let imgdata = canvas.toDataURL(gfFileFormatSettings);
+
                 let obj = document.createElement("img");
                 obj.src = imgdata;
                 zip.file(
@@ -161,9 +179,13 @@ function gennyFlow(gf) {
                         .catch((err) => {
                             console.log(err);
                         });
-
-                    // Removes the temporary staging area
-                    document.body.removeChild(tempFiles);
+                    if (gf.debugLeaveTemp) {
+                        console.log('GennyFlow: Leaving temp files');
+                    }
+                    else {
+                        // Removes the temporary staging area
+                        document.body.removeChild(tempFiles);
+                    }
                 }
             });
         }
@@ -175,10 +197,11 @@ function gennyFlow(gf) {
     console.log('GennyFlow: ' + captureList.length + ' images to capture');
 
     // If capturelist only has one item, it runs a new function that doesn't require a loop.
-    if (captureList.length == 1) {
-        soloCapture();
-    } else {
-        multiCapture();
-
-    }
+    setTimeout(function () {
+        if (captureList.length == 1) {
+            soloCapture();
+        } else {
+            multiCapture();
+        }
+    }, 1000);
 }
