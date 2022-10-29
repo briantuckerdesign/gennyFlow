@@ -15,7 +15,7 @@ v1.6.0 currently only supports one instance per page, but multi per page is on t
  - jszip
  - filesaver.js
  - inline-svg
- These are included in gennyflow.js, but not in gennyflow-solo.js
+These are included in gennyflow.js, but not in gennyflow-solo.js
 
 ### Required elements
 All GennyFlow elements start with "gf_"
