@@ -86,6 +86,8 @@ If you run into issues with SVGs, tainted canvases, or CORS, these tools can be 
     <script src="gennyflow.js"></script>
 </head>
 <body>
+<button id="gf_trigger" type="button">Download</button>
+
     <div id="gf_wrapper">
         <div class="gf_capture">
             <span class=" gf_slug">slug-1</span>
