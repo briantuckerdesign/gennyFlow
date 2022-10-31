@@ -79,6 +79,27 @@ If you run into issues with SVGs, tainted canvases, or CORS, these tools can be 
 |Allow Taint	|`debugAllowTaint`|`true` or `false`| Default `true`. Changes HTML2Canvas AllowTaint setting.
 |Use CORS	|`debugUseCORS`|`true` or `false`| Default `true`. Changes HTML2Canvas UseCORS setting.
 
-### Example Page Structure
-
-coming soon
+### Example 
+```<html>
+<head>
+    <script src="dependencies/jquery.min.js"></script>
+    <script src="gennyflow.js"></script>
+</head>
+<body>
+    <div id="gf_wrapper">
+        <div class="gf_capture">
+            <span class=" gf_slug">slug-1</span>
+            Capture Content Here
+        </div>
+    </div>
+    <script>
+        document.getElementById("gf_trigger").onclick = () => gennyFlow({
+            fileFormat: 'jpg',
+            jpgQuality: 0.9,
+            scale: 2,
+            labelImgDate: false, 
+            labelImgScale: false,
+        });
+    </script>
+</body>
+</html>```
