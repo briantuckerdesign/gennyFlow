@@ -5,7 +5,7 @@ GennyFlow is a web-based image generator.
 
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but can be used outside of Webflow too.
 
-v1.6.0 currently only supports one instance per page, but multi per page is on the horizon.
+v1.7.0 currently only supports one instance per page, but multi per page is on the horizon.
 
 ### Requirements
  - jquery
@@ -48,7 +48,7 @@ Set these when you initialize GennyFlow. Many (but not all) of these can be set 
 |   |Label|Values|Description| 
 |---|---|---|---|
 |File Format|`fileFormat`|`'jpg' or 'png'`|Default `'png'`
-|JPG Quality (broken)|`jpgQuality`|`0.0` to `1.0`|Default `1.0.` Only works for jpg.
+|JPG Quality |`jpgQuality`|`0.0` to `1.0`|Default `1.0.` Only works for jpg.
 |Scale|`scale`|`'jpg' or 'png'`|Default `'png'`
 |Zip Folder Name|`zipName`        |`'zip_name_here'`          | Default `'images'`
 
@@ -79,6 +79,27 @@ If you run into issues with SVGs, tainted canvases, or CORS, these tools can be 
 |Allow Taint	|`debugAllowTaint`|`true` or `false`| Default `true`. Changes HTML2Canvas AllowTaint setting.
 |Use CORS	|`debugUseCORS`|`true` or `false`| Default `true`. Changes HTML2Canvas UseCORS setting.
 
-### Example Page Structure
-
-coming soon
+### Example 
+```<html>
+<head>
+    <script src="dependencies/jquery.min.js"></script>
+    <script src="gennyflow.js"></script>
+</head>
+<body>
+    <div id="gf_wrapper">
+        <div class="gf_capture">
+            <span class=" gf_slug">slug-1</span>
+            Capture Content Here
+        </div>
+    </div>
+    <script>
+        document.getElementById("gf_trigger").onclick = () => gennyFlow({
+            fileFormat: 'jpg',
+            jpgQuality: 0.9,
+            scale: 2,
+            labelImgDate: false, 
+            labelImgScale: false,
+        });
+    </script>
+</body>
+</html>```
