@@ -16,8 +16,8 @@
     <div>
         File Format
         <select id="gf_file-format">
-            <option value="jpg">JPG</option>
             <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
         </select>
         <br /><br />
         Scale
@@ -28,19 +28,31 @@
             <option value="4">@4x</option>
         </select>
         <br /><br />
+        Quality (JPG only)
+        <select id="gf_jpg-quality">
+            <option value="1.0">Max</option>
+            <option value="0.9">High</option>
+            <option value="0.8">Medium</option>
+            <option value="0.6">Low</option>
+        </select>
+        <br /><br />
         Folder Name
         <input type="text" id="gf_zip-name" value="Folder Name" />
+        <br /><br />
+        Image
+        <input id="inp" type="file">
         <br /><br />
         <div class="button" id="gf_trigger">Download</div>
         <br /><br />
     </div>
     <div id="gf_wrapper">
         <div class="gf_capture">
-            <span class="gf_slug">slug-1</span>
+            <span class=" gf_slug">slug-1</span>
             Capture Content Here
         </div>
         <div class="gf_capture">
             <span class="gf_slug">slug-2</span>
+            <img id="img" height="150">
             Another One
         </div>
         <div class="gf_capture">
@@ -49,11 +61,23 @@
         </div>
     </div>
     <script>
+        function readFile() {
+            if (!this.files || !this.files[0]) return;
+            const getFile = new FileReader();
+            getFile.addEventListener("load", function (evt) {
+                document.querySelector("#img").src = evt.target.result;
+                document.querySelector("#b64").textContent = evt.target.result;
+            });
+            getFile.readAsDataURL(this.files[0]);
+        }
+
+        document.querySelector("#inp").addEventListener("change", readFile);
+
         document.getElementById("gf_trigger").onclick = () => gennyFlow({
             fileFormat: 'jpg', // done
             fileFormatInputID: 'gf_file-format', // overridden by user input
-            jpgQuality: 0.5, // overridden by user input
-            //jpgQualityInputID: 'gf_jpg-quality',
+            // jpgQuality: 0.5, // overridden by user input 
+            jpgQualityInputID: 'gf_jpg-quality',
             labelZipDate: true, // done
             labelZipScale: true, // done
             zipName: 'testzipname', // done // overridden by user input

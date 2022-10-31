@@ -1,4 +1,4 @@
-// gennyFlow v1.6.0
+// gennyFlow v1.7.0
 // Created by Brian Tucker
 // I only vaguely know what I'm doing. Care to help?
 // 
@@ -63,7 +63,6 @@ function gennyFlow(gf) {
     let gfZipName = document.getElementById(zipNameInputID) ? document.getElementById(zipNameInputID).value : zipName;
 
     /**************gfScale*************/
-    // Order of priority: scaleInputID -> scaleManual -> default (1)
     let scaleInputID = gf.scaleInputID || 'gf_scale';
     let scaleManual = gf.scale || 1;
     let gfScale = document.getElementById(scaleInputID) ? document.getElementById(scaleInputID).value : scaleManual;
@@ -78,17 +77,16 @@ function gennyFlow(gf) {
 
     /**************jpg quality*************/
     let jpgQualityInputID = gf.jpgQualityInputID || 'gf_jpg-quality';
-    let jpgQuality = gf.jpgQuality || 1;
-    let gfJPGquality = document.getElementById(jpgQualityInputID) ? document.getElementById(jpgQualityInputID).value : jpgQuality;
-
+    let jpgQualityManual = gf.jpgQuality || 1;
+    let gfJPGquality = document.getElementById(jpgQualityInputID) ? document.getElementById(jpgQualityInputID).value : jpgQualityManual;
 
 
     /**************fileFormat*************/
     let fileFormatInputID = gf.fileFormatInputID || 'gf_file-format';
     let fileFormat = gf.fileFormat || 'png';
     let gfFileFormat = document.getElementById(fileFormatInputID) ? document.getElementById(fileFormatInputID).value : fileFormat;
-    let gfJPGsettings = "'image/jpeg', " + jpgQuality;
-    let gfPNGsettings = "image/png";
+    let gfJPGsettings = 'image/jpeg';
+    let gfPNGsettings = 'image/png';
     let gfFileFormatSettings = (gfFileFormat == 'png') ? gfPNGsettings : gfJPGsettings;
 
 
@@ -101,11 +99,32 @@ function gennyFlow(gf) {
     let gfDateZip = labelZipDate ? '_' + gfDate : '';
 
 
+
+    console.log(`
+    GennyFlow Settings before Run:
+
+    File Format: ${gfFileFormat}
+    Quality: ${gfJPGquality}
+    Scale: ${gfScale}
+
+    Img Label, Scale: ${labelImgScale}
+    Img Label, Date: ${labelImgDate}
+
+    Zip Name: ${gfZipName}
+    Zip Label, Date: ${labelZipDate}
+    Zip Label, Scale: ${labelZipScale}
+
+    Debug SVGs: ${debugSVG}
+    Debug Allow Taint: ${debugAllowTaint}
+    Debug Use CORS: ${debugUseCORS}
+
+    `);
+
+    /**************SVG Debug*************/
     if (debugSVG) {
         gfInlineSVG();
         setSVGdimensions();
     }
-    console.log(gfFileFormatSettings + ' ' + gfFileFormat);
     /**************capture 1 item*************/
     function soloCapture() {
         for (let i = 0; i < captureList.length; i++) {
@@ -120,7 +139,7 @@ function gennyFlow(gf) {
                 console.log('GennyFlow: Generating ' + label);
                 canvas.toBlob(function (blob) {
                     window.saveAs(blob, label);
-                }, gfFileFormatSettings);
+                }, gfFileFormatSettings, parseFloat(gfJPGquality));
             });
         }
     }
@@ -142,8 +161,7 @@ function gennyFlow(gf) {
                 let exportSlug = captureList[i].querySelector(".gf_slug").innerHTML;
                 let label = exportSlug + gfDateImg + gfScaleImg + "." + gfFileFormat;
                 console.log('GennyFlow: Generating ' + label);
-
-                let imgdata = canvas.toDataURL(gfFileFormatSettings);
+                let imgdata = canvas.toDataURL(gfFileFormatSettings, parseFloat(gfJPGquality));
 
                 let obj = document.createElement("img");
                 obj.src = imgdata;
