@@ -5,7 +5,7 @@ GennyFlow is a web-based image generator.
 
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but can be used outside of Webflow too.
 
-v1.6.0 currently only supports one instance per page, but multi per page is on the horizon.
+v1.7.0 currently only supports one instance per page, but multi per page is on the horizon.
 
 ### Requirements
  - jquery
@@ -48,7 +48,7 @@ Set these when you initialize GennyFlow. Many (but not all) of these can be set 
 |   |Label|Values|Description| 
 |---|---|---|---|
 |File Format|`fileFormat`|`'jpg' or 'png'`|Default `'png'`
-|JPG Quality (broken)|`jpgQuality`|`0.0` to `1.0`|Default `1.0.` Only works for jpg.
+|JPG Quality |`jpgQuality`|`0.0` to `1.0`|Default `1.0.` Only works for jpg.
 |Scale|`scale`|`'jpg' or 'png'`|Default `'png'`
 |Zip Folder Name|`zipName`        |`'zip_name_here'`          | Default `'images'`
 
