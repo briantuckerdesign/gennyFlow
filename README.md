@@ -5,7 +5,7 @@ GennyFlow is a web-based image generator.
 
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but can be used outside of Webflow too.
 
-v1.7.0 currently only supports one instance per page, but multi per page is on the horizon.
+v1.8.0 currently only supports one instance per page, but multi per page is on the horizon.
 
 ### Requirements
  - jquery

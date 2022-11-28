@@ -3,13 +3,11 @@
 <head>
     <script src="../src/dependencies/jquery.min.js"></script>
     <link rel="stylesheet" href="example.css" />
-
-
     <script src="../src//dependencies/filesaver.min.js"></script>
     <script src="../src//dependencies/html2canvas.min.js"></script>
     <script src="../src//dependencies/inline-svg.js"></script>
     <script src="../src//dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-solo.js"></script>
+    <script src="../src/gennyflow-solo-v1.8.0.js"></script>
 </head>
 
 <body>
@@ -52,7 +50,7 @@
         </div>
         <div class="gf_capture">
             <span class="gf_slug">slug-2</span>
-            <img id="img" height="150">
+            <!-- <img id="img" height="150"> -->
             Another One
         </div>
         <div class="gf_capture">
@@ -61,34 +59,35 @@
         </div>
     </div>
     <script>
-        function readFile() {
-            if (!this.files || !this.files[0]) return;
-            const getFile = new FileReader();
-            getFile.addEventListener("load", function (evt) {
-                document.querySelector("#img").src = evt.target.result;
-                document.querySelector("#b64").textContent = evt.target.result;
-            });
-            getFile.readAsDataURL(this.files[0]);
-        }
+        // function readFile() {
+        //     if (!this.files || !this.files[0]) return;
+        //     const getFile = new FileReader();
+        //     getFile.addEventListener("load", function (evt) {
+        //         document.querySelector("#img").src = evt.target.result;
+        //         document.querySelector("#b64").textContent = evt.target.result;
+        //     });
+        //     getFile.readAsDataURL(this.files[0]);
+        // }
 
-        document.querySelector("#inp").addEventListener("change", readFile);
+        // document.querySelector("#inp").addEventListener("change", readFile);
 
         document.getElementById("gf_trigger").onclick = () => gennyFlow({
-            fileFormat: 'jpg', // done
-            fileFormatInputID: 'gf_file-format', // overridden by user input
+            // fileFormat: 'jpg', // done
+            // fileFormatInputID: 'gf_file-format', // overridden by user input
             // jpgQuality: 0.5, // overridden by user input 
-            jpgQualityInputID: 'gf_jpg-quality',
-            labelZipDate: true, // done
-            labelZipScale: true, // done
-            zipName: 'testzipname', // done // overridden by user input
-            zipNameInputID: 'gf_zip-name', // done 
-            scaleInputID: 'gf_scale', // done
-            scale: 1, // done // overridden by user input
-            labelImgDate: true, // done
-            labelImgScale: true, // done
-            debugSVG: true, // done
-            debugAllowTaint: true, // done
-            debugUseCORS: true, // done
+            // jpgQualityInputID: 'gf_jpg-quality',
+            // labelZipDate: true,
+            // labelZipScale: true,
+            // zipName: 'testzipname', // overridden by user input
+            // zipNameInputID: 'gf_zip-name', 
+            // scaleInputID: 'gf_scale', 
+            // scale: 1, // overridden by user input
+            // labelImgDate: true, 
+            // labelImgScale: true, 
+            // debugSVG: true, 
+            // debugAllowTaint: true, 
+            // debugUseCORS: true, 
+            // verbose: false, 
         });
     </script>
 </body>
