@@ -79,11 +79,50 @@ If you run into issues with SVGs, tainted canvases, or CORS, these tools can be 
 |Allow Taint	|`debugAllowTaint`|`true` or `false`| Default `true`. Changes HTML2Canvas AllowTaint setting.
 |Use CORS	|`debugUseCORS`|`true` or `false`| Default `true`. Changes HTML2Canvas UseCORS setting.
 
-### Example 
+### Example, Webflow setup
+#### Upload/Include Script
+Upload the .txt file in /src to Webflow. Use the URL of this uploaded file below:
+
+#### Add to page head
+```
+<script src="webflow url here"></script>
+```
+
+#### Add before body close
+This is where you add all the settings to customize. Alternatively, you can set it via user input by creating a form and using the IDs above for the fields.
+```
+<script>
+document.getElementById("gf_trigger").onclick = () => gennyFlow({
+    scale: 2,
+    labelImgDate: false, 
+    labelImgScale: false,
+    // Additional settings go here
+});
+</script>
+```
+
+#### Container
+Make a div that contains all the items you want to capture. Set the ID to gf_wrapper.
+
+#### Item Wrapper
+Each item you want to capture should be inside a div with the class gf_capture. 
+You can have as few or as many as you want.
+
+#### Slug
+Each capture item MUST have a unique slug. This is what labels the file. Create a text block with the glass gf_slug. 
+This MUST be inside of the gf_capture element.
+This element can be hidden.
+
+#### Capture Trigger
+In order to trigger gennyFlow, you must add a trigger. 
+You can use any element, like a button or link block. Then you give it an ID of gf_trigger.
+
+
+### Example, HTML
 ```<html>
 <head>
-    <script src="dependencies/jquery.min.js"></script>
-    <script src="gennyflow.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="gennyflow-v1.8.0.js"></script>
 </head>
 <body>
 <button id="gf_trigger" type="button">Download</button>
