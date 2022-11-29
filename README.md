@@ -102,24 +102,25 @@ document.getElementById("gf_trigger").onclick = () => gennyFlow({
 ```
 
 #### Container
-Make a div that contains all the items you want to capture. Set the ID to gf_wrapper.
+Make a div that contains all the items you want to capture. Set the ID to ```gf_wrapper```.
 
 #### Item Wrapper
-Each item you want to capture should be inside a div with the class gf_capture. 
+Each item you want to capture should be inside a div with the class ```gf_capture```. 
 You can have as few or as many as you want.
 
 #### Slug
-Each capture item MUST have a unique slug. This is what labels the file. Create a text block with the glass gf_slug. 
+Each capture item MUST have a unique slug. This is what labels the file. Create a text block with the class ```gf_slug```. 
 This MUST be inside of the gf_capture element.
 This element can be hidden.
 
 #### Capture Trigger
 In order to trigger gennyFlow, you must add a trigger. 
-You can use any element, like a button or link block. Then you give it an ID of gf_trigger.
+You can use any element, like a button or link block. Then you give it an ID of ```gf_trigger```.
 
 
 ### Example, HTML
-```<html>
+```
+<html>
 <head>
     <script src="jquery.min.js"></script>
     <script src="gennyflow-v1.8.0.js"></script>
@@ -143,4 +144,5 @@ You can use any element, like a button or link block. Then you give it an ID of 
         });
     </script>
 </body>
-</html>```
+</html>
+```
