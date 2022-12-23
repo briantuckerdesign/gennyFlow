@@ -7,19 +7,19 @@
     <script src="../src/dependencies/html2canvas.min.js"></script>
     <script src="../src/dependencies/inline-svg.js"></script>
     <script src="../src/dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-solo-v1.8.0.js"></script>
+    <script src="../src/gennyflow-solo-v2.0.0.js"></script>
 </head>
 
 <body>
     <div>
         File Format
-        <select id="gf_file-format">
+        <select gennyflow="fileformat">
             <option value="png">PNG</option>
             <option value="jpg">JPG</option>
         </select>
         <br /><br />
         Scale
-        <select id="gf_scale">
+        <select gennyflow="scale">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
@@ -27,7 +27,7 @@
         </select>
         <br /><br />
         Quality (JPG only)
-        <select id="gf_jpg-quality">
+        <select gennyflow="jpgquality">
             <option value="1.0">Max</option>
             <option value="0.9">High</option>
             <option value="0.8">Medium</option>
@@ -35,60 +35,40 @@
         </select>
         <br /><br />
         Folder Name
-        <input type="text" id="gf_zip-name" value="Folder Name" />
+        <input type="text" value="Folder Name" gennyflow="zipname" />
         <br /><br />
-        Image
-        <input id="inp" type="file">
-        <br /><br />
-        <div class="button" id="gf_trigger">Download</div>
+        <div class="button" gennyflow="trigger">Download</div>
         <br /><br />
     </div>
-    <div id="gf_wrapper">
-        <div class="gf_capture">
-            <span class=" gf_slug">slug-1</span>
+    <div class="wrapper" gennyflow="wrapper">
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug 1 a</span>
             Capture Content Here
         </div>
-        <div class="gf_capture">
-            <span class="gf_slug">slug-2</span>
-            <!-- <img id="img" height="150"> -->
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug-2</span>
             Another One
         </div>
-        <div class="gf_capture">
-            <span class="gf_slug">slug-3</span>
-            Last but not least <img src="poll-h.svg" class="gf_svg">
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug-3</span>
+            Last but not least <img src="poll-h.svg" class="svg">
         </div>
     </div>
     <script>
-        // function readFile() {
-        //     if (!this.files || !this.files[0]) return;
-        //     const getFile = new FileReader();
-        //     getFile.addEventListener("load", function (evt) {
-        //         document.querySelector("#img").src = evt.target.result;
-        //         document.querySelector("#b64").textContent = evt.target.result;
-        //     });
-        //     getFile.readAsDataURL(this.files[0]);
-        // }
-
-        // document.querySelector("#inp").addEventListener("change", readFile);
-
-        document.getElementById("gf_trigger").onclick = () => gennyFlow({
-            // fileFormat: 'jpg', // done
-            // fileFormatInputID: 'gf_file-format', // overridden by user input
-            // jpgQuality: 0.5, // overridden by user input 
-            // jpgQualityInputID: 'gf_jpg-quality',
-            // labelZipDate: true,
-            // labelZipScale: true,
-            // zipName: 'testzipname', // overridden by user input
-            // zipNameInputID: 'gf_zip-name', 
-            // scaleInputID: 'gf_scale', 
-            // scale: 1, // overridden by user input
-            // labelImgDate: true, 
-            // labelImgScale: true, 
-            // debugSVG: true, 
-            // debugAllowTaint: true, 
-            // debugUseCORS: true, 
-            // verbose: false, 
-        });
+        $('[gennyflow=trigger]').click(() => gennyFlow({
+            scale: 1, // overridden by user input
+            fileFormat: 'jpg', // overridden by user input 
+            jpgQuality: 0.5, // overridden by user input 
+            zipName: 'testzipname', // overridden by user input
+            labelZipDate: true,
+            labelZipScale: true,
+            labelImgDate: true,
+            labelImgScale: true,
+            enableSVGfix: true,
+            enableAllowTaint: true,
+            enableUseCORS: true,
+            enableVerbose: true,
+        }));
     </script>
 </body>
 
