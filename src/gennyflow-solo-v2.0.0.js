@@ -1,4 +1,4 @@
-// gennyFlow Solo v1.9.1 (no dependencies)
+// gennyFlow Solo v2.0.0 (no dependencies)
 // Created by Brian Tucker
 
 /******************************************
@@ -10,18 +10,18 @@ GennyFlow runs
 .
 *******************************************/
 
-// Finds all <img> elements with class 'gf_svg' and converts them to inline <svg> (fixes HTML2Canvas issue)
-// 'gf_svg' should only be added to <img> elements that are SVGs
 function convertIMGtoSVG() {
+    let svgClass = 'img.gf_img2svg';
     inlineSVG.init({
-        svgSelector: "img.gf_svg",
-        initClass: "js-inlinesvg"
+        svgSelector: svgClass, // the class attached to all images that should be inlined
+        initClass: 'js-inlinesvg', // class added to the inlined SVG
     });
 }
 
-// Sets explicit height/width for inline <svg>'s (fixes HTML2Canvas issue)
+// Set explicit height/width for inline <svg>'s (fixes HTML2Canvas issue)
 function setSVGdimensions() {
-    document.body.querySelectorAll("svg.gf_svg").forEach(item => {
+    var svgElements = document.body.querySelectorAll('svg.gf_img2svg');
+    svgElements.forEach(function (item) {
         item.setAttribute("width", item.getBoundingClientRect().width);
         item.setAttribute("height", item.getBoundingClientRect().height);
     });
@@ -54,32 +54,28 @@ GennyFlow
 *******************************************/
 
 function gennyFlow(options) {
-    if (options.verbose) {
-        console.log('GennyFlow: running...');
-    }
     i = 0;
     options = options || {};
-
+    if (options.enableVerbose) {
+        console.log('GennyFlow: running...');
+    }
     // Starts JS Zip
     const jsZipInstance = new JSZip();
 
+    // DATE
     // Gets date for file labels
     const dateMMDDYY = formatDate();
 
-    // Default settings
-    const captureWrapperID = 'gf_wrapper'; // ID 
-    const captureClass = '.gf_capture'; // Class
-    const slugClass = 'gf_slug'; // Class
-
-    // Misc settings
-    const enableSVGfixes = options.debugSVG ? true : true;
-    const enableAllowTaint = options.debugAllowTaint == false ? false : true; // Default: true
-    const enableUseCORS = options.debugUseCORS == false ? false : true; // Default: true
+    // MISC SETTINGS
+    // All true by default
+    const enableSVGfixes = options.enableSVGfix ? true : true;
+    const enableAllowTaint = options.enableAllowTaint == false ? false : true;
+    const enableUseCORS = options.enableUseCORS == false ? false : true;
 
     // ZIP NAME
     // Default: 'images.zip'
     // Order of precedence: input > options > default
-    const zipNameFromUserInput = document.getElementById(options.zipNameInputID || 'gf_zip-name');
+    const zipNameFromUserInput = document.querySelector('[gennyflow=zipname]');
     const zipNameDefault = 'images';
     const zipNameFromOptions = options.zipName || zipNameDefault;
     const zipFolderName = zipNameFromUserInput ? convertToSlug(zipNameFromUserInput.value) : zipNameFromOptions;
@@ -87,7 +83,7 @@ function gennyFlow(options) {
     // IMAGE SCALE
     // Default: 1
     // Order of precedence: input > options > default
-    const scaleFromUserInput = document.getElementById(options.scaleInputID || 'gf_scale');
+    const scaleFromUserInput = document.querySelector('[gennyflow=scale]');
     const scaleDefault = 1;
     const scaleFromOptions = options.scale || scaleDefault;
     const scaleValue = scaleFromUserInput ? sanitizeInput(scaleFromUserInput.value) : scaleFromOptions;
@@ -97,17 +93,16 @@ function gennyFlow(options) {
     // Order of precedence: input > options > default
     const fileFormatDefault = 'png';
     const fileFormatFromOptions = options.fileFormat || fileFormatDefault;
-    const fileFormatInput = document.getElementById(options.fileFormatInputID || 'gf_file-format');
+    const fileFormatInput = document.querySelector('[gennyflow=fileformat]');
     const fileFormat = fileFormatInput ? sanitizeInput(fileFormatInput.value) : fileFormatFromOptions;
     const fileFormatMime = (fileFormat === 'png') ? 'image/png' : 'image/jpeg';
 
     // JPG QUALITY - only used if fileFormat is 'jpg'
     // Default: 1
     // Order of precedence: input > options > default
-    const jpgQualityInputID = options.jpgQualityInputID || 'gf_jpg-quality';
+    const jpgQualityFromUserInput = document.querySelector('[gennyflow=jpgquality]');    
     const jpgQualityDefault = 1
     const jpgQualityFromOptions = options.jpgQuality || jpgQualityDefault;
-    const jpgQualityFromUserInput = document.getElementById(jpgQualityInputID);
     const jpgQuality = jpgQualityFromUserInput ? sanitizeInput(jpgQualityFromUserInput.value) : jpgQualityFromOptions;
 
     // LABELS
@@ -119,7 +114,7 @@ function gennyFlow(options) {
     const labelZipDate = options.labelZipDate !== false ? `_${dateMMDDYY}` : '';
 
     // Shows settings in console
-    if (options.verbose) {
+    if (options.enableVerbose) {
         console.log(`
 GennyFlow Settings before run:
 
@@ -137,24 +132,33 @@ Zip Label, Scale: ${labelZipScale}
 SVGs Fix: ${enableSVGfixes}
 HTML2Canvas Allow Taint: ${enableAllowTaint}
 HTML2Canvas Use CORS: ${enableUseCORS}
-GennyFlow Verbose Logging: ${options.verbose}
+GennyFlow Verbose Logging: ${options.enableVerbose}
 `);
     }
 
     // Gets list of elements to capture. 
     const captureList = $('div[gennyflow="wrapper"]').find('[gennyflow="capture"]')
-    if (options.verbose) {
+    if (options.enableVerbose) {
         console.log('GennyFlow: ' + captureList.length + ' images to capture');
     }
 
     // Fixes issue HTML2Canvas has with SVGs
     if (enableSVGfixes) {
+        const imgs = document.querySelectorAll('div[gennyflow=wrapper] img[src$=".svg"]');
+        // const imgs = document.querySelectorAll('img[gennyflow=svg]');
+        imgs.forEach(img => {
+            img.classList.add('gf_img2svg');
+        });
+        if (options.enableVerbose) {
+            console.log("GennyFlow: .gf_img2svg has been added to all 'gennyflow=svg' <img> elements");
+        }
+
         convertIMGtoSVG();
-        if (options.verbose) {
+        if (options.enableVerbose) {
             console.log('GennyFlow: <img> SVGs with class .gf_svg have been inlined.');
         }
         setSVGdimensions();
-        if (options.verbose) {
+        if (options.enableVerbose) {
             console.log('GennyFlow: <svg> with .gf_svg height/width set');
         }
     }
@@ -176,7 +180,7 @@ GennyFlow Verbose Logging: ${options.verbose}
                     backgroundColor: null,
                 });
 
-                const slug = $(element).find('[gennyflow="slug"]').html();
+                const slug = convertToSlug($(element).find('[gennyflow="slug"]').html());
                 let label; // declare label variable
 
                 if (slug) { // if slug exists, use it as the label
@@ -185,7 +189,7 @@ GennyFlow Verbose Logging: ${options.verbose}
                     label = `img-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
                 }
 
-                if (options.verbose) {
+                if (options.enableVerbose) {
                     console.log(`GennyFlow: Generating ${label}`);
                 }
 
@@ -212,75 +216,6 @@ GennyFlow Verbose Logging: ${options.verbose}
     Captures multiple images and zips them
     .
     *******************************************/
-    // async function multiCapture() {
-    //     // Creates a temporary staging area for generated images and appends it to the body
-    //     const tempFiles = document.createElement('div');
-    //     tempFiles.setAttribute('id', tempFiles);
-    //     document.body.appendChild(tempFiles);
-
-    //     // Loops through captureList and runs html2canvas to convert each div to a canvas
-    //     for (const element of captureList) {
-    //         try {
-    //             const canvas = await html2canvas(element, {
-    //                 scale: scaleValue,
-    //                 allowTaint: enableAllowTaint,
-    //                 useCORS: enableUseCORS,
-    //                 backgroundColor: null, // transparent background
-    //             });
-
-    //             const slug = $(element).find('[gennyflow="slug"]').html();
-    //             const label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
-
-    //             if (options.verbose) {
-    //                 console.log(`GennyFlow: Generating ${label}`);
-    //             }
-
-    //             const imgdata = canvas.toDataURL(fileFormatMime, parseFloat(jpgQuality));
-
-    //             const obj = document.createElement('img');
-    //             obj.src = imgdata;
-    //             jsZipInstance.file(
-    //                 label,
-    //                 obj.src.substr(obj.src.indexOf(',') + 1), {
-    //                     base64: true,
-    //                 }
-    //             );
-
-    //             // This will append the image to the temporary staging div.
-    //             $(tempFiles).append(`<img src="${obj.src}"/>`);
-
-    //             // stops adding to the zip file once it's done
-    //             const tempFilesLength = document.getElementById(tempFiles).children.length;
-
-    //             // If all images have been captured, generate the zip file
-    //             if (tempFilesLength === document.getElementById(captureWrapperID).children.length) {
-    //                 jsZipInstance
-    //                     .generateAsync({
-    //                             type: 'blob',
-    //                         },
-    //                         function updateCallback(metadata) {}
-    //                     )
-    //                     .then((content) => {
-    //                         const gfZipLabel = `${zipFolderName}${labelZipDate}${labelZipScale}`;
-    //                         saveAs(content, `${gfZipLabel}.zip`);
-
-    //                         if (options.verbose) {
-    //                             console.log('Zip Downloaded ');
-    //                         }
-    //                     })
-    //                     .catch((err) => {
-    //                         if (options.verbose) {
-    //                             console.log(err);
-    //                         }
-    //                     });
-    //                 document.body.removeChild(tempFiles);
-    //             }
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     }
-    // }
-
     async function multiCapture() {
         let counter = 1; // add counter variable
 
@@ -299,7 +234,7 @@ GennyFlow Verbose Logging: ${options.verbose}
                     backgroundColor: null, // transparent background
                 });
 
-                const slug = $(element).find('[gennyflow="slug"]').html();
+                const slug = convertToSlug($(element).find('[gennyflow="slug"]').html());
                 let label; // declare label variable
 
                 if (slug) { // if slug exists, use it as the label
@@ -308,7 +243,7 @@ GennyFlow Verbose Logging: ${options.verbose}
                     label = `item-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
                 }
 
-                if (options.verbose) {
+                if (options.enableVerbose) {
                     console.log(`GennyFlow: Generating ${label}`);
                 }
 
@@ -341,12 +276,12 @@ GennyFlow Verbose Logging: ${options.verbose}
                             const gfZipLabel = `${zipFolderName}${labelZipDate}${labelZipScale}`;
                             saveAs(content, `${gfZipLabel}.zip`);
 
-                            if (options.verbose) {
+                            if (options.enableVerbose) {
                                 console.log('Zip Downloaded ');
                             }
                         })
                         .catch((err) => {
-                            if (options.verbose) {
+                            if (options.enableVerbose) {
                                 console.log(err);
                             }
                         });
