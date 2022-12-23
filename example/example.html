@@ -7,7 +7,7 @@
     <script src="../src/dependencies/html2canvas.min.js"></script>
     <script src="../src/dependencies/inline-svg.js"></script>
     <script src="../src/dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-solo-v1.9.0.js"></script>
+    <script src="../src/gennyflow-solo-v1.9.1.js"></script>
 </head>
 
 <body>
@@ -40,19 +40,19 @@
         <div class="button" id="gf_trigger">Download</div>
         <br /><br />
     </div>
-    <div id="gf_wrapper">
-        <div class="gf_capture">
-            <span class=" gf_slug">slug-1</span>
+    <div class="wrapper" gennyflow="wrapper">
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug-1</span>
             Capture Content Here
         </div>
-        <!-- <div class="gf_capture">
-            <span class="gf_slug">slug-2</span>
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug-2</span>
             Another One
         </div>
-        <div class="gf_capture">
-            <span class="gf_slug">slug-3</span>
-            Last but not least <img src="poll-h.svg" class="gf_svg">
-        </div> -->
+        <div class="item" gennyflow="capture">
+            <span class="slug" gennyflow="slug">slug-3</span>
+            Last but not least <img src="poll-h.svg" class="svg gf_svg" gennyflow="svg">
+        </div>
     </div>
     <script>
         document.getElementById("gf_trigger").onclick = () => gennyFlow({

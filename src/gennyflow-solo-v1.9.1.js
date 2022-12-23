@@ -1,4 +1,4 @@
-// gennyFlow Solo v1.9.0 (no dependencies)
+// gennyFlow Solo v1.9.1 (no dependencies)
 // Created by Brian Tucker
 
 /******************************************
@@ -109,7 +109,7 @@ function gennyFlow(options) {
     const jpgQualityFromOptions = options.jpgQuality || jpgQualityDefault;
     const jpgQualityFromUserInput = document.getElementById(jpgQualityInputID);
     const jpgQuality = jpgQualityFromUserInput ? sanitizeInput(jpgQualityFromUserInput.value) : jpgQualityFromOptions;
-    
+
     // LABELS
     // Default: includes date and scale (e.g. 'image_062122_@2x.png')
     // This isn't set up for user input, but can be set in {options}
@@ -142,7 +142,7 @@ GennyFlow Verbose Logging: ${options.verbose}
     }
 
     // Gets list of elements to capture. 
-    const captureList = document.getElementById(captureWrapperID).querySelectorAll(captureClass);
+    const captureList = $('div[gennyflow="wrapper"]').find('[gennyflow="capture"]')
     if (options.verbose) {
         console.log('GennyFlow: ' + captureList.length + ' images to capture');
     }
@@ -165,6 +165,8 @@ GennyFlow Verbose Logging: ${options.verbose}
     .
     *******************************************/
     async function soloCapture() {
+        let counter = 1; // add counter variable
+
         for (const element of captureList) {
             try {
                 const canvas = await html2canvas(element, {
@@ -174,8 +176,14 @@ GennyFlow Verbose Logging: ${options.verbose}
                     backgroundColor: null,
                 });
 
-                const exportSlug = element.querySelector('.gf_slug').innerHTML;
-                const label = `${exportSlug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                const slug = $(element).find('[gennyflow="slug"]').html();
+                let label; // declare label variable
+
+                if (slug) { // if slug exists, use it as the label
+                    label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                } else { // if slug doesn't exist, use the counter as the label
+                    label = `img-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                }
 
                 if (options.verbose) {
                     console.log(`GennyFlow: Generating ${label}`);
@@ -188,6 +196,8 @@ GennyFlow Verbose Logging: ${options.verbose}
                     fileFormatMime,
                     parseFloat(jpgQuality)
                 );
+
+                counter++; // increment counter on each iteration
             } catch (error) {
                 console.error(error);
             }
@@ -196,12 +206,84 @@ GennyFlow Verbose Logging: ${options.verbose}
 
 
 
+
     /******************************************
     .
     Captures multiple images and zips them
     .
     *******************************************/
+    // async function multiCapture() {
+    //     // Creates a temporary staging area for generated images and appends it to the body
+    //     const tempFiles = document.createElement('div');
+    //     tempFiles.setAttribute('id', tempFiles);
+    //     document.body.appendChild(tempFiles);
+
+    //     // Loops through captureList and runs html2canvas to convert each div to a canvas
+    //     for (const element of captureList) {
+    //         try {
+    //             const canvas = await html2canvas(element, {
+    //                 scale: scaleValue,
+    //                 allowTaint: enableAllowTaint,
+    //                 useCORS: enableUseCORS,
+    //                 backgroundColor: null, // transparent background
+    //             });
+
+    //             const slug = $(element).find('[gennyflow="slug"]').html();
+    //             const label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+
+    //             if (options.verbose) {
+    //                 console.log(`GennyFlow: Generating ${label}`);
+    //             }
+
+    //             const imgdata = canvas.toDataURL(fileFormatMime, parseFloat(jpgQuality));
+
+    //             const obj = document.createElement('img');
+    //             obj.src = imgdata;
+    //             jsZipInstance.file(
+    //                 label,
+    //                 obj.src.substr(obj.src.indexOf(',') + 1), {
+    //                     base64: true,
+    //                 }
+    //             );
+
+    //             // This will append the image to the temporary staging div.
+    //             $(tempFiles).append(`<img src="${obj.src}"/>`);
+
+    //             // stops adding to the zip file once it's done
+    //             const tempFilesLength = document.getElementById(tempFiles).children.length;
+
+    //             // If all images have been captured, generate the zip file
+    //             if (tempFilesLength === document.getElementById(captureWrapperID).children.length) {
+    //                 jsZipInstance
+    //                     .generateAsync({
+    //                             type: 'blob',
+    //                         },
+    //                         function updateCallback(metadata) {}
+    //                     )
+    //                     .then((content) => {
+    //                         const gfZipLabel = `${zipFolderName}${labelZipDate}${labelZipScale}`;
+    //                         saveAs(content, `${gfZipLabel}.zip`);
+
+    //                         if (options.verbose) {
+    //                             console.log('Zip Downloaded ');
+    //                         }
+    //                     })
+    //                     .catch((err) => {
+    //                         if (options.verbose) {
+    //                             console.log(err);
+    //                         }
+    //                     });
+    //                 document.body.removeChild(tempFiles);
+    //             }
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+    // }
+
     async function multiCapture() {
+        let counter = 1; // add counter variable
+
         // Creates a temporary staging area for generated images and appends it to the body
         const tempFiles = document.createElement('div');
         tempFiles.setAttribute('id', tempFiles);
@@ -217,8 +299,14 @@ GennyFlow Verbose Logging: ${options.verbose}
                     backgroundColor: null, // transparent background
                 });
 
-                const exportSlug = element.querySelector('.gf_slug').innerHTML;
-                const label = `${exportSlug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                const slug = $(element).find('[gennyflow="slug"]').html();
+                let label; // declare label variable
+
+                if (slug) { // if slug exists, use it as the label
+                    label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                } else { // if slug doesn't exist, use the counter as the label
+                    label = `item-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                }
 
                 if (options.verbose) {
                     console.log(`GennyFlow: Generating ${label}`);
@@ -242,7 +330,7 @@ GennyFlow Verbose Logging: ${options.verbose}
                 const tempFilesLength = document.getElementById(tempFiles).children.length;
 
                 // If all images have been captured, generate the zip file
-                if (tempFilesLength === document.getElementById(captureWrapperID).children.length) {
+                if (tempFilesLength === captureList.length) {
                     jsZipInstance
                         .generateAsync({
                                 type: 'blob',
@@ -267,8 +355,10 @@ GennyFlow Verbose Logging: ${options.verbose}
             } catch (error) {
                 console.log(error);
             }
+            counter++; // increment counter on each iteration
         }
     }
+
 
 
     // If capturelist only has one item, it runs a new function that doesn't require a loop.
