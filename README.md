@@ -2,7 +2,7 @@
 
 # GennyFlow:
 
-GennyFlow is a web-based image generator. It uses designs you make in Webflow to create PNG and JPG images. If there are more than one images to capture, it will zip them up for you.
+GennyFlow is a web-based image generator. It uses designs you make in Webflow to create PNG and JPG images. If there is more than one image to capture, it will zip them up for you.
 
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but it can be used without the CMS, or in any web environment!
 
