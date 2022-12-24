@@ -1,6 +1,6 @@
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
 
-# GennyFlow:
+# GennyFlow [beta v2.0.1]:
 
 GennyFlow is a web-based image generator. It uses designs you make in Webflow to create PNG and JPG images. If there is more than one image to capture, it will zip them up for you.
 
