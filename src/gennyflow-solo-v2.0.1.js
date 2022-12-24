@@ -38,13 +38,19 @@ function formatDate() {
 }
 // Converts input to slug formatting (lowercase, no spaces, no special characters)
 function convertToSlug(input) {
-    return input.replace(/[^a-zA-Z0-9 ]/g, "").toLowerCase().replace(/\s/g, "-");
+    if (typeof input === 'string') {
+        return input.replace(/[^a-zA-Z0-9 ]/g, "").toLowerCase().replace(/\s/g, "-");
+    }
 }
 
 // Sanitizes input to remove HTML tags
 function sanitizeInput(input) {
-    return input.replace(/<[^>]*>/g, "");
+    if (typeof input === 'string') {
+        return input.replace(/<[^>]*>/g, "");
+    }
 }
+
+
 /******************************************
 .
 .
@@ -100,7 +106,7 @@ function gennyFlow(options) {
     // JPG QUALITY - only used if fileFormat is 'jpg'
     // Default: 1
     // Order of precedence: input > options > default
-    const jpgQualityFromUserInput = document.querySelector('[gennyflow=jpgquality]');    
+    const jpgQualityFromUserInput = document.querySelector('[gennyflow=jpgquality]');
     const jpgQualityDefault = 1
     const jpgQualityFromOptions = options.jpgQuality || jpgQualityDefault;
     const jpgQuality = jpgQualityFromUserInput ? sanitizeInput(jpgQualityFromUserInput.value) : jpgQualityFromOptions;
@@ -144,7 +150,7 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
 
     // Fixes issue HTML2Canvas has with SVGs
     if (enableSVGfixes) {
-        const imgs = document.querySelectorAll('div[gennyflow=wrapper] img[src$=".svg"]');
+        const imgs = document.querySelectorAll('div[gennyflow=wrapper] img[src$=".svg"]:not([gennyflow=ignore])');
         // const imgs = document.querySelectorAll('img[gennyflow=svg]');
         imgs.forEach(img => {
             img.classList.add('gf_img2svg');
@@ -162,7 +168,12 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
             console.log('GennyFlow: <svg> with .gf_svg height/width set');
         }
     }
+    const ignoreElements = document.querySelectorAll('[gennyflow="ignore"]');
 
+    ignoreElements.forEach(element => {
+      element.setAttribute('data-html2canvas-ignore', 'true');
+    });
+    
     /******************************************
     .
     Captures only one image

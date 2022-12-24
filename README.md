@@ -53,6 +53,10 @@ To avoid CORS issues:
 - Webflow doesn't support JS files, so upload the .TXT file in the /src folder.
   You can read more about CORS [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
+#### Ignore Elements
+
+If you want to have an element be ignored by GennyFlow, add a custom attribute: `gennyflow="ignore"`
+
 ## Settings
 
 You can set these when you initialize GennyFlow. Some can be set by the user via an on-page form. Simply put the custom attribute on an form input. I recommend using select or radio for things that should be specific (i.e. scale).
@@ -144,5 +148,3 @@ GennyFlow also works outside of Webflow! Here is how it would look on a simple p
 	</body>
 </html>
 ```
-
--
