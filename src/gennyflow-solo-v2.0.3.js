@@ -1,4 +1,4 @@
-// gennyFlow Solo v2.0.2 (no dependencies)
+// gennyFlow Solo v2.0.3 (no dependencies)
 // Created by Brian Tucker
 
 /******************************************
@@ -62,9 +62,8 @@ GennyFlow
 function gennyFlow(options) {
     i = 0;
     options = options || {};
-    if (options.enableVerbose) {
-        console.log('GennyFlow: running...');
-    }
+    if (options.enableVerbose) console.log('GennyFlow: running...');
+
     // Starts JS Zip
     const jsZipInstance = new JSZip();
 
@@ -101,9 +100,9 @@ function gennyFlow(options) {
     const fileFormatFromOptions = options.fileFormat || fileFormatDefault;
     const fileFormatInput = document.querySelector('[gennyflow=fileformat]');
     const fileFormat = fileFormatInput ? sanitizeInput(fileFormatInput.value) : fileFormatFromOptions;
-    const fileFormatMime = (fileFormat === 'png') ? 'image/png' : 'image/jpeg';
+    const fileFormatMime = (fileFormat === 'png') ? 'image/png' : (fileFormat === 'jpeg') ? 'image/jpeg' : 'image/webp';
 
-    // JPG QUALITY - only used if fileFormat is 'jpg'
+    // JPG QUALITY - only works if fileFormat is 'jpg' or webp'
     // Default: 1
     // Order of precedence: input > options > default
     const jpgQualityFromUserInput = document.querySelector('[gennyflow=jpgquality]');
@@ -144,29 +143,20 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
 
     // Gets list of elements to capture. 
     const captureList = $('div[gennyflow="wrapper"]').find('[gennyflow="capture"]')
-    if (options.enableVerbose) {
-        console.log('GennyFlow: ' + captureList.length + ' images to capture');
-    }
+    if (options.enableVerbose) console.log('GennyFlow: ' + captureList.length + ' images to capture');
 
     // Fixes issue HTML2Canvas has with SVGs
     if (enableSVGfixes) {
+        // Finds all <img>'s that end in .svg that are inside of a <div gennyflow="wrapper">, but don't contain the attribute gennyflow="ignore"
         const imgs = document.querySelectorAll('div[gennyflow=wrapper] img[src$=".svg"]:not([gennyflow=ignore])');
-        // const imgs = document.querySelectorAll('img[gennyflow=svg]');
         imgs.forEach(img => {
             img.classList.add('gf_img2svg');
         });
-        if (options.enableVerbose) {
-            console.log("GennyFlow: .gf_img2svg has been added to all 'gennyflow=svg' <img> elements");
-        }
-
+        if (options.enableVerbose) console.log("GennyFlow: .gf_img2svg has been added to all 'gennyflow=svg' <img> elements");
         convertIMGtoSVG();
-        if (options.enableVerbose) {
-            console.log('GennyFlow: <img> SVGs with class .gf_svg have been inlined.');
-        }
+        if (options.enableVerbose) console.log('GennyFlow: <img> SVGs with class .gf_svg have been inlined.');
         setSVGdimensions();
-        if (options.enableVerbose) {
-            console.log('GennyFlow: <svg> with .gf_svg height/width set');
-        }
+        if (options.enableVerbose) console.log('GennyFlow: <svg> with .gf_svg height/width set');
     }
     const ignoreElements = document.querySelectorAll('[gennyflow="ignore"]');
 
@@ -174,70 +164,17 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
         element.setAttribute('data-html2canvas-ignore', 'true');
     });
 
-    /******************************************
-    .
-    Captures only one image
-    .
-    *******************************************/
-    async function soloCapture() {
-        let counter = 1; // add counter variable
-
-        for (const element of captureList) {
-            try {
-                // checks for custom scale value (i.e. gennyflow-scale="2" would export @2x)
-                const scaleValueCustom = parseFloat(element.getAttribute('gennyflow-scale'));
-                if (options.enableVerbose) {
-                    if (scaleValueCustom) {
-                        console.log('scaleValueCustom: ', scaleValueCustom);
-                    }
-                }
-                const scaleFinal = scaleValueCustom ? scaleValueCustom : scaleValue;
-                const scaleFormatted = options.labelImgScale !== false ? `_@${scaleFinal}x` : '';
-                const canvas = await html2canvas(element, {
-                    scale: scaleFinal,
-                    allowTaint: enableAllowTaint,
-                    useCORS: enableUseCORS,
-                    backgroundColor: null,
-                });
-
-                const slug = convertToSlug($(element).find('[gennyflow="slug"]').html());
-                let label; // declare label variable
-
-                if (slug) { // if slug exists, use it as the label
-                    label = `${slug}${labelImgDate}${scaleFormatted}.${fileFormat}`;
-                } else { // if slug doesn't exist, use the counter as the label
-                    label = `img-${counter}${labelImgDate}${scaleFormatted}.${fileFormat}`;
-                }
-
-                if (options.enableVerbose) {
-                    console.log(`GennyFlow: Generating ${label}`);
-                }
-
-                canvas.toBlob(
-                    (blob) => {
-                        window.saveAs(blob, label);
-                    },
-                    fileFormatMime,
-                    parseFloat(jpgQuality)
-                );
-
-                counter++; // increment counter on each iteration
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    }
-
 
 
 
     /******************************************
     .
-    Captures multiple images and zips them
+    Captures image(s) and either saves them to a zip file or downloads them individually, depending on the quantity. 
+    (If there's only one image, it will download it instead of zipping it.)
     .
     *******************************************/
-    async function multiCapture() {
-        let counter = 1; // add counter variable
+    async function gennyCapture() {
+        let counter = 1; // used to label images with no slug
 
         // Creates a temporary staging area for generated images and appends it to the body
         const tempFiles = document.createElement('div');
@@ -247,14 +184,16 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
         // Loops through captureList and runs html2canvas to convert each div to a canvas
         for (const element of captureList) {
             try {
-                // checks for custom scale value (i.e. gennyflow-scale="2" would export @2x)
+                // checks for custom scale value (i.e. gennyflow-scale="2" would export @2x for that one image)
                 const scaleValueCustom = parseFloat(element.getAttribute('gennyflow-scale'));
                 if (options.enableVerbose) {
                     if (scaleValueCustom) {
                         console.log('scaleValueCustom: ', scaleValueCustom);
                     }
                 }
+                // if custom scale value exists, use it. Otherwise, use the default scale value
                 const scaleFinal = scaleValueCustom ? scaleValueCustom : scaleValue;
+                // formats scale value for label, leaves blank if user used labelImgScale: false
                 const scaleFormatted = options.labelImgScale !== false ? `_@${scaleFinal}x` : '';
                 const canvas = await html2canvas(element, {
                     scale: scaleFinal,
@@ -272,49 +211,66 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
                     label = `item-${counter}${labelImgDate}${scaleFormatted}.${fileFormat}`;
                 }
 
-                if (options.enableVerbose) {
-                    console.log(`GennyFlow: Generating ${label}`);
+                if (options.enableVerbose) console.log(`GennyFlow: Generating ${label}`);
+
+                // Runs if there is only one image to capture
+                // Directly downloads instead of zipping
+                if (captureList.length === 1) {
+                    canvas.toBlob(
+                        (blob) => {
+                            window.saveAs(blob, label);
+                        },
+                        fileFormatMime,
+                        parseFloat(jpgQuality)
+                    );
+
+                    counter++; // increment counter on each iteration
                 }
 
-                const imgdata = canvas.toDataURL(fileFormatMime, parseFloat(jpgQuality));
+                // Runs if there are multiple images to capture
+                // Adds images to a zip file
+                else {
+                    // Sets format and quality
+                    const imgdata = canvas.toDataURL(fileFormatMime, parseFloat(jpgQuality));
+                    const obj = document.createElement('img');
+                    obj.src = imgdata;
 
-                const obj = document.createElement('img');
-                obj.src = imgdata;
-                jsZipInstance.file(
-                    label,
-                    obj.src.substr(obj.src.indexOf(',') + 1), {
-                        base64: true,
+                    jsZipInstance.file(
+                        label,
+                        obj.src.slice(obj.src.indexOf(',') + 1), {
+                            base64: true,
+                        }
+                    );
+
+                    // This will append the image to the temporary staging div.
+                    $(tempFiles).append(`<img src="${obj.src}"/>`);
+
+                    // stops adding to the zip file once it's done
+                    const tempFilesLength = document.getElementById(tempFiles).children.length;
+
+                    // If all images have been captured, generate the zip file
+                    if (tempFilesLength === captureList.length) {
+                        jsZipInstance
+                            .generateAsync({
+                                    type: 'blob',
+                                },
+                                function updateCallback(metadata) {}
+                            )
+                            .then((content) => {
+                                const gfZipLabel = `${zipFolderName}${labelZipDate}${labelZipScale}`;
+                                saveAs(content, `${gfZipLabel}.zip`);
+
+                                if (options.enableVerbose) {
+                                    console.log('Zip Downloaded ');
+                                }
+                            })
+                            .catch((err) => {
+                                if (options.enableVerbose) {
+                                    console.log(err);
+                                }
+                            });
+                        document.body.removeChild(tempFiles);
                     }
-                );
-
-                // This will append the image to the temporary staging div.
-                $(tempFiles).append(`<img src="${obj.src}"/>`);
-
-                // stops adding to the zip file once it's done
-                const tempFilesLength = document.getElementById(tempFiles).children.length;
-
-                // If all images have been captured, generate the zip file
-                if (tempFilesLength === captureList.length) {
-                    jsZipInstance
-                        .generateAsync({
-                                type: 'blob',
-                            },
-                            function updateCallback(metadata) {}
-                        )
-                        .then((content) => {
-                            const gfZipLabel = `${zipFolderName}${labelZipDate}${labelZipScale}`;
-                            saveAs(content, `${gfZipLabel}.zip`);
-
-                            if (options.enableVerbose) {
-                                console.log('Zip Downloaded ');
-                            }
-                        })
-                        .catch((err) => {
-                            if (options.enableVerbose) {
-                                console.log(err);
-                            }
-                        });
-                    document.body.removeChild(tempFiles);
                 }
             } catch (error) {
                 console.log(error);
@@ -323,15 +279,9 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
         }
     }
 
-
-
-    // If capturelist only has one item, it runs a new function that doesn't require a loop.
     // Delays the function by 750ms to allow the page to render before capturing.
     setTimeout(async function () {
-        if (captureList.length === 1) {
-            await soloCapture();
-        } else {
-            await multiCapture();
-        }
+        await gennyCapture();
+        if (options.enableVerbose) console.log('GennyFlow: Done');
     }, 750);
 }

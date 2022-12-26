@@ -64,12 +64,12 @@ If you want to have an element be ignored by GennyFlow, add a custom attribute: 
 
 You can set these when you initialize GennyFlow. Some can be set by the user via an on-page form. Simply put the custom attribute on an form input. I recommend using select or radio for things that should be specific (i.e. scale).
 
-|                 | Label        | Values            | Description                        | User-settable            |
-| --------------- | ------------ | ----------------- | ---------------------------------- | ------------------------ |
-| File Format     | `fileFormat` | `'jpg' or 'png'`  | Default `'png'`                    | `gennyflow="fileformat"` |
-| JPG Quality     | `jpgQuality` | `0.0` to `1.0`    | Default `1.0.` Only works for jpg. | `gennyflow="jpgquality"` |
-| Scale           | `scale`      | `'2'`             | Default `'1'`                      | `gennyflow="scale"`      |
-| Zip Folder Name | `zipName`    | `'zip_name_here'` | Default `'images'`                 | `gennyflow="zipname"`    |
+|                 | Label        | Values                     | Description                             | User-settable            |
+| --------------- | ------------ | -------------------------- | --------------------------------------- | ------------------------ |
+| File Format     | `fileFormat` | `'jpg' or 'png' or 'webp'` | Default `'png'`                         | `gennyflow="fileformat"` |
+| JPG Quality     | `jpgQuality` | `0.0` to `1.0`             | Default `1.0.` Only works for jpg/webp. | `gennyflow="jpgquality"` |
+| Scale           | `scale`      | `'2'`                      | Default `'1'`                           | `gennyflow="scale"`      |
+| Zip Folder Name | `zipName`    | `'zip_name_here'`          | Default `'images'`                      | `gennyflow="zipname"`    |
 
 **Label Settings**
 By default, zip labels are `images_MMDDYY_@1x.zip` and image labels are `slug_MMDDYY_@1x.png`
