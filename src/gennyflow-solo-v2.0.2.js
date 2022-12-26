@@ -1,4 +1,4 @@
-// gennyFlow Solo v2.0.0 (no dependencies)
+// gennyFlow Solo v2.0.2 (no dependencies)
 // Created by Brian Tucker
 
 /******************************************
@@ -92,7 +92,7 @@ function gennyFlow(options) {
     const scaleFromUserInput = document.querySelector('[gennyflow=scale]');
     const scaleDefault = 1;
     const scaleFromOptions = options.scale || scaleDefault;
-    const scaleValue = scaleFromUserInput ? sanitizeInput(scaleFromUserInput.value) : scaleFromOptions;
+    let scaleValue = scaleFromUserInput ? sanitizeInput(scaleFromUserInput.value) : scaleFromOptions;
 
     // FILE FORMAT
     // Default: 'png'
@@ -171,9 +171,9 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
     const ignoreElements = document.querySelectorAll('[gennyflow="ignore"]');
 
     ignoreElements.forEach(element => {
-      element.setAttribute('data-html2canvas-ignore', 'true');
+        element.setAttribute('data-html2canvas-ignore', 'true');
     });
-    
+
     /******************************************
     .
     Captures only one image
@@ -184,8 +184,17 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
 
         for (const element of captureList) {
             try {
+                // checks for custom scale value (i.e. gennyflow-scale="2" would export @2x)
+                const scaleValueCustom = parseFloat(element.getAttribute('gennyflow-scale'));
+                if (options.enableVerbose) {
+                    if (scaleValueCustom) {
+                        console.log('scaleValueCustom: ', scaleValueCustom);
+                    }
+                }
+                const scaleFinal = scaleValueCustom ? scaleValueCustom : scaleValue;
+                const scaleFormatted = options.labelImgScale !== false ? `_@${scaleFinal}x` : '';
                 const canvas = await html2canvas(element, {
-                    scale: scaleValue,
+                    scale: scaleFinal,
                     allowTaint: enableAllowTaint,
                     useCORS: enableUseCORS,
                     backgroundColor: null,
@@ -195,9 +204,9 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
                 let label; // declare label variable
 
                 if (slug) { // if slug exists, use it as the label
-                    label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                    label = `${slug}${labelImgDate}${scaleFormatted}.${fileFormat}`;
                 } else { // if slug doesn't exist, use the counter as the label
-                    label = `img-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                    label = `img-${counter}${labelImgDate}${scaleFormatted}.${fileFormat}`;
                 }
 
                 if (options.enableVerbose) {
@@ -238,8 +247,17 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
         // Loops through captureList and runs html2canvas to convert each div to a canvas
         for (const element of captureList) {
             try {
+                // checks for custom scale value (i.e. gennyflow-scale="2" would export @2x)
+                const scaleValueCustom = parseFloat(element.getAttribute('gennyflow-scale'));
+                if (options.enableVerbose) {
+                    if (scaleValueCustom) {
+                        console.log('scaleValueCustom: ', scaleValueCustom);
+                    }
+                }
+                const scaleFinal = scaleValueCustom ? scaleValueCustom : scaleValue;
+                const scaleFormatted = options.labelImgScale !== false ? `_@${scaleFinal}x` : '';
                 const canvas = await html2canvas(element, {
-                    scale: scaleValue,
+                    scale: scaleFinal,
                     allowTaint: enableAllowTaint,
                     useCORS: enableUseCORS,
                     backgroundColor: null, // transparent background
@@ -249,9 +267,9 @@ GennyFlow Verbose Logging: ${options.enableVerbose}
                 let label; // declare label variable
 
                 if (slug) { // if slug exists, use it as the label
-                    label = `${slug}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                    label = `${slug}${labelImgDate}${scaleFormatted}.${fileFormat}`;
                 } else { // if slug doesn't exist, use the counter as the label
-                    label = `item-${counter}${labelImgDate}${labelImgScale}.${fileFormat}`;
+                    label = `item-${counter}${labelImgDate}${scaleFormatted}.${fileFormat}`;
                 }
 
                 if (options.enableVerbose) {

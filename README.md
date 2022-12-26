@@ -1,6 +1,6 @@
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
 
-# GennyFlow [beta v2.0.1]:
+# GennyFlow [beta v2.0.2]:
 
 GennyFlow is a web-based image generator. It uses designs you make in Webflow to create PNG and JPG images. If there is more than one image to capture, it will zip them up for you.
 
@@ -52,6 +52,9 @@ To avoid CORS issues:
 - Host GennyFlow in the Webflow asset manager
 - Webflow doesn't support JS files, so upload the .TXT file in the /src folder.
   You can read more about CORS [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+I recently added support for custom scale per canvas. This is done by adding the gennyflow-scale attribute.
+I.e. `gennyflow-scale="3"` would yield an @3x image, just for that canvas. The others would remain at the default.
 
 #### Ignore Elements
 
