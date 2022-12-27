@@ -1,5 +1,7 @@
 body {
   font-family: sans-serif;
+  background-color: #191939;
+  color: white;
 }
 .wrapper {
   display: flex;
@@ -9,7 +11,7 @@ body {
 
 .item {
   padding: 1rem;
-  background-color: #ececec;
+  background-color: #0a0a0a;
   display: flex;
   flex-direction: column;
   font-size: 2rem;
@@ -25,9 +27,9 @@ body {
   height: 3rem;
 }
 .button {
-  background-color: #ccc;
+  background-color: #fff;
+  color: black;
   display: inline-block;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
 }
-/**/

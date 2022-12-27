@@ -7,7 +7,7 @@
     <script src="../src/dependencies/html2canvas.min.js"></script>
     <script src="../src/dependencies/inline-svg.js"></script>
     <script src="../src/dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-solo-v2.0.3.js"></script>
+    <script src="../src/gennyflow-v3.0.0.js"></script>
 </head>
 
 <body>
@@ -41,9 +41,9 @@
         <div class="button" gennyflow="trigger">Download</div>
         <br /><br />
     </div>
-    <div class="wrapper" gennyflow="wrapper">
-        <div class="item" gennyflow="capture">
-            <span class="slug" gennyflow="slug">slug 1 a</span>
+    <div class="wrapper" gennyflow="wrapper" gennyflow-scale="3" gennyflow-format="png" gennyflow-quality="0.2">
+        <div class="item" gennyflow="capture" gennyflow-scale="2">
+            <span class="slug" gennyflow="slug">example</span>
             Capture Content Here
             <div gennyflow="ignore">ignore</div>
         </div>
@@ -52,26 +52,13 @@
             Another One
         </div>
         <div class="item" gennyflow="capture">
-            <span class="slug" gennyflow="slug">slug-3</span>
+            <span class="slug" gennyflow="slug">example</span>
             Last but not least <img src="poll-h.svg" class="svg">
         </div>
     </div>
     <script>
-        $('[gennyflow=trigger]').click(() => gennyFlow({
-            scale: 1, // overridden by user input
-            fileFormat: 'jpg', // overridden by user input 
-            jpgQuality: 0.5, // overridden by user input 
-            zipName: 'testzipname', // overridden by user input
-            labelZipDate: true,
-            labelZipScale: true,
-            labelImgDate: true,
-            labelImgScale: true,
-            enableSVGfix: true,
-            enableAllowTaint: true,
-            enableUseCORS: true,
-            enableVerbose: true,
-        }));
+        $('[gennyflow=trigger]').click(() => gennyFlow());
     </script>
 </body>
 
-</html><!---->
+</html>
