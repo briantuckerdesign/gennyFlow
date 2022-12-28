@@ -1,5 +1,7 @@
-function gennyFlow() {
-    const flowList = $('[gennyflow="wrapper"]').find('[gennyflow="capture"]');
+function gennyFlow(instance) {
+    const flowList = $(`[gennyflow="wrapper-${instance}"]`).find(
+        '[gennyflow="capture"]'
+    );
     //TODO: add SVG fixer
     //TODO: add settings via user input
     //TODO: ignore feature
