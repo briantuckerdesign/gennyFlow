@@ -1,14 +1,33 @@
 function gennyFlow() {
     const flowList = $('[gennyflow="wrapper"]').find('[gennyflow="capture"]');
+    //TODO: add SVG fixer
+    //TODO: add settings via user input
+    //TODO: ignore feature
 
     async function gennyCapture() {
         let flowID = 1;
-        let formatDefault =
-            $('[gennyflow="wrapper"]').attr("gennyflow-format") || "png"; // Default: png
-        let qualityDefault =
-            $('[gennyflow="wrapper"]').attr("gennyflow-quality") || 1; // Default: 1 (max)
-        let scaleDefault =
-            parseFloat($('[gennyflow="wrapper"]').attr("gennyflow-scale")) || 1; // Default: 1x
+        let flowSettings = [
+            { attribute: "format", default: "png", type: "string" },
+            { attribute: "quality", default: 1, type: "number" },
+            { attribute: "scale", default: 1, type: "number" },
+        ];
+
+        flowSettings.forEach((setting) => {
+            const { attribute, default: defaultValue } = setting;
+            const variableName = `${attribute}Default`;
+            const variableValue =
+                $('[gennyflow="wrapper"]').attr(`gennyflow-${attribute}`) ||
+                defaultValue;
+            window[variableName] = variableValue;
+        });
+        console.log(formatDefault, qualityDefault, scaleDefault);
+
+        // let formatDefault =
+        //     $('[gennyflow="wrapper"]').attr("gennyflow-format") || "png"; // Default: png
+        // let qualityDefault =
+        //     $('[gennyflow="wrapper"]').attr("gennyflow-quality") || 1; // Default: 1 (max)
+        // let scaleDefault =
+        //     parseFloat($('[gennyflow="wrapper"]').attr("gennyflow-scale")) || 1; // Default: 1x
 
         function convertToSlug(input) {
             if (typeof input === "string") {
