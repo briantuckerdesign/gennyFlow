@@ -7,20 +7,19 @@
     <script src="../src/dependencies/html2canvas.min.js"></script>
     <script src="../src/dependencies/inline-svg.js"></script>
     <script src="../src/dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-v3.0.0.js"></script>
 </head>
 
 <body>
     <div>
         File Format
-        <select gennyflow="format">
+        <select gf="format-input">
             <option value="png">PNG</option>
             <option value="jpg">JPG</option>
             <option value="webp">WebP</option>
         </select>
         <br /><br />
         Scale
-        <select gennyflow="scale">
+        <select gf="scale-input">
             <option value="1">@1x</option>
             <option value="2">@2x</option>
             <option value="3">@3x</option>
@@ -28,7 +27,7 @@
         </select>
         <br /><br />
         Quality (JPG only)
-        <select gennyflow="quality">
+        <select gf="quality-input">
             <option value="1.0">Max</option>
             <option value="0.9">High</option>
             <option value="0.8">Medium</option>
@@ -36,31 +35,28 @@
         </select>
         <br /><br />
         Folder Name
-        <input type="text" value="Folder Name" gennyflow="zip-name" />
+        <input type="text" value="Folder Name" gf="zip-name-input" />
         <br /><br />
-        <div class="button" gennyflow="trigger">Download</div>
+        <div class="button" gf="trigger">Download</div>
         <br /><br />
     </div>
-    <div class="wrapper" gennyflow="wrapper" gennyflow-scale="3" gennyflow-format="webp" gennyflow-quality="0.2"
-        gennyflow-include-date-zip="true" gennyflow-include-scale-zip="true" gennyflow-include-date-img="true"
-        gennyflow-include-scale-img="true">
-        <div class="item" gennyflow="capture">
-            <span class="slug" gennyflow="slug">slug-1</span>
+    <div class="wrapper" gf="wrapper" gf-scale="3" gf-format="webp" gf-quality="0.2" gf-include-date-zip="true"
+        gf-include-scale-zip="true" gf-include-scale-img="true">
+        <div class="item" gf="capture" gf-include-date-img="true">
+            <span class="slug" gf="slug">slug-1</span>
             Capture Content Here
-            <div gennyflow="ignore">ignore</div>
+            <div gf="ignore">ignore</div>
         </div>
-        <div class="item" gennyflow="capture" gennyflow-include-date-img="false">
-            <span class="slug" gennyflow="slug">slug-2</span>
+        <div class="item" gf="capture" gf-scale="5">
+            <span class="slug" gf="slug">slug-2</span>
             Another One
         </div>
-        <div class="item" gennyflow="capture" gennyflow-include-scale-img="false">
-            <span class="slug" gennyflow="slug">slug-3</span>
+        <div class="item" gf="capture">
+            <span class="slug" gf="slug">slug-3</span>
             Last but not least <img src="poll-h.svg" class="svg">
         </div>
     </div>
-    <script>
-        $('[gennyflow=trigger]').click(() => gennyFlow());
-    </script>
+    <script src="../src/gennyflow-v3.0.0.js"></script>
 </body>
 
 </html>
