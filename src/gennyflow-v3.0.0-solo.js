@@ -202,6 +202,8 @@ function gennyFlow() {
             const canvas = await html2canvas(flowItem, {
                 scale: fileScale,
                 backgroundColor: null, // transparent background
+                allowTaint: true,
+                useCORS: true,
             });
 
             // If there is only one image, it will download it
