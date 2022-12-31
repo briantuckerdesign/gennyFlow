@@ -76,24 +76,25 @@ GennyFlow also works outside of Webflow! Here is how it would look on a simple p
 
 ```
 <html>
-	<head>
-	 <script src="jquery.min.js"></script>
-	 <script src="gennyflow-v2.0.0.js"></script>
-	</head>
 
-	<body>
-	 <button gennyflow="trigger" type="button">Download</button>
-	 <div gennyflow="wrapper">
-	 <div gennyflow="capture">
-	 <span gennyflow="slug">slug-1</span>
-	 Capture Content Here
-	 </div>
-	 </div>
+<head>
+    <script src="../src/dependencies/jquery.min.js"></script>
+</head>
 
-	<script>
-	 $('[gennyflow=trigger]').click(() => gennyFlow());
-	</script>
-	</body>
+<body>
+    <div gf="trigger">Generate</div>
+        <div gf="wrapper">
+            <div gf="capture">
+                <div gf="slug">Example image 1</div>
+            </div>
+            <div gf="capture">
+                <div gf="slug">Example image 2</div>
+            </div>
+        </div>
+    </div>
+    <script src="gennyflow-v3.0.0.js"></script>
+</body>
+
 </html>
 ```
 
