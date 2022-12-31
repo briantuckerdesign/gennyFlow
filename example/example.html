@@ -3,75 +3,41 @@
 <head>
     <script src="../src/dependencies/jquery.min.js"></script>
     <link rel="stylesheet" href="example.css" />
-    <script src="../src/dependencies/filesaver.min.js"></script>
-    <script src="../src/dependencies/html2canvas.min.js"></script>
-    <script src="../src/dependencies/inline-svg.js"></script>
-    <script src="../src/dependencies/jszip.min.js"></script>
-    <script src="../src/gennyflow-solo-v2.0.3.js"></script>
 </head>
 
 <body>
-    <div>
-        File Format
-        <select gennyflow="fileformat">
-            <option value="png">PNG</option>
-            <option value="jpg">JPG</option>
-            <option value="webp">WebP</option>
-        </select>
-        <br /><br />
-        Scale
-        <select gennyflow="scale">
-            <option value="1">@1x</option>
-            <option value="2">@2x</option>
-            <option value="3">@3x</option>
-            <option value="4">@4x</option>
-        </select>
-        <br /><br />
-        Quality (JPG only)
-        <select gennyflow="jpgquality">
-            <option value="1.0">Max</option>
-            <option value="0.9">High</option>
-            <option value="0.8">Medium</option>
-            <option value="0.6">Low</option>
-        </select>
-        <br /><br />
-        Folder Name
-        <input type="text" value="Folder Name" gennyflow="zipname" />
-        <br /><br />
-        <div class="button" gennyflow="trigger">Download</div>
-        <br /><br />
-    </div>
-    <div class="wrapper" gennyflow="wrapper">
-        <div class="item" gennyflow="capture">
-            <span class="slug" gennyflow="slug">slug 1 a</span>
-            Capture Content Here
-            <div gennyflow="ignore">ignore</div>
+
+    <div class="wrapper">
+        <div>
+            <div class="input-wrapper">
+                <div class="input-label">File Format</div>
+                <select gf="format-input" class="example-input">
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                    <option value="webp">WebP</option>
+                </select>
+                <div class="input-label">Scale</div>
+                <select gf="scale-input" class="example-input">
+                    <option value="1">@1x</option>
+                    <option value="2">@2x</option>
+                    <option value="3">@3x</option>
+                    <option value="4">@4x</option>
+                </select>
+                <div class="input-label">Zip Name</div>
+                <input type="text" value="images" gf="zip-name-input" class="example-input">
+                <div gf="trigger" class="example-button">Generate</div>
+            </div>
         </div>
-        <div class="item" gennyflow="capture" gennyflow-scale="4">
-            <span class="slug" gennyflow="slug">slug-2</span>
-            Another One
-        </div>
-        <div class="item" gennyflow="capture">
-            <span class="slug" gennyflow="slug">slug-3</span>
-            Last but not least <img src="poll-h.svg" class="svg">
+        <div class="example-wrapper" gf="wrapper">
+            <div class="example-1" gf="capture">
+                <div class="example-text-1" gf="slug">Example image 1</div>
+            </div>
+            <div class="example-2" gf="capture">
+                <div class="example-text-2" gf="slug">Example image 2</div>
+            </div>
         </div>
     </div>
-    <script>
-        $('[gennyflow=trigger]').click(() => gennyFlow({
-            scale: 1, // overridden by user input
-            fileFormat: 'jpg', // overridden by user input 
-            jpgQuality: 0.5, // overridden by user input 
-            zipName: 'testzipname', // overridden by user input
-            labelZipDate: true,
-            labelZipScale: true,
-            labelImgDate: true,
-            labelImgScale: true,
-            enableSVGfix: true,
-            enableAllowTaint: true,
-            enableUseCORS: true,
-            enableVerbose: true,
-        }));
-    </script>
+    <script src="../src/gennyflow-v3.0.0.js"></script>
 </body>
 
-</html><!---->
+</html>

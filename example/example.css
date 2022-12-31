@@ -1,5 +1,7 @@
-body {
+/* body {
   font-family: sans-serif;
+  background-color: #191939;
+  color: white;
 }
 .wrapper {
   display: flex;
@@ -9,7 +11,7 @@ body {
 
 .item {
   padding: 1rem;
-  background-color: #ececec;
+  background-color: #243b82;
   display: flex;
   flex-direction: column;
   font-size: 2rem;
@@ -25,9 +27,109 @@ body {
   height: 3rem;
 }
 .button {
-  background-color: #ccc;
+  background-color: #fff;
+  color: black;
   display: inline-block;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
+} */
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #151224;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+        Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
-/**/
+
+.wrapper {
+    display: grid;
+    width: 800px;
+    height: 500px;
+    grid-auto-columns: 1fr;
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #fff;
+}
+
+.input-label {
+    margin-bottom: 0px;
+    font-weight: 700;
+}
+
+.example-input {
+    margin-bottom: 1rem;
+    padding: 6px;
+    -webkit-align-self: stretch;
+    -ms-flex-item-align: stretch;
+    -ms-grid-row-align: stretch;
+    align-self: stretch;
+    border: 1px solid #7000ff;
+    border-radius: 4px;
+    color: #000;
+}
+
+.example-button {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 11px 22px;
+    background-color: #7000ff;
+}
+
+.example-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: #7000ff;
+    border-radius: 8px;
+}
+
+.example-2 {
+    display: flex;
+    width: 200px;
+    height: 200px;
+    padding: 22px;
+    justify-content: center;
+    align-items: center;
+    background-color: #7000ff;
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 700;
+    text-align: center;
+}
+
+.example-1 {
+    display: flex;
+    width: 400px;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.example-text-2 {
+    color: #fff;
+}
+
+.example-text-1 {
+    color: #7000ff;
+}
