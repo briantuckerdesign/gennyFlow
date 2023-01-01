@@ -6,6 +6,8 @@ GennyFlow is a web-based image generator. It uses designs you make in Webflow to
 
 It was designed to be used with the Webflow CMS to allow for rapid and dynamic image creation, but it can be used without the CMS, or in any web environment!
 
+You can see a live example at [GennyFlow.com](https://www.gennyflow.com).
+
 ### Required elements
 
 GennyFlow divs are controlled using custom attributes, which you'll be familiar with if you've used Finsweet Attributes.
