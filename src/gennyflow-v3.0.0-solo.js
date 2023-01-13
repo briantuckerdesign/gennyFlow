@@ -97,12 +97,10 @@ function gennyFlow() {
 
     // Removes all non-alphanumeric characters and replaces spaces with hyphens
     function convertToSlug(input) {
-        if (typeof input === "string") {
-            return input
-                .replace(/[^a-zA-Z0-9 ]/g, "")
-                .toLowerCase()
-                .replace(/\s/g, "-");
-        }
+        input = input.toLowerCase();
+        input = input.replace(/[^a-z0-9_ -]/g, "");
+        input = input.replace(/\s+/g, "-");
+        return input;
     }
 
     // Fixes two SVG issues
