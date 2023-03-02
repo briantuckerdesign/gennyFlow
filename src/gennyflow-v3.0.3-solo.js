@@ -145,7 +145,8 @@ async function gennyFlow() {
         const slugFromHTMLunformatted = $(item).find('[gf="slug"]').html();
         let slugFromHTML = convertToSlug(slugFromHTMLunformatted);
         let imgName = slugFromHTML ? slugFromHTML : `img-${flowID}`;
-
+        console.log("finalquality", finalQuality);
+        console.log("fileMime", fileMime);
         $(".gf_loader-message").html(`Capturing ${imgName}...`);
 
         let imgScale = "";
@@ -181,12 +182,12 @@ async function gennyFlow() {
                     window.saveAs(blob, fileLabel);
                     $(".gf_loader").css("display", "none");
                 },
-                finalFormat,
-                parseFloat(finalQuality)
+                fileMime,
+                finalQuality
             );
             return;
         }
-        const flowDataURL = canvas.toDataURL(fileMime, parseFloat(finalQuality));
+        const flowDataURL = canvas.toDataURL(fileMime, finalQuality);
         const flowImg = document.createElement("img");
         flowImg.src = flowDataURL;
         jsZipInstance.file(fileLabel, flowImg.src.slice(flowImg.src.indexOf(",") + 1), { base64: true });
