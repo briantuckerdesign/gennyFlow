@@ -1,0 +1,32 @@
+{
+  "name": "gennyflow",
+  "version": "3.0.3",
+  "description": "webflow image generator",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "build": "esbuild src/index.js --drop:console --minify --keep-names --bundle  --outfile=dist/gennyflow-3.0.3a.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briantuckerdesign/GennyFlow.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/briantuckerdesign/GennyFlow/issues"
+  },
+  "homepage": "https://github.com/briantuckerdesign/GennyFlow#readme",
+  "dependencies": {
+    "esbuild": "0.17.6",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "inline-svg": "^2.2.3",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.0.1"
+  }
+}
