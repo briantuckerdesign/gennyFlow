@@ -9678,6 +9678,7 @@
                                 ) {
                                     var title = document.createElementNS("http://www.w3.org/2000/svg", "title"),
                                         titvarext = document.createTextNode(attributes.alt.value);
+
                                     if ((title.setAttribute("id", uid()), title.appendChild(titvarext), inlinedSVG.insertBefore(title, inlinedSVG.firstChild), attributes.id)) inlinedSVG.setAttribute("aria-labelledby", attributes.id.value);
                                     else if (!attributes.id) {
                                         var getTitleId = function () {
@@ -13578,9 +13579,19 @@ async function gennyFlow() {
     if (!settings.disableSVGfix) {
         if (gfLoaderMessage) gfLoaderMessage.innerHTML = `Making it pop...`;
         const imgs = document.querySelectorAll('div[gf=wrapper] img[src$=".svg"]:not([gf=ignore])');
+
         imgs.forEach((img) => {
-            img.classList.add("gf_img2svg");
+            if (isVisible(img)) {
+                img.classList.add("gf_img2svg");
+            }
         });
+
+        function isVisible(element) {
+            if (element.offsetParent === null) return false;
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+        }
+
         inlineSVG.init({
             svgSelector: "img.gf_img2svg",
             initClass: "js-inlinesvg",
