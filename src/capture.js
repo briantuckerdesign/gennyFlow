@@ -1,24 +1,29 @@
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { convertToSlug, isVisible } from "./utils";
+import { closeLoader, convertToSlug, isVisible } from "./utils";
+import { updateLoader } from "./utils";
 
-export async function capture(flowList, flowSettings, settings, gfLoader, gfLoaderMessage) {
+export async function capture(flowList, flowSettings, settings, loaderStatus) {
     let date = String(new Date().getMonth() + 1).padStart(2, "0") + String(new Date().getDate()).padStart(2, "0") + new Date().getFullYear().toString().slice(-2);
+
     const jsZipInstance = new JSZip();
+
     const storedFlowLabels = [];
     let zipScale = settings.includeScaleZip ? `_@${settings.fileScale}x` : "";
     let zipDate = settings.includeDateZip ? `_${date}` : "";
     let zipName = convertToSlug(settings.zipName);
     let zipLabel = `${zipName}${zipScale}${zipDate}.zip`;
 
-    // await new Promise((resolve) => setTimeout(resolve, 100));
-
     for (let i = 0; i < flowList.length; i++) {
         let item = flowList[i];
         let flowID = i + 1;
         let itemSettings = {};
 
+        // Skips the item if it is not visible, based on being > 1px x 1px in the dom
+        if (item && !isVisible(item)) continue;
+
+        // Gets the settings from the gf="capture" element and adds them to the itemSettings object
         Object.keys(flowSettings).forEach((settingKey) => {
             const setting = flowSettings[settingKey];
             const itemAttributeValue = item.getAttribute(`gf-${setting.attribute}`);
@@ -36,7 +41,7 @@ export async function capture(flowList, flowSettings, settings, gfLoader, gfLoad
         const slugFromHTMLunformatted = item.querySelector('[gf="slug"]').innerHTML;
         let slugFromHTML = convertToSlug(slugFromHTMLunformatted);
         let imgName = slugFromHTML ? slugFromHTML : `img-${flowID}`;
-        if (gfLoaderMessage) gfLoaderMessage.innerHTML = `Capturing ${imgName}...`;
+        updateLoader(`Capturing ${imgName}...`, loaderStatus);
 
         let imgScale = "";
         if (includeScaleImg === "true") {
@@ -69,7 +74,7 @@ export async function capture(flowList, flowSettings, settings, gfLoader, gfLoad
             canvas.toBlob(
                 function (blob) {
                     window.saveAs(blob, fileLabel);
-                    if (gfLoader) gfLoader.style.display = "none";
+                    closeLoader();
                 },
                 fileMime,
                 finalQuality
@@ -81,12 +86,12 @@ export async function capture(flowList, flowSettings, settings, gfLoader, gfLoad
         flowImg.src = flowDataURL;
         jsZipInstance.file(fileLabel, flowImg.src.slice(flowImg.src.indexOf(",") + 1), { base64: true });
         if (flowID === flowList.length) {
-            if (gfLoaderMessage) gfLoaderMessage.innerHTML = `Zipping it all up...`;
+            updateLoader(`Zipping it all up...`, loaderStatus);
             jsZipInstance
                 .generateAsync({ type: "blob" }, function updateCallback(metadata) {})
                 .then((content) => {
                     saveAs(content, zipLabel);
-                    if (gfLoader) gfLoader.style.display = "none";
+                    closeLoader();
 
                     console.log(`
 ${storedFlowLabels.length} files saved.

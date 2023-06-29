@@ -32,3 +32,45 @@ export function isVisible(element) {
     const rect = element.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0;
 }
+
+export function initLoader() {
+    const gfLoader = document.querySelector(".gf_loader");
+    if (gfLoader) {
+        gfLoader.style.opacity = "0";
+        gfLoader.style.display = "block";
+        gfLoader.style.opacity = "1";
+    }
+    const gfLoaderMessage = document.querySelector(".gf_loader-message");
+    if (gfLoaderMessage && gfLoader) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export function updateLoader(message, loaderStatus) {
+    if (loaderStatus) {
+        const gfLoaderMessage = document.querySelector(".gf_loader-message");
+        gfLoaderMessage.innerHTML = message;
+    }
+}
+
+export function closeLoader() {
+    const gfLoader = document.querySelector(".gf_loader");
+    if (gfLoader) {
+        gfLoader.style.opacity = "0";
+        //delay by 200ms
+        setTimeout(() => {
+            gfLoader.style.display = "none";
+        }, 200);
+    }
+}
+
+export async function gennyFlowListener(wrapperSelector, captureSelector, triggerSelector) {
+    const trigger = document.querySelector(triggerSelector);
+    if (trigger) {
+        trigger.addEventListener("click", function () {
+            gennyFlow(wrapperSelector, captureSelector);
+        });
+    } else console.log('gennyFlow Warning: No trigger found.  Add a trigger with custom attribute gf="trigger". Ignore this warning if you are running gennyFlow manually.');
+}

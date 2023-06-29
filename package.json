@@ -1,13 +1,13 @@
 {
   "name": "gennyflow",
-  "version": "10.0.0",
+  "version": "4.0.0a",
   "description": "webflow image generator",
   "main": "index.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && node ./js-to-txt-util.js",
     "watch": "webpack --watch --mode development"
   },
   "repository": {

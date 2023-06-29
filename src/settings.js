@@ -1,4 +1,4 @@
-export const flowSettings = {
+export const defaultSettings = {
     format: {
         attribute: "format",
         variableName: "fileFormat",
