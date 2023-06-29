@@ -15,7 +15,7 @@ let triggerAttribute = '[gf="trigger"]';
 // listens for the trigger and then runs gennyFlow
 gennyFlowListener(wrapperAttribute, captureAttribute, triggerAttribute);
 
-async function gennyFlow(wrapperSelector, captureSelector) {
+async function gennyFlow(wrapperSelector = '[gf="wrapper"]', captureSelector = '[gf="capture"]') {
     if (!document.querySelector(wrapperSelector)) {
         console.log(`gennyFlow Error: No wrapper found. Add a wrapper using custom attribute: ${wrapperSelector}`);
         return;

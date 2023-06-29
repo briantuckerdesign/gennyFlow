@@ -66,7 +66,7 @@ export function closeLoader() {
     }
 }
 
-export async function gennyFlowListener(wrapperSelector, captureSelector, triggerSelector) {
+export async function gennyFlowListener(wrapperSelector = '[gf="wrapper"]', captureSelector = '[gf="capture"]', triggerSelector = '[gf="trigger"]') {
     const trigger = document.querySelector(triggerSelector);
     if (trigger) {
         trigger.addEventListener("click", function () {

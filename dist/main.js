@@ -7882,7 +7882,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0c","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
+module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0d","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
 
 /***/ })
 
@@ -8042,22 +8042,29 @@ function closeLoader() {
     }, 200);
   }
 }
-function gennyFlowListener(_x, _x2, _x3) {
+function gennyFlowListener() {
   return _gennyFlowListener.apply(this, arguments);
 }
 function _gennyFlowListener() {
-  _gennyFlowListener = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(wrapperSelector, captureSelector, triggerSelector) {
-    var trigger;
+  _gennyFlowListener = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var wrapperSelector,
+      captureSelector,
+      triggerSelector,
+      trigger,
+      _args2 = arguments;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
+          wrapperSelector = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : '[gf="wrapper"]';
+          captureSelector = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : '[gf="capture"]';
+          triggerSelector = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : '[gf="trigger"]';
           trigger = document.querySelector(triggerSelector);
           if (trigger) {
             trigger.addEventListener("click", function () {
               gennyFlow(wrapperSelector, captureSelector);
             });
           } else console.log('gennyFlow Warning: No trigger found.  Add a trigger with custom attribute gf="trigger". Ignore this warning if you are running gennyFlow manually.');
-        case 2:
+        case 5:
         case "end":
           return _context2.stop();
       }
@@ -8311,29 +8318,37 @@ var triggerAttribute = '[gf="trigger"]';
 
 // listens for the trigger and then runs gennyFlow
 gennyFlowListener(wrapperAttribute, captureAttribute, triggerAttribute);
-function src_gennyFlow(_x, _x2) {
+function src_gennyFlow() {
   return _gennyFlow.apply(this, arguments);
 }
 function _gennyFlow() {
-  _gennyFlow = src_asyncToGenerator( /*#__PURE__*/src_regeneratorRuntime().mark(function _callee(wrapperSelector, captureSelector) {
-    var listOfCaptureElements, loaderStatus, settings, ignoreElements;
+  _gennyFlow = src_asyncToGenerator( /*#__PURE__*/src_regeneratorRuntime().mark(function _callee() {
+    var wrapperSelector,
+      captureSelector,
+      listOfCaptureElements,
+      loaderStatus,
+      settings,
+      ignoreElements,
+      _args = arguments;
     return src_regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
+          wrapperSelector = _args.length > 0 && _args[0] !== undefined ? _args[0] : '[gf="wrapper"]';
+          captureSelector = _args.length > 1 && _args[1] !== undefined ? _args[1] : '[gf="capture"]';
           if (document.querySelector(wrapperSelector)) {
-            _context.next = 3;
+            _context.next = 5;
             break;
           }
           console.log("gennyFlow Error: No wrapper found. Add a wrapper using custom attribute: ".concat(wrapperSelector));
           return _context.abrupt("return");
-        case 3:
+        case 5:
           if (document.querySelector(captureSelector)) {
-            _context.next = 6;
+            _context.next = 8;
             break;
           }
           console.log("gennyFlow Error: No capture items found. Add a capture element inside the wrapper using custom attribute: ".concat(captureSelector));
           return _context.abrupt("return");
-        case 6:
+        case 8:
           listOfCaptureElements = Array.from(document.querySelectorAll("".concat(wrapperSelector, " ").concat(captureSelector)));
           loaderStatus = initLoader();
           updateLoader("Capturing ".concat(listOfCaptureElements.length, " items..."), loaderStatus);
@@ -8362,13 +8377,13 @@ function _gennyFlow() {
 
           // inlines SVGs
           if (settings.disableSVGfix) {
-            _context.next = 16;
+            _context.next = 18;
             break;
           }
           updateLoader("Making it pop...", loaderStatus);
-          _context.next = 16;
+          _context.next = 18;
           return inlineSVGs();
-        case 16:
+        case 18:
           // ignores elements with gf="ignore"
           ignoreElements = document.querySelectorAll('[gf="ignore"]');
           ignoreElements.forEach(function (element) {
@@ -8377,7 +8392,7 @@ function _gennyFlow() {
 
           // runs html2canvas on each element and downloads
           capture(listOfCaptureElements, defaultSettings, settings, loaderStatus);
-        case 19:
+        case 21:
         case "end":
           return _context.stop();
       }
