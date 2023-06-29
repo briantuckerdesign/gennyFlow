@@ -7882,7 +7882,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0a","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
+module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0c","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
 
 /***/ })
 
@@ -8149,6 +8149,11 @@ function _capture() {
     return capture_regeneratorRuntime().wrap(function _callee$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
+          _context2.next = 2;
+          return new Promise(function (resolve) {
+            return setTimeout(resolve, 1000);
+          });
+        case 2:
           date = String(new Date().getMonth() + 1).padStart(2, "0") + String(new Date().getDate()).padStart(2, "0") + new Date().getFullYear().toString().slice(-2);
           jsZipInstance = new (jszip_min_default())();
           storedFlowLabels = [];
@@ -8253,30 +8258,30 @@ function _capture() {
             }, _loop);
           });
           i = 0;
-        case 9:
+        case 11:
           if (!(i < flowList.length)) {
-            _context2.next = 19;
+            _context2.next = 21;
             break;
           }
-          return _context2.delegateYield(_loop(), "t0", 11);
-        case 11:
+          return _context2.delegateYield(_loop(), "t0", 13);
+        case 13:
           _ret = _context2.t0;
           if (!(_ret === "continue")) {
-            _context2.next = 14;
-            break;
-          }
-          return _context2.abrupt("continue", 16);
-        case 14:
-          if (!(capture_typeof(_ret) === "object")) {
             _context2.next = 16;
             break;
           }
-          return _context2.abrupt("return", _ret.v);
+          return _context2.abrupt("continue", 18);
         case 16:
+          if (!(capture_typeof(_ret) === "object")) {
+            _context2.next = 18;
+            break;
+          }
+          return _context2.abrupt("return", _ret.v);
+        case 18:
           i++;
-          _context2.next = 9;
+          _context2.next = 11;
           break;
-        case 19:
+        case 21:
         case "end":
           return _context2.stop();
       }

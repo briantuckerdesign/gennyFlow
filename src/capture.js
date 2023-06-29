@@ -5,6 +5,7 @@ import { closeLoader, convertToSlug, isVisible } from "./utils";
 import { updateLoader } from "./utils";
 
 export async function capture(flowList, flowSettings, settings, loaderStatus) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     let date = String(new Date().getMonth() + 1).padStart(2, "0") + String(new Date().getDate()).padStart(2, "0") + new Date().getFullYear().toString().slice(-2);
 
     const jsZipInstance = new JSZip();

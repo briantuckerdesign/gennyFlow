@@ -1,6 +1,6 @@
 {
   "name": "gennyflow",
-  "version": "4.0.0a",
+  "version": "4.0.0c",
   "description": "webflow image generator",
   "main": "index.js",
   "directories": {
