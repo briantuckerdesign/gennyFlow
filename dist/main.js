@@ -7882,7 +7882,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0d","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
+module.exports = JSON.parse('{"name":"gennyflow","version":"4.0.0f","description":"webflow image generator","main":"index.js","directories":{"example":"example"},"scripts":{"build":"webpack --mode production && node ./js-to-txt-util.js","watch":"webpack --watch --mode development"},"repository":{"type":"git","url":"git+https://github.com/briantuckerdesign/GennyFlow.git"},"author":"","license":"ISC","bugs":{"url":"https://github.com/briantuckerdesign/GennyFlow/issues"},"homepage":"https://github.com/briantuckerdesign/GennyFlow#readme","dependencies":{"file-saver":"^2.0.5","html2canvas":"^1.4.1","inline-svg":"^2.2.3","jszip":"^3.10.1"},"devDependencies":{"@babel/core":"^7.22.5","@babel/preset-env":"^7.22.5","babel-loader":"^9.1.2","terser-webpack-plugin":"^5.3.9","webpack":"^5.88.0","webpack-cli":"^5.1.4"}}');
 
 /***/ })
 
@@ -8158,7 +8158,7 @@ function _capture() {
         case 0:
           _context2.next = 2;
           return new Promise(function (resolve) {
-            return setTimeout(resolve, 1000);
+            return setTimeout(resolve, 250);
           });
         case 2:
           date = String(new Date().getMonth() + 1).padStart(2, "0") + String(new Date().getDate()).padStart(2, "0") + new Date().getFullYear().toString().slice(-2);
