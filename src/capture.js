@@ -39,7 +39,7 @@ export async function capture(flowList, flowSettings, settings, loaderStatus) {
         let includeScaleImg = itemSettings.includeScaleImg || settings.includeScaleImg;
         let includeDateImg = itemSettings.includeDateImg || settings.includeDateImg;
         let fileMime = finalFormat === "jpg" ? "image/jpeg" : `image/${finalFormat}`;
-        const slugFromHTMLunformatted = item.querySelector('[gf="slug"]').innerHTML;
+        const slugFromHTMLunformatted = item.querySelector('[gf="slug"]').textContent;
         let slugFromHTML = convertToSlug(slugFromHTMLunformatted);
         let imgName = slugFromHTML ? slugFromHTML : `img-${flowID}`;
         updateLoader(`Capturing ${imgName}...`, loaderStatus);

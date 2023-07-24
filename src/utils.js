@@ -2,7 +2,7 @@ import inlineSVG from "inline-svg";
 
 export function convertToSlug(input) {
     input = input.toLowerCase();
-    input = input.replace(/[^a-z0-9_ -]/g, "");
+    input = input.replace(/[^a-z0-9_@ -]/g, "");
     input = input.replace(/\s+/g, "-");
     return input;
 }
