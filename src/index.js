@@ -1,20 +1,18 @@
 import { gennyFlow } from "./gennyFlow";
 import { triggerAttribute } from "./settings";
 
-module.exports.gennyFlow = gennyFlow;
-
-/**
- * 1. Pushes gennyFlow function to window for access by other js scripts
- * 2. Creates event listener for a click on trigger element.
- *    On click. runs gennyFlow using the default wrapper and capture selectors.
- *
- * Default settings found in ./settings
- */
-
-window.gennyFlow = gennyFlow;
-
-const trigger = document.querySelector(triggerAttribute);
-
-if (trigger) {
-  trigger.addEventListener("click", () => gennyFlow());
+// Only attach gennyFlow to window if window is defined (e.g., in a browser environment)
+if (typeof window !== "undefined") {
+  window.gennyFlow = gennyFlow;
 }
+
+// Assuming this script runs in the browser as it's manipulating the DOM
+document.addEventListener("DOMContentLoaded", (event) => {
+  const trigger = document.querySelector(triggerAttribute);
+
+  if (trigger) {
+    trigger.addEventListener("click", () => gennyFlow());
+  }
+});
+
+export { gennyFlow };
