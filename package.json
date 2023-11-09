@@ -1,8 +1,8 @@
 {
   "name": "gennyflow",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Easily download one or multiple divs as images in Webflow.",
-  "main": "index.js",
+  "main": "src/index.js",
   "directories": {
     "dist": "dist",
     "src": "src",
