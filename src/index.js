@@ -1,6 +1,8 @@
 import { gennyFlow } from "./gennyFlow";
 import { triggerAttribute } from "./settings";
 
+module.exports.gennyFlow = gennyFlow;
+
 /**
  * 1. Pushes gennyFlow function to window for access by other js scripts
  * 2. Creates event listener for a click on trigger element.
