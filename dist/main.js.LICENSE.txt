@@ -1,35 +1,13 @@
-/*!**********************!*\
-  !*** ./package.json ***!
-  \**********************/
+/*!
 
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
+JSZip v3.10.1 - A JavaScript class for generating and reading zip files
+<http://stuartk.com/jszip>
 
-/*!**********************!*\
-  !*** ./src/utils.js ***!
-  \**********************/
+(c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
+Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/main/LICENSE.markdown.
 
-/*!************************!*\
-  !*** ./src/capture.js ***!
-  \************************/
+JSZip uses the library pako released under the MIT license :
+https://github.com/nodeca/pako/blob/main/LICENSE
+*/
 
-/*!*************************!*\
-  !*** ./src/settings.js ***!
-  \*************************/
-
-/*!**********************************************!*\
-  !*** ./node_modules/jszip/dist/jszip.min.js ***!
-  \**********************************************/
-
-/*!******************************************************!*\
-  !*** ./node_modules/html2canvas/dist/html2canvas.js ***!
-  \******************************************************/
-
-/*!*******************************************************!*\
-  !*** ./node_modules/file-saver/dist/FileSaver.min.js ***!
-  \*******************************************************/
-
-/*!*******************************************************!*\
-  !*** ./node_modules/inline-svg/dist/inlineSVG.min.js ***!
-  \*******************************************************/
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */

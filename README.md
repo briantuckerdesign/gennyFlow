@@ -1,6 +1,6 @@
 
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
-# GennyFlow [5.0.3]:
+# GennyFlow [6.0.0]:
 
 GennyFlow is a client-side javascript tool that downloads HTML elements as images.
 
@@ -100,9 +100,9 @@ See `required elements` above. Create the elements and apply the custom attribut
 
 ### Built using
 
--  [`HTML2Canvas`](https://github.com/niklasvh/html2canvas)
+-  [`html-to-img`](https://github.com/bubkoo/html-to-image)
 -  [`jszip`](https://github.com/Stuk/jszip)
--  [`filesaver.js`](https://github.com/eligrey/FileSaver.js)
+-  [`downloadjs`](https://github.com/rndme/download)
 
 
 ### Limitations

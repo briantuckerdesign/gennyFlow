@@ -3,10 +3,10 @@ import { triggerAttribute } from "./settings";
 
 // Only attach gennyFlow to window if window is defined (e.g., in a browser environment)
 if (typeof window !== "undefined") {
-  window.gennyFlow = gennyFlow;
+  (window as any).gennyFlow = gennyFlow;
 }
 
-// Assuming this script runs in the browser as it's manipulating the DOM
+// Listens for trigger click after DOM loads
 document.addEventListener("DOMContentLoaded", (event) => {
   const trigger = document.querySelector(triggerAttribute);
 
