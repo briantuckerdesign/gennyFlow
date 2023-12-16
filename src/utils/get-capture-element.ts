@@ -1,3 +1,4 @@
+import { isVisible } from "./is-visible";
 import { updateLoadingMessage } from "./loader";
 
 /**
@@ -28,9 +29,11 @@ export async function getCaptureElements(
     console.error("gennyFlow: No capture items found in the wrapper.");
     return [];
   }
-  const arrayOfElements = Array.from(
+  const elements = Array.from(
     document.querySelectorAll(`${wrapperSelector} ${captureSelector}`)
   );
+  // Filter out elements that are not visible
+  const visibleElements = elements.filter((element) => isVisible(element));
 
-  return arrayOfElements;
+  return visibleElements;
 }

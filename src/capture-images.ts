@@ -4,13 +4,16 @@ import {
   updateLoadingMessage,
 } from "./utils";
 import { nodesToIgnore, prepareIgnoredNodes } from "./utils/ignore-items";
+import { runCorsProxy } from "./utils/run-cors-proxy";
 
 export async function captureImages(
   elementsToCapture,
   settings,
   loaderEnabled
 ) {
-  updateLoadingMessage(`Capturing images...`, loaderEnabled);
+  // updateLoadingMessage(`Capturing images...`, loaderEnabled);
+
+  await runCorsProxy();
 
   await prepareIgnoredNodes;
 
@@ -24,13 +27,16 @@ export async function captureImages(
     )
   );
 
-  updateLoadingMessage(`All images captured...`, loaderEnabled);
+  // updateLoadingMessage(`All images captured...`, loaderEnabled);
 
   return images;
 }
 
 async function captureImage(element, itemSettings, loaderEnabled) {
-  updateLoadingMessage(`Capturing ${itemSettings.fileName}`, loaderEnabled);
+  await updateLoadingMessage(
+    `Capturing ${itemSettings.fileName}`,
+    loaderEnabled
+  );
 
   let dataURL = "";
 
