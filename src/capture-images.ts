@@ -3,6 +3,7 @@ import { updateLoadingMessage } from "./utils";
 import { nodesToIgnore, prepareIgnoredNodes } from "./utils/ignore-items";
 import { runCorsProxy } from "./utils/run-cors-proxy";
 import { getItemOptions } from "./get-options";
+import html2canvas from "html2canvas";
 
 /**
  * Asynchronously captures images from a set of DOM elements using specified options.
@@ -20,7 +21,7 @@ import { getItemOptions } from "./get-options";
  */
 export async function captureImages(options, captureElements) {
   // When enabled, replaces urls with proxied ones to bypass CORS errors.
-  await runCorsProxy();
+  await runCorsProxy(options);
 
   // Backwards compatible node ignoring from html2canvas
   await prepareIgnoredNodes;
@@ -51,7 +52,46 @@ export async function captureImages(options, captureElements) {
  *                                      'dataURL' is the base64 encoded image, and 'fileName' is the name of the image file.
  *
  */
+
+/** HTML 2 CANVAS VERSION */
+// async function captureImage(element, options) {
+//   console.log("capturing using html2canvas");
+
+//   await updateLoadingMessage(
+//     `Capturing ${options.slug}`,
+//     options.loaderEnabled
+//   );
+//   let canvas = html2canvas(element, {
+//     scale: parseFloat(options.scale),
+//     backgroundColor: null,
+//     useCORS: true,
+//     allowTaint: true,
+//   });
+
+//   let dataURL, mimeType;
+//   // Captures image based on format
+//   switch (options.format.toLowerCase()) {
+//     case "jpg":
+//     case "jpeg":
+//       mimeType = "image/jpeg";
+//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
+//       options.fileName = `${options.slug}.jpg`;
+//       break;
+//     case "png":
+//     default:
+//       mimeType = "image/png";
+//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
+//       options.fileName = `${options.slug}.png`;
+//       break;
+//   }
+
+//   const image: [string, string] = [dataURL, options.fileName];
+//   return image;
+// }
+
+/** HTML-TO-IMAGE VERSION */
 async function captureImage(element, options) {
+  console.log("capturing using html-to-img");
   await updateLoadingMessage(
     `Capturing ${options.slug}`,
     options.loaderEnabled

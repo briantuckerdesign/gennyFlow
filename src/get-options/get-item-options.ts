@@ -1,5 +1,5 @@
 import { attributesToCheck } from ".";
-import { convertToSlug, parseImageLabel } from "../utils";
+import { parseImageLabel } from "../utils";
 
 /**
  * Extracts and customizes settings for a specific element based on its attributes and additional criteria.

@@ -33,6 +33,7 @@
   "dependencies": {
     "downloadjs": "^1.4.7",
     "html-to-image": "^1.11.11",
+    "html2canvas": "^1.4.1",
     "jszip": "^3.10.1"
   },
   "devDependencies": {
