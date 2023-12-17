@@ -4,8 +4,8 @@ import { getCaptureElements } from "./get-capture-element";
 import { captureImages } from "./capture-images";
 import { downloadImages } from "./download-images";
 
-export async function gennyFlow(
-  options = {
+export async function gennyFlow(userOptions = {}) {
+  const defaultOptions = {
     // capture options
     format: "png",
     quality: 1,
@@ -22,8 +22,10 @@ export async function gennyFlow(
     captureSelector: '[gf="capture"]',
     corsProxyBaseURL: null,
     loaderEnabled: false,
-  }
-) {
+  };
+
+  let options = { ...defaultOptions, ...userOptions };
+
   try {
     // Initialize optional user-facing loading screen
     options.loaderEnabled = initLoader(); // Returns boolean.

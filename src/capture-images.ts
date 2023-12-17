@@ -1,9 +1,8 @@
+import { runCorsProxy } from "./cors-proxy";
+import { nodesToIgnore, prepareIgnoredNodes } from "./utils/ignore-items";
+import { getItemOptions } from "./get-options";
 import * as htmlToImage from "html-to-image";
 import { updateLoadingMessage } from "./utils";
-import { nodesToIgnore, prepareIgnoredNodes } from "./utils/ignore-items";
-import { runCorsProxy } from "./utils/run-cors-proxy";
-import { getItemOptions } from "./get-options";
-import html2canvas from "html2canvas";
 
 /**
  * Asynchronously captures images from a set of DOM elements using specified options.
@@ -53,45 +52,8 @@ export async function captureImages(options, captureElements) {
  *
  */
 
-/** HTML 2 CANVAS VERSION */
-// async function captureImage(element, options) {
-//   console.log("capturing using html2canvas");
-
-//   await updateLoadingMessage(
-//     `Capturing ${options.slug}`,
-//     options.loaderEnabled
-//   );
-//   let canvas = html2canvas(element, {
-//     scale: parseFloat(options.scale),
-//     backgroundColor: null,
-//     useCORS: true,
-//     allowTaint: true,
-//   });
-
-//   let dataURL, mimeType;
-//   // Captures image based on format
-//   switch (options.format.toLowerCase()) {
-//     case "jpg":
-//     case "jpeg":
-//       mimeType = "image/jpeg";
-//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
-//       options.fileName = `${options.slug}.jpg`;
-//       break;
-//     case "png":
-//     default:
-//       mimeType = "image/png";
-//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
-//       options.fileName = `${options.slug}.png`;
-//       break;
-//   }
-
-//   const image: [string, string] = [dataURL, options.fileName];
-//   return image;
-// }
-
 /** HTML-TO-IMAGE VERSION */
 async function captureImage(element, options) {
-  console.log("capturing using html-to-img");
   await updateLoadingMessage(
     `Capturing ${options.slug}`,
     options.loaderEnabled
@@ -126,3 +88,40 @@ async function captureImage(element, options) {
   // returns image stored in tuple. [dataURL, fileName]
   return image;
 }
+
+/** HTML 2 CANVAS VERSION */
+// async function captureImage(element, options) {
+//   console.log("capturing using html2canvas");
+
+//   await updateLoadingMessage(
+//     `Capturing ${options.slug}`,
+//     options.loaderEnabled
+//   );
+//   let canvas = await html2canvas(element, {
+//     scale: parseFloat(options.scale),
+//     backgroundColor: null,
+//     useCORS: true,
+//     allowTaint: true,
+//   });
+//   console.log("file: capture-images.ts:66 ~ captureImage ~ canvas:", canvas);
+
+//   let dataURL, mimeType;
+//   // Captures image based on format
+//   switch (options.format.toLowerCase()) {
+//     case "jpg":
+//     case "jpeg":
+//       mimeType = "image/jpeg";
+//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
+//       options.fileName = `${options.slug}.jpg`;
+//       break;
+//     case "png":
+//     default:
+//       mimeType = "image/png";
+//       dataURL = (await canvas).toDataURL(mimeType, parseFloat(options.quality));
+//       options.fileName = `${options.slug}.png`;
+//       break;
+//   }
+
+//   const image: [string, string] = [dataURL, options.fileName];
+//   return image;
+// }
