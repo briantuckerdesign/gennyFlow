@@ -2,13 +2,14 @@ import download from "downloadjs";
 import JSZip from "jszip";
 
 import { parseZipLabel, updateLoadingMessage } from "./utils";
-export async function downloadImages(images, settings, loaderEnabled) {
+
+export async function downloadImages(images, options) {
   if (images.length === 1) {
     const [dataURL, fileName] = images[0];
     await download(dataURL, fileName);
-    updateLoadingMessage("File downloaded!", loaderEnabled);
+    updateLoadingMessage("File downloaded!", options.loaderEnabled);
   } else if (images.length > 1) {
-    const zipName = parseZipLabel(settings);
+    const zipName = parseZipLabel(options);
     const zipBlob = await zipUpImages(images);
     await download(zipBlob, zipName);
   }

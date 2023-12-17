@@ -2,7 +2,7 @@ export async function runCorsProxy() {
   console.groupCollapsed("CORS Proxy");
 
   try {
-    const proxyBaseURL = "your proxy url here";
+    const proxyBaseURL = "https://mask.brian-751.workers.dev/?";
     if (!isValidUrl(proxyBaseURL)) {
       console.log("proxy url invalid");
 
