@@ -1,4 +1,5 @@
 import { isValidUrl } from "../utils";
+import { Options } from "../options-interface";
 
 /**
  * proxyCSS - Processes CSS stylesheets linked in the document to use the CORS proxy.
@@ -10,11 +11,15 @@ import { isValidUrl } from "../utils";
  * @param {number} proxyPings - Initial count of proxy server pings.
  * @returns {Promise<number>} - Returns the updated count of proxy server pings after processing stylesheets.
  */
-export async function proxyCSS(options, proxyPings) {
+
+export async function proxyCSS(options: Partial<Options>): Promise<number> {
   let cssPings = 0;
+  let proxyPings = 0;
   const css = document.querySelectorAll('link[rel="stylesheet"]');
+
   for (let stylesheet of css) {
     let stylesheetURL = stylesheet.getAttribute("href");
+
     // Check if the URL is valid and not a base64 encoded string
     if (
       stylesheetURL &&
@@ -22,12 +27,30 @@ export async function proxyCSS(options, proxyPings) {
       isValidUrl(stylesheetURL)
     ) {
       const url = options.corsProxyBaseURL + encodeURIComponent(stylesheetURL);
-      stylesheet.setAttribute("href", url);
-      proxyPings++;
-      cssPings++;
+
+      try {
+        // Fetch the CSS content
+        const response = await fetch(url);
+        const cssText = await response.text();
+
+        // Create a <style> element and set its content
+        const styleEl = document.createElement("style");
+        styleEl.textContent = cssText;
+
+        // Append the <style> element to the document's <head>
+        document.head.appendChild(styleEl);
+
+        // Remove the original <link> element
+        stylesheet.remove();
+
+        proxyPings++;
+        cssPings++;
+      } catch (error) {
+        console.error("Error fetching CSS:", error);
+      }
     }
   }
-  console.log(`
-    Stylesheets proxied: ${cssPings}`);
+
+  console.log(`Stylesheets proxied: ${cssPings}`);
   return proxyPings;
 }

@@ -1,4 +1,5 @@
 import { blobToDataURL, isValidUrl } from "../utils";
+import { Options } from "../options-interface";
 
 /**
  * proxyImages - Processes images within a specified wrapper element to use the CORS proxy.
@@ -11,7 +12,13 @@ import { blobToDataURL, isValidUrl } from "../utils";
  *     - corsProxyBaseURL: String - The base URL of the CORS proxy server.
  * @returns {Promise<number>} - Returns the number of times the proxy server was pinged.
  */
-export async function proxyImages(options) {
+export async function proxyImages(options, proxyPings): Promise<number> {
+  // find all link tags in head and add crossorigin="anonymous"
+  const links = document.querySelectorAll("link");
+  links.forEach((link) => {
+    link.setAttribute("crossorigin", "anonymous");
+  });
+
   const wrapper = document.querySelector(options.wrapperSelector);
   const images = Array.from(
     wrapper.querySelectorAll("img")
@@ -29,7 +36,6 @@ export async function proxyImages(options) {
   let callsSaved = 0;
   let imagesProxied = 0;
   let imagesEmbedded = 0;
-  let proxyPings = 0;
 
   for (const [src, duplicates] of srcMap) {
     if (!isValidUrl(src)) {

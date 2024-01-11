@@ -3,9 +3,10 @@ import { determineOptions } from "./get-options";
 import { getCaptureElements } from "./get-capture-element";
 import { captureImages } from "./capture-images";
 import { downloadImages } from "./download-images";
+import { Options } from "./options-interface";
 
-export async function gennyFlow(userOptions = {}) {
-  const defaultOptions = {
+export async function gennyFlow(userOptions: Partial<Options> = {}) {
+  const defaultOptions: Options = {
     // capture options
     format: "png",
     quality: 1,
@@ -20,11 +21,11 @@ export async function gennyFlow(userOptions = {}) {
     includeScaleImg: true,
     wrapperSelector: '[gf="wrapper"]',
     captureSelector: '[gf="capture"]',
-    corsProxyBaseURL: null,
+    corsProxyBaseURL: "",
     loaderEnabled: false,
   };
 
-  let options = { ...defaultOptions, ...userOptions };
+  let options: Options = { ...defaultOptions, ...userOptions };
 
   try {
     // Initialize optional user-facing loading screen
@@ -39,6 +40,7 @@ export async function gennyFlow(userOptions = {}) {
     // Captures image and returns array of tuples: [dataURL,fileName]
     const images = await captureImages(options, captureElements);
 
+    // Downloads images
     await downloadImages(images, options);
 
     closeLoader();
