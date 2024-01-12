@@ -1,6 +1,6 @@
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
 
-# gennyFlow [v6.0.3]
+# gennyFlow [v6.0.4]
 
 gennyFlow is a client-side javascript tool that downloads HTML elements as images.
 
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 Below this is
 
-### Required elements
+## Required elements
 
 `gennyFlow` elements are controlled using custom attributes, which you'll be familiar with if you've used Finsweet Attributes.
 
@@ -35,34 +35,32 @@ Below this is
   - An element to be captured and downloaded
   - Must be nested inside of the wrapper element.
 - **Slug element**
-  - `gf="slug"`
-  - Sets file name for (1) capture element
+  - `gf="slug" (ok this isn't really required)`
   - Must be nested inside capture element
-  - Does not need to have CSS visibility
-  - Should not include file extension
+  - Sets file name for (1) capture element
+  - Does not need to have CSS visibility (can be set to display:none)
+  - Should not include file extension ("my-image" not "my-image.jpg")
+  - Will default to image-1, image-2, etc.
 - **Trigger element**
   - `gf="trigger"`
   - When this element is clicked, it runs `gennyFlow`, downloading all capture elements.
 
-## Settings
+## Options
 
-You can set these when you initialize GennyFlow.
-You can allow users to set these by putting the user-settable attribute on any type of form input. Be sure the values match what's below (so I recommend things like selects, radio, or checkboxes for items that need to be specific, i.e. format).
-
-You can set these options in several places, here is the order of precedence:
+There are many ways to set these options, and you can use them in any combination, as long as you understand the order of precedence.
 
 **Order of precedence**
 
-1. **Setting declared on gf="capture" element**
+1. **Capture element**
    Example: An element has both "gf=capture" and "gf-scale=2"
    The item would export with a scale of 2 no matter what higher-level settings were set.
-2. **Setting declared by html user input**
+2. **User input**
    Example: An html input with attribute "gf=scale-input"
    `<input gf="scale-input" value="2">`
-3. **Value from the gf="wrapper" element**
+3. **Wrapper**
    Example: The wrapper element with gf="wrapper" also has "gf-scale=2"
    This scale is applied to all captures inside of the wrapper unless overruled by 1 or 2.
-4. **Default setting from defaultSettings in settings.js**
+4. **Defaults**
 
 |                         | Attribute (and defaults)       | Accepted values      | User inputs           |
 | ----------------------- | ------------------------------ | -------------------- | --------------------- |
@@ -79,7 +77,7 @@ You can set these options in several places, here is the order of precedence:
 
 ### Example, Webflow setup
 
-Coming soon
+[Cloneable here](https://gennyflow-cloneable.webflow.io/)
 
 ### Example, HTML
 

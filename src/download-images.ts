@@ -3,6 +3,15 @@ import JSZip from "jszip";
 
 import { parseZipLabel, updateLoadingMessage } from "./utils";
 
+/**
+ * Downloads images based on the provided array of images and options.
+ * If there is only one image, it is downloaded individually.
+ * If there are multiple images, they are zipped and downloaded as a single file.
+ *
+ * @param images - An array of images to be downloaded. Each image should be represented as a tuple with the data URL and the file name.
+ * @param options - Additional options for downloading the images.
+ * @returns A promise that resolves when all the images are downloaded.
+ */
 export async function downloadImages(images, options) {
   if (images.length === 1) {
     const [dataURL, fileName] = images[0];
@@ -15,6 +24,13 @@ export async function downloadImages(images, options) {
   }
 }
 
+/**
+ * Zips up the given images into a single ZIP file.
+ *
+ * @param images - An array of image tuples, where each tuple contains the data URL and the filename.
+ * @returns A Promise that resolves to the generated ZIP file as a Blob.
+ * @throws If there is an error creating the ZIP file.
+ */
 async function zipUpImages(images) {
   const zip = new JSZip();
   // Loop through each image tuple and add to the zip
