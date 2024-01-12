@@ -77,7 +77,7 @@ There are many ways to set these options, and you can use them in any combinatio
 
 ### Example, Webflow setup
 
-[Cloneable here](https://gennyflow-cloneable.webflow.io/)
+[Cloneable here](https://webflow.com/made-in-webflow/website/gennyflow-cloneable)
 
 ### Example, HTML
 
