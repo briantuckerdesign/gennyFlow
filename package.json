@@ -1,6 +1,6 @@
 {
   "name": "gennyflow",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "description": "Easily download one or more DOM elements as images in Webflow",
   "main": "src/index.ts",
   "directories": {

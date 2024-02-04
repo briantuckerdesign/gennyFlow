@@ -28,7 +28,7 @@ export function initLoader(): boolean {
  * @param {string} message - The message to display in the loading indicator.
  * @param {boolean} loaderStatus - The status of the loader, if it is initialized and displayed.
  */
-export function updateLoadingMessage(
+export async function updateLoadingMessage(
   message: string,
   loaderStatus: boolean = false
 ) {

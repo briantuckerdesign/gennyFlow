@@ -1,9 +1,10 @@
 // Find elements with the specified attributes and add the class to them
-export async function prepareIgnoredNodes() {
+export function prepareIgnoredNodes() {
   document
-    .querySelectorAll('[gf="ignore"], [data-html2canvas-ignore="true"]')
+    .querySelectorAll('[gf=ignore], [gf-ignore=true], [data-html2canvas-ignore=true]')
     .forEach((element) => {
       element.classList.add("gf_ignore-item");
+      console.log('ignore element found')
     });
 }
 export const nodesToIgnore = (node: HTMLElement) => {

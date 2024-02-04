@@ -23,7 +23,7 @@ export async function captureImages(options, captureElements) {
   await runCorsProxy(options);
 
   // Backwards compatible node ignoring from html2canvas
-  await prepareIgnoredNodes;
+   prepareIgnoredNodes();
 
   // Gets array of tuples representing images, see captureImage() documentation for more info
   const images = await Promise.all(
