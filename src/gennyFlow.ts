@@ -29,7 +29,7 @@ export async function gennyFlow(userOptions: Partial<Options> = {}) {
 
   try {
     // Initialize optional user-facing loading screen
-    options.loaderEnabled = initLoader(); // Returns boolean.
+    options.loaderEnabled = await initLoader(); // Returns boolean.
 
     // Overwrites default options from various inputs based on order of precedence
     options = await determineOptions(options);
@@ -43,9 +43,9 @@ export async function gennyFlow(userOptions: Partial<Options> = {}) {
     // Downloads images
     await downloadImages(images, options);
 
-    closeLoader();
+    await closeLoader();
   } catch (error) {
     console.error(error);
-    closeLoader();
+    await closeLoader();
   }
 }

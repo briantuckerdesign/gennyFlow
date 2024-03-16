@@ -31,7 +31,7 @@ export const attributesToCheck = {
  *
  */
 async function determineOptions(options) {
-  updateLoadingMessage("Settings magic happening...", options.loaderEnabled);
+  await updateLoadingMessage("Settings magic happening...", options.loaderEnabled);
 
   // If settings exist on the wrapper, overwrite the default options
   options = await getWrapperOptions(options, attributesToCheck);

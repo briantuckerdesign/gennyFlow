@@ -7,6 +7,7 @@ import { updateLoadingMessage } from "./utils";
 /**
  * Asynchronously captures images from a set of DOM elements using specified options.
  *
+ * 
  * This function is designed to capture images from a collection of elements. It first initializes
  * a CORS proxy and prepares nodes that should be ignored during the image capture process. Then, for
  * each element in the `captureElements` array, it captures an image using the `captureImage` function
@@ -23,7 +24,7 @@ export async function captureImages(options, captureElements) {
   await runCorsProxy(options);
 
   // Backwards compatible node ignoring from html2canvas
-   prepareIgnoredNodes();
+  await prepareIgnoredNodes();
 
   // Gets array of tuples representing images, see captureImage() documentation for more info
   const images = await Promise.all(

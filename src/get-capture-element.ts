@@ -2,7 +2,7 @@ import { isVisible } from "./utils/is-visible";
 import { updateLoadingMessage } from "./utils/loader";
 
 export async function getCaptureElements(options): Promise<Element[]> {
-  updateLoadingMessage(
+  await updateLoadingMessage(
     "Searching for items to capture...",
     options.loaderEnabled
   );

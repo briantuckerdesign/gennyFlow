@@ -3,7 +3,7 @@
  *
  * @returns {boolean} True if the loader element is found and initialized, false otherwise.
  */
-export function initLoader(): boolean {
+export async function initLoader(): Promise<boolean> {
   const gfLoader = document.querySelector(".gf_loader") as HTMLElement | null;
 
   const gfLoaderMessage = document.querySelector(
@@ -15,7 +15,7 @@ export function initLoader(): boolean {
     gfLoader.style.display = "block";
     gfLoader.style.opacity = "1";
 
-    updateLoadingMessage("Loading...", true);
+    await updateLoadingMessage("Loading...", true);
     return true;
   }
 
@@ -45,13 +45,13 @@ export async function updateLoadingMessage(
 /**
  * Closes and hides the loading indicator element on the page.
  */
-export function closeLoader(): void {
+export async function closeLoader(): Promise<void> {
   const gfLoader = document.querySelector(".gf_loader") as HTMLElement | null;
   if (gfLoader) {
     gfLoader.style.opacity = "0";
     // Delay the hiding of the loader to allow for fade-out transition.
     setTimeout(() => {
       gfLoader.style.display = "none";
-    }, 200);
+    }, 500);
   }
 }

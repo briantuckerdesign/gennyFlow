@@ -1,5 +1,5 @@
 // Find elements with the specified attributes and add the class to them
-export function prepareIgnoredNodes() {
+export async function prepareIgnoredNodes() {
   document
     .querySelectorAll('[gf=ignore], [gf-ignore=true], [data-html2canvas-ignore=true]')
     .forEach((element) => {

@@ -16,11 +16,13 @@ export async function downloadImages(images, options) {
   if (images.length === 1) {
     const [dataURL, fileName] = images[0];
     await download(dataURL, fileName);
-    updateLoadingMessage("File downloaded!", options.loaderEnabled);
+    await updateLoadingMessage("File downloaded!", options.loaderEnabled);
   } else if (images.length > 1) {
     const zipName = parseZipLabel(options);
     const zipBlob = await zipUpImages(images);
     await download(zipBlob, zipName);
+    await updateLoadingMessage("Zip downloaded!", options.loaderEnabled);
+    
   }
 }
 
