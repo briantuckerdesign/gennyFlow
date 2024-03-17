@@ -54,9 +54,17 @@ There are many ways to set these options, and you can use them in any combinatio
 1. **Capture element**
    Example: An element has both "gf=capture" and "gf-scale=2"
    The item would export with a scale of 2 no matter what higher-level settings were set.
+
+   Note: **_only_** on capture elements, you can specify multiple scales separated by commas.
+   Example: This would export this element 3 times: @1x @2x @3x
+
+   `<div gf="capture" gf-scale="1,2,3">`
+
 2. **User input**
    Example: An html input with attribute "gf=scale-input"
+
    `<input gf="scale-input" value="2">`
+
 3. **Wrapper**
    Example: The wrapper element with gf="wrapper" also has "gf-scale=2"
    This scale is applied to all captures inside of the wrapper unless overruled by 1 or 2.

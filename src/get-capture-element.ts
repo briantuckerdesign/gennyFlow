@@ -2,6 +2,7 @@ import { Options } from "./options-interface";
 import { isVisible } from "./utils/is-visible";
 import { updateLoadingMessage } from "./utils/loader";
 
+// Finds all elements to be captured and returns them in an array
 export async function getCaptureElements(options: Options): Promise<Element[]> {
   await updateLoadingMessage("Searching for items to capture...", options.loaderEnabled);
 
@@ -9,13 +10,14 @@ export async function getCaptureElements(options: Options): Promise<Element[]> {
     console.error("gennyFlow: No capture items found in the wrapper.");
     return [];
   }
+
+  // If CSV values found in gf-scale, encapsulate elements until all scales are accounted for
   await findMultiScaleElements(options);
 
+  // Find all elements to be captured (which includes the multi-scale elements)
   const elements = Array.from(
     document.querySelectorAll(`${options.wrapperSelector} ${options.captureSelector}`)
   );
-
-  await findMultiScaleElements(options);
 
   // Filter out elements that are not visible
   const visibleElements = elements.filter((element) => isVisible(element));
@@ -23,6 +25,7 @@ export async function getCaptureElements(options: Options): Promise<Element[]> {
   return visibleElements;
 }
 
+// If CSV values found in gf-scale, encapsulate elements until all scales are accounted for
 async function findMultiScaleElements(options: Options) {
   const elements = Array.from(
     document.querySelectorAll(`${options.wrapperSelector} ${options.captureSelector}`)
@@ -42,12 +45,12 @@ async function findMultiScaleElements(options: Options) {
       // If scaleValue is an array...
       const scaleArray: Array<Number> = scaleValue.split(",").map(Number);
 
-      distributeMultiScaleArray(element, scaleArray);
+      encapsulateMultiScaleElements(element, scaleArray);
     }
   });
 }
 
-function distributeMultiScaleArray(element: Element, scaleArray: Array<Number>) {
+function encapsulateMultiScaleElements(element: Element, scaleArray: Array<Number>) {
   // Set scale attribute
   element.setAttribute("gf-scale", scaleArray[0].toString());
   // Force include scale img attribute
