@@ -1,6 +1,6 @@
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
 
-# gennyFlow [v6.0.4]
+# gennyFlow [v6.1.0]
 
 gennyFlow is a client-side javascript tool that downloads HTML elements as images.
 
