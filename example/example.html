@@ -1,91 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>gennyFlow Example</title>
     <link rel="stylesheet" href="example.css" />
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="gf_loader">
-        <div class="gf_loader-message">Loading...</div>
+      <div class="gf_loader-message">Loading...</div>
     </div>
     <div class="wrapper">
-        <div>
-            <div class="input-wrapper">
-                <!--You can set settings via user input like this-->
-                <label for="format" class="input-label">File Format</label>
-                <select title="format" gf="format-input" class="example-input">
-                    <option value="png">PNG</option>
-                    <option value="jpg">JPG</option>
-                </select>
+      <div>
+        <div class="input-wrapper">
+          <!--You can set settings via user input like this-->
+          <label for="format" class="input-label">File Format</label>
+          <select title="format" gf="format-input" class="example-input">
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
 
-                <label for="scale" class="input-label">Scale</label>
-                <select title="scale" gf="scale-input" class="example-input">
-                    <option value="1">@1x</option>
-                    <option value="2">@2x</option>
-                    <option value="3">@3x</option>
-                    <option value="4">@4x</option>
-                </select>
+          <label for="scale" class="input-label">Scale</label>
+          <select title="scale" gf="scale-input" class="example-input">
+            <option value="9">@9x</option>
+            <option value="2">@2x</option>
+            <option value="3">@3x</option>
+            <option value="4">@4x</option>
+          </select>
 
-                <label for="zipname" class="input-label">Zip Name</label>
-                <input title="zipname" type="text" value="images" gf="zip-name-input" class="example-input">
+          <label for="zipname" class="input-label">Zip Name</label>
+          <input
+            title="zipname"
+            type="text"
+            value="images"
+            gf="zip-name-input"
+            class="example-input"
+          />
 
-
-                <div gf="trigger" class="example-button">Generate</div>
-            </div>
+          <div gf="trigger" class="example-button">Generate</div>
         </div>
-        <div class="example-wrapper" gf="wrapper" gf-scale="2" gf-include-scale-zip="true" gf-include-date-zip="true"
-            gf-include-scale-img="true" gf-include-date-img="true">
-            <div class="example-1" gf="capture">
-                <div class="example-text-1" gf="slug">Example image 1</div>
-            </div>
-            <div class="example-2" gf="capture">
-                <div class="example-text-2" gf="slug">Example image 2</div>
-            </div>
-            <div class="example-2" gf="capture">
+      </div>
+      <div
+        class="example-wrapper"
+        gf="wrapper"
+        gf-scale="2"
+        gf-include-scale-zip="true"
+        gf-include-date-zip="true"
+        gf-include-scale-img="true"
+        gf-include-date-img="true"
+      >
+        <div class="example-1" gf="capture" gf-scale="1,2,5">
+          <div class="example-text-1" gf="slug">Example image 1</div>
+        </div>
+        <div class="example-2" gf="capture">
+          <div class="example-text-2" gf="slug">Example image 2</div>
+        </div>
+        <!-- <div class="example-2" gf="capture">
                 <div class="example-text-2" gf="slug">Example image 3</div>
-            </div>
-            <!--Or you can set the settings on the actual capture element
+            </div> -->
+        <!--Or you can set the settings on the actual capture element
             This is the highest in the order of precedence -->
-            <div class="example-2" gf="capture" gf-format="webp" gf-scale="3">
+        <!-- <div class="example-2" gf="capture" gf-format="webp" gf-scale="3">
                 <div class="example-text-2" gf="slug">Example image 4</div>
-            </div>
-        </div>
+            </div> -->
+      </div>
     </div>
     <script src="../dist/main.js" type="text/javascript"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector("[gf=trigger]")?.addEventListener("click", () => {
-                const options = {
-                    // These are the default options, you don't need to pass any!
-                    // Note that user input values and individual capture element values will override these
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelector("[gf=trigger]")
+          ?.addEventListener("click", () => {
+            const options = {
+              // These are the default options, you don't need to pass any!
+              // Note that user input values and individual capture element values will override these
 
-                    // capture options
-                    format: "png",
-                    quality: 1,
-                    scale: 1,
-                    inlineSVGs: true,
-                    // zip label options
-                    zipName: "images",
-                    includeDateZip: false,
-                    includeScaleZip: false,
-                    // image label options
-                    includeDateImg: false,
-                    includeScaleImg: true,
-                    wrapperSelector: '[gf="wrapper"]',
-                    captureSelector: '[gf="capture"]',
-                    corsProxyBaseURL: "",
-                    loaderEnabled: false,
-                };
-                gennyFlow(options);
-            });
-        });
-
+              // capture options
+              format: "png",
+              quality: 1,
+              scale: 1,
+              hidpiMode: false,
+              inlineSVGs: true,
+              // zip label options
+              zipName: "images",
+              includeDateZip: false,
+              includeScaleZip: false,
+              // image label options
+              includeDateImg: false,
+              includeScaleImg: true,
+              wrapperSelector: '[gf="wrapper"]',
+              captureSelector: '[gf="capture"]',
+              corsProxyBaseURL: "",
+              loaderEnabled: false,
+            };
+            gennyFlow(options);
+          });
+      });
     </script>
-
-</body>
-
+  </body>
 </html>

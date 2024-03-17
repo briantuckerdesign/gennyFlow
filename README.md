@@ -1,7 +1,7 @@
 ![GennyFlow](https://uploads-ssl.webflow.com/60c4c4c98684b37e4da3dde8/63a5ed906f28b58ba94bcafe_github.jpg)
 
-# gennyFlow [v6.0.6]
-
+# gennyFlow [v6.1.0]
+=======
 gennyFlow is a client-side javascript tool that downloads HTML elements as images.
 
 Practically speaking, when used with Webflow, you can create powerful automated image generation tools using your Webflow data, and no code, just attributes!
@@ -54,9 +54,17 @@ There are many ways to set these options, and you can use them in any combinatio
 1. **Capture element**
    Example: An element has both "gf=capture" and "gf-scale=2"
    The item would export with a scale of 2 no matter what higher-level settings were set.
+
+   Note: **_only_** on capture elements, you can specify multiple scales separated by commas.
+   Example: This would export this element 3 times: @1x @2x @3x
+
+   `<div gf="capture" gf-scale="1,2,3">`
+
 2. **User input**
    Example: An html input with attribute "gf=scale-input"
+
    `<input gf="scale-input" value="2">`
+
 3. **Wrapper**
    Example: The wrapper element with gf="wrapper" also has "gf-scale=2"
    This scale is applied to all captures inside of the wrapper unless overruled by 1 or 2.

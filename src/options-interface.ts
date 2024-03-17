@@ -1,7 +1,7 @@
 export interface Options {
   format: string;
   quality: number;
-  scale: number;
+  scale: any;
   inlineSVGs: boolean;
   zipName: string;
   includeDateZip: boolean;
