@@ -53,12 +53,10 @@ export async function captureImages(options, captureElements) {
  *
  */
 
-/** HTML-TO-IMAGE VERSION */
 async function captureImage(element, options) {
-  await updateLoadingMessage(
-    `Capturing ${options.slug}`,
-    options.loaderEnabled
-  );
+  options.slug = ensureUniqueSlug(options.slug);
+
+  await updateLoadingMessage(`Capturing ${options.slug}`, options.loaderEnabled);
 
   let dataURL = "";
   // Final settings for capturing images.
@@ -88,4 +86,22 @@ async function captureImage(element, options) {
 
   // returns image stored in tuple. [dataURL, fileName]
   return image;
+}
+
+let usedSlugs: any = [];
+
+function ensureUniqueSlug(slug: string): string {
+  if (usedSlugs.includes(slug)) {
+    let counter = 1;
+    let newSlug = `${slug}-${counter}`;
+    while (usedSlugs.includes(newSlug)) {
+      counter++;
+      newSlug = `${slug}-${counter}`;
+    }
+    usedSlugs.push(newSlug);
+    return newSlug;
+  } else {
+    usedSlugs.push(slug);
+    return slug;
+  }
 }

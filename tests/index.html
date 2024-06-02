@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
+    <script src="/dist/gennyFlow.umd.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector("[gf=trigger]")?.addEventListener("click", () => {
+          const options = {};
+          gennyFlow(options);
+        });
+      });
+    </script>
+    <style>
+      slug {
+        display: none;
+      }
+      artboard {
+        border: 1px solid #2d3138;
+      }
+      section {
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 1rem 0;
+      }
+      .test-1 {
+        padding: 1rem;
+        background-color: #f0f0f0;
+        color: #333;
+        width: 300px;
+        height: 300px;
+        font-weight: 800;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(45deg, #01aaff, #0172ad);
+        color: white;
+        margin: 0rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Tests</h1>
+      <p>Exports a series of artboards simulating common scenarios.</p>
+      <p>Check each export on build.</p>
+      <button gf="trigger">Run</button>
+    </header>
+    <main gf="wrapper" gf-scale="4">
+      <section>
+        <h2>Test 1</h2>
+        <artboard gf="capture" class="test-1">
+          <slug gf="slug">test</slug>
+          <div>This is the headline</div>
+        </artboard>
+        <artboard gf="capture" class="test-1">
+          <slug gf="slug">test</slug>
+          <div>This is the headline</div>
+        </artboard>
+      </section>
+    </main>
+  </body>
+</html>

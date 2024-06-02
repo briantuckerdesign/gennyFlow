@@ -1,16 +1,24 @@
 {
   "name": "gennyflow",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Easily download one or more DOM elements as images in Webflow",
   "main": "src/index.ts",
+  "type": "module",
   "directories": {
     "dist": "dist",
     "src": "src",
     "example": "example"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/gennyFlow.es.js",
+      "require": "./dist/gennyFlow.umd.js"
+    }
+  },
   "scripts": {
-    "build": "webpack --mode production && node ./js-to-txt-util.js",
-    "watch": "webpack --watch --mode development"
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "build": "vite build && node js-to-txt-util.cjs"
   },
   "repository": {
     "type": "git",
@@ -43,7 +51,6 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
-    "webpack": "^5.88.0",
-    "webpack-cli": "^5.1.4"
+    "vite": "^5.2.4"
   }
 }
