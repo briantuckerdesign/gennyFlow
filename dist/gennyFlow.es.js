@@ -1,4 +1,3 @@
-(() => {
 const getUserValue = (attribute) => {
   attribute = attribute.slice(3);
   const selector = `[gf="${attribute}-input"]`;
@@ -3962,4 +3961,3 @@ if (typeof window !== "undefined") {
 export {
   gennyFlow
 };
-})()
