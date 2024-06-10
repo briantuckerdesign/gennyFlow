@@ -20,9 +20,7 @@ export async function proxyImages(options, proxyPings): Promise<number> {
   });
 
   const wrapper = document.querySelector(options.wrapperSelector);
-  const images = Array.from(
-    wrapper.querySelectorAll("img")
-  ) as HTMLImageElement[];
+  const images = Array.from(wrapper.querySelectorAll("img")) as HTMLImageElement[];
 
   const srcMap = new Map<string, HTMLImageElement[]>();
 
@@ -38,15 +36,13 @@ export async function proxyImages(options, proxyPings): Promise<number> {
   let imagesEmbedded = 0;
 
   for (const [src, duplicates] of srcMap) {
-    if (!isValidUrl(src)) {
+    if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseURL)) {
       continue;
     }
     if (duplicates.length > 1) {
       // Fetch and replace src for duplicate images
       try {
-        const response = await fetch(
-          options.corsProxyBaseURL + encodeURIComponent(src)
-        );
+        const response = await fetch(options.corsProxyBaseURL + encodeURIComponent(src));
         proxyPings++; // Increment proxy pings for the fetch call
 
         const blob = await response.blob();

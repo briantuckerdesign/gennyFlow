@@ -262,9 +262,7 @@
       link.setAttribute("crossorigin", "anonymous");
     });
     const wrapper = document.querySelector(options.wrapperSelector);
-    const images = Array.from(
-      wrapper.querySelectorAll("img")
-    );
+    const images = Array.from(wrapper.querySelectorAll("img"));
     const srcMap = /* @__PURE__ */ new Map();
     images.forEach((img) => {
       const srcs = srcMap.get(img.src) || [];
@@ -275,14 +273,12 @@
     let imagesProxied = 0;
     let imagesEmbedded = 0;
     for (const [src, duplicates] of srcMap) {
-      if (!isValidUrl(src)) {
+      if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseURL)) {
         continue;
       }
       if (duplicates.length > 1) {
         try {
-          const response = await fetch(
-            options.corsProxyBaseURL + encodeURIComponent(src)
-          );
+          const response = await fetch(options.corsProxyBaseURL + encodeURIComponent(src));
           proxyPings++;
           const blob = await response.blob();
           const dataURL = await blobToDataURL(blob);
