@@ -1,3 +1,5 @@
+import { Options } from "../options-interface";
+
 /**
  * Asynchronously retrieves specific attributes from a DOM element and updates the provided options object.
  *
@@ -10,20 +12,19 @@
  * - The function is asynchronous and returns a Promise.
  * - Only attributes present in the 'attributesToCheck' object and found in the element will update the options object.
  */
-export async function getWrapperOptions(options, attributesToCheck) {
-  const wrapper = document.querySelector(options.wrapperSelector);
+export function getWrapperOptions(options: Options): Options {
+  const wrapper = document.querySelector(options.attributes.wrapperSelector);
 
   if (!wrapper) {
-    console.error("gennyFlow: Wrapper element not found");
+    console.error("ImageExporter: Wrapper element not found");
     return options;
   }
 
-  Object.keys(attributesToCheck).forEach((key) => {
-    const attrValue = wrapper.getAttribute(attributesToCheck[key]);
+  Object.keys(options.attributes).forEach((key) => {
+    const attrValue = wrapper.getAttribute(options.attributes[key]);
     if (attrValue !== null) {
       options[key] = attrValue;
     }
   });
-
   return options;
 }

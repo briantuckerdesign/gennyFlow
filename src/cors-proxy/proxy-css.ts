@@ -12,7 +12,7 @@ import { Options } from "../options-interface";
  * @returns {Promise<number>} - Returns the updated count of proxy server pings after processing stylesheets.
  */
 
-export async function proxyCSS(options: Partial<Options>): Promise<number> {
+export async function proxyCSS(options: Options): Promise<number> {
   let cssPings = 0;
   let proxyPings = 0;
   const css = document.querySelectorAll('link[rel="stylesheet"]');
@@ -26,7 +26,7 @@ export async function proxyCSS(options: Partial<Options>): Promise<number> {
       !stylesheetURL.startsWith("data:") &&
       isValidUrl(stylesheetURL)
     ) {
-      const url = options.corsProxyBaseURL + encodeURIComponent(stylesheetURL);
+      const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
 
       try {
         // Fetch the CSS content

@@ -1,52 +1,33 @@
 (() => {
 (function(global2, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.gennyFlow = {}));
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["image-exporter"] = {}));
 })(this, function(exports2) {
   "use strict";
-  const getUserValue = (attribute) => {
+  function getWrapperOptions(options) {
+    const wrapper = document.querySelector(options.attributes.wrapperSelector);
+    if (!wrapper) {
+      console.error("ImageExporter: Wrapper element not found");
+      return options;
+    }
+    Object.keys(options.attributes).forEach((key) => {
+      const attrValue = wrapper.getAttribute(options.attributes[key]);
+      if (attrValue !== null) {
+        options[key] = attrValue;
+      }
+    });
+    return options;
+  }
+  const getUserValue = (options, attribute) => {
     attribute = attribute.slice(3);
-    const selector = `[gf="${attribute}-input"]`;
-    const inputElement = document.querySelector(
-      selector
-    );
+    const selector = `[${options.prefix}="${attribute}-input"]`;
+    const inputElement = document.querySelector(selector);
+    console.log("📣 - getUserValue - selector:", selector);
     if (inputElement) {
+      console.log("📣 - getUserValue - inputElement.value:", inputElement.value);
       return inputElement.value;
     } else
       return null;
   };
-  async function initLoader() {
-    const gfLoader = document.querySelector(".gf_loader");
-    const gfLoaderMessage = document.querySelector(
-      ".gf_loader-message"
-    );
-    if (gfLoader && gfLoaderMessage) {
-      gfLoader.style.opacity = "0";
-      gfLoader.style.display = "block";
-      gfLoader.style.opacity = "1";
-      await updateLoadingMessage("Loading...", true);
-      return true;
-    }
-    return false;
-  }
-  async function updateLoadingMessage(message, loaderStatus = false) {
-    if (loaderStatus) {
-      const gfLoaderMessage = document.querySelector(
-        ".gf_loader-message"
-      );
-      if (gfLoaderMessage) {
-        gfLoaderMessage.innerHTML = message;
-      }
-    }
-  }
-  async function closeLoader() {
-    const gfLoader = document.querySelector(".gf_loader");
-    if (gfLoader) {
-      gfLoader.style.opacity = "0";
-      setTimeout(() => {
-        gfLoader.style.display = "none";
-      }, 500);
-    }
-  }
   function convertToSlug(input) {
     if (!input) {
       return null;
@@ -68,21 +49,17 @@
     return String((/* @__PURE__ */ new Date()).getMonth() + 1).padStart(2, "0") + String((/* @__PURE__ */ new Date()).getDate()).padStart(2, "0") + (/* @__PURE__ */ new Date()).getFullYear().toString().slice(-2);
   }
   function parseZipLabel(options) {
-    if (!options)
-      return null;
     const date = getDateMMDDYY();
-    const zipScale = convertStringToBoolean(options.includeScaleZip) ? `_@${options.scale}x` : "";
-    const zipDate = convertStringToBoolean(options.includeDateZip) ? `_${date}` : "";
-    const zipNameSlug = convertToSlug(options.zipName);
+    const zipScale = convertStringToBoolean(options.zipLabelScale) ? `_@${options.scale}x` : "";
+    const zipDate = convertStringToBoolean(options.zipLabelDate) ? `_${date}` : "";
+    const zipNameSlug = convertToSlug(options.zipLabel);
     const zipLabel = `${zipNameSlug}${zipDate}${zipScale}.zip`;
     return zipLabel;
   }
   function parseImageLabel(options) {
-    if (!options)
-      return null;
     const date = getDateMMDDYY();
-    const imgScale = convertStringToBoolean(options.includeScaleImg) ? `_@${options.scale}x` : "";
-    const imgDate = convertStringToBoolean(options.includeDateImg) ? `_${date}` : "";
+    const imgScale = convertStringToBoolean(options.imgLabelScale) ? `_@${options.scale}x` : "";
+    const imgDate = convertStringToBoolean(options.imgLabelDate) ? `_${date}` : "";
     const imgNameSlug = convertToSlug(options.userSlug) || `img-${options.id}`;
     const imgLabel = `${imgNameSlug}${imgDate}${imgScale}`;
     return imgLabel;
@@ -117,25 +94,13 @@
       reader.readAsDataURL(blob);
     });
   }
-  async function getWrapperOptions(options, attributesToCheck2) {
-    const wrapper = document.querySelector(options.wrapperSelector);
-    if (!wrapper) {
-      console.error("gennyFlow: Wrapper element not found");
-      return options;
-    }
-    Object.keys(attributesToCheck2).forEach((key) => {
-      const attrValue = wrapper.getAttribute(attributesToCheck2[key]);
-      if (attrValue !== null) {
-        options[key] = attrValue;
-      }
-    });
-    return options;
-  }
-  async function getUserOptions(options, attributesToCheck2) {
-    await Promise.all(
-      Object.keys(attributesToCheck2).map(async (key) => {
-        const attributeName = attributesToCheck2[key];
-        const userInputValue = await getUserValue(attributeName);
+  function getUserOptions(options) {
+    Promise.all(
+      Object.keys(options.attributes).map(async (key) => {
+        const attributeName = options.attributes[key];
+        if (attributeName.startsWith("["))
+          return null;
+        const userInputValue = await getUserValue(options, attributeName);
         if (userInputValue) {
           options[key] = userInputValue;
         }
@@ -145,87 +110,78 @@
   }
   function getItemOptions(element, options, index) {
     var _a;
-    let itemOptions = { ...options };
-    Object.keys(attributesToCheck).forEach((key) => {
-      const attributeName = attributesToCheck[key];
+    let itemOptions = {
+      ...options,
+      id: index,
+      userSlug: "",
+      slug: "",
+      fileName: ""
+    };
+    Object.keys(options.attributes).forEach((key) => {
+      const attributeName = options.attributes[key];
       const attributeValue = element.getAttribute(attributeName);
       if (attributeValue !== null) {
         itemOptions[key] = attributeValue;
       }
     });
     itemOptions.id = index;
-    itemOptions.userSlug = ((_a = element.querySelector('[gf="slug"]')) == null ? void 0 : _a.textContent) || null;
+    itemOptions.userSlug = ((_a = element.querySelector(`[${options.prefix}="slug"]`)) == null ? void 0 : _a.textContent) || "";
     itemOptions.slug = parseImageLabel(itemOptions);
     return itemOptions;
   }
-  const attributesToCheck = {
-    format: "gf-format",
-    quality: "gf-quality",
-    scale: "gf-scale",
-    inlineSVGs: "gf-inline-svgs",
-    zipName: "gf-zip-name",
-    includeDateZip: "gf-include-date-zip",
-    includeScaleZip: "gf-include-scale-zip",
-    includeDateImg: "gf-include-date-img",
-    includeScaleImg: "gf-include-scale-img",
-    captureSelector: "gf-capture-selector",
-    triggerSelector: "gf-trigger-selector",
-    corsProxyBaseURL: "gf-cors-proxy-base-url"
-  };
-  async function determineOptions(options) {
-    await updateLoadingMessage(
-      "Settings magic happening...",
-      options.loaderEnabled
-    );
-    options = await getWrapperOptions(options, attributesToCheck);
-    options = await getUserOptions(options, attributesToCheck);
+  function determineOptions(options) {
+    options = getWrapperOptions(options);
+    options = getUserOptions(options);
     return options;
   }
-  async function getCaptureElements(options) {
-    await updateLoadingMessage("Searching for items to capture...", options.loaderEnabled);
-    if (!document.querySelector(options.captureSelector)) {
-      console.error("gennyFlow: No capture items found in the wrapper.");
+  function getCaptureElements(options) {
+    if (!document.querySelector(options.attributes.wrapperSelector)) {
+      console.error("ImageExporter: No capture items found in the wrapper.");
       return [];
     }
-    await findMultiScaleElements(options);
+    findMultiScaleElements(options);
     const elements = Array.from(
-      document.querySelectorAll(`${options.wrapperSelector} ${options.captureSelector}`)
+      document.querySelectorAll(
+        `${options.attributes.wrapperSelector} ${options.attributes.captureSelector}`
+      )
     );
     const visibleElements = elements.filter((element) => isVisible(element));
     return visibleElements;
   }
-  async function findMultiScaleElements(options) {
+  function findMultiScaleElements(options) {
     const elements = Array.from(
-      document.querySelectorAll(`${options.wrapperSelector} ${options.captureSelector}`)
+      document.querySelectorAll(
+        `${options.attributes.wrapperSelector} ${options.attributes.captureSelector}`
+      )
     );
     const elementsWithScaleAttribute = elements.filter(
-      (element) => element.hasAttribute("gf-scale")
+      (element) => element.hasAttribute(options.attributes.scale)
     );
     elementsWithScaleAttribute.forEach((element) => {
-      const scaleValue = element.getAttribute("gf-scale");
+      const scaleValue = element.getAttribute(options.attributes.scale);
       if (scaleValue.includes(",")) {
         const scaleArray = scaleValue.split(",").map(Number);
-        encapsulateMultiScaleElements(element, scaleArray);
+        encapsulateMultiScaleElements(options, element, scaleArray);
       }
     });
   }
-  function encapsulateMultiScaleElements(element, scaleArray) {
-    element.setAttribute("gf-scale", scaleArray[0].toString());
-    element.setAttribute("gf-include-scale-img", "true");
+  function encapsulateMultiScaleElements(options, element, scaleArray) {
+    element.setAttribute(options.attributes.scale, scaleArray[0].toString());
+    element.setAttribute(options.attributes.imgLabelScale, "true");
     for (let i = 1; i < scaleArray.length; i++) {
-      const newElement = cloneElementWithGfAttributes(element);
-      newElement.setAttribute("gf-scale", scaleArray[i].toString());
-      newElement.setAttribute("gf-include-scale-img", "true");
+      const newElement = cloneElementWithPrefix(options, element);
+      newElement.setAttribute(options.attributes.scale, scaleArray[i].toString());
+      newElement.setAttribute(options.attributes.imgLabelScale, "true");
       if (element.parentNode) {
         element.parentNode.insertBefore(newElement, element);
         newElement.appendChild(element);
       }
     }
   }
-  function cloneElementWithGfAttributes(originalElement) {
+  function cloneElementWithPrefix(options, originalElement) {
     const clonedElement = document.createElement("div");
     Array.from(originalElement.attributes).forEach((attr) => {
-      if (attr.name.startsWith("gf")) {
+      if (attr.name.startsWith(options.attributes.prefix)) {
         clonedElement.setAttribute(attr.name, attr.value);
       }
     });
@@ -238,7 +194,7 @@
     for (let stylesheet of css) {
       let stylesheetURL = stylesheet.getAttribute("href");
       if (stylesheetURL && !stylesheetURL.startsWith("data:") && isValidUrl(stylesheetURL)) {
-        const url = options.corsProxyBaseURL + encodeURIComponent(stylesheetURL);
+        const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
         try {
           const response = await fetch(url);
           const cssText = await response.text();
@@ -261,10 +217,12 @@
     links.forEach((link) => {
       link.setAttribute("crossorigin", "anonymous");
     });
-    const wrapper = document.querySelector(options.wrapperSelector);
-    const images = Array.from(
-      wrapper.querySelectorAll("img")
-    );
+    const wrapper = document.querySelector(options.attributes.wrapperSelector);
+    if (!wrapper) {
+      console.error("ImageExporter: Wrapper element not found.");
+      return proxyPings;
+    }
+    const images = Array.from(wrapper.querySelectorAll("img"));
     const srcMap = /* @__PURE__ */ new Map();
     images.forEach((img) => {
       const srcs = srcMap.get(img.src) || [];
@@ -275,14 +233,12 @@
     let imagesProxied = 0;
     let imagesEmbedded = 0;
     for (const [src, duplicates] of srcMap) {
-      if (!isValidUrl(src)) {
+      if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseUrl)) {
         continue;
       }
       if (duplicates.length > 1) {
         try {
-          const response = await fetch(
-            options.corsProxyBaseURL + encodeURIComponent(src)
-          );
+          const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
           proxyPings++;
           const blob = await response.blob();
           const dataURL = await blobToDataURL(blob);
@@ -299,7 +255,7 @@
       } else {
         images.forEach((img) => {
           if (img.src === src) {
-            img.src = options.corsProxyBaseURL + encodeURIComponent(src);
+            img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
             imagesProxied++;
           }
         });
@@ -314,7 +270,7 @@
     return proxyPings;
   }
   async function runCorsProxy(options) {
-    const proxyBaseURL = options.corsProxyBaseURL;
+    const proxyBaseURL = options.corsProxyBaseUrl;
     if (!isValidUrl(proxyBaseURL)) {
       return;
     }
@@ -326,21 +282,11 @@
     console.groupEnd();
     return;
   }
-  async function prepareIgnoredNodes() {
-    document.querySelectorAll("[gf=ignore], [gf-ignore=true], [data-html2canvas-ignore=true]").forEach((element) => {
-      element.classList.add("gf_ignore-item");
-      console.log("ignore element found");
-    });
+  function getIgnoredNodes(options) {
+    return document.querySelectorAll(
+      `[${options.prefix}=ignore], [${options.prefix}-ignore=true], [data-html2canvas-ignore=true]`
+    ) || [];
   }
-  const nodesToIgnore = (node) => {
-    const exclusionClasses = ["gf_ignore-item"];
-    return !exclusionClasses.some(
-      (classname) => {
-        var _a;
-        return (_a = node.classList) == null ? void 0 : _a.contains(classname);
-      }
-    );
-  };
   function resolveUrl(url, baseUrl) {
     if (url.match(/^[a-z]+:\/\//i)) {
       return url;
@@ -1080,7 +1026,7 @@
   }
   async function captureImages(options, captureElements) {
     await runCorsProxy(options);
-    await prepareIgnoredNodes();
+    getIgnoredNodes(options);
     const images = await Promise.all(
       captureElements.map(
         (element, index) => captureImage(element, getItemOptions(element, options, index + 1))
@@ -1088,17 +1034,18 @@
     );
     return images;
   }
-  async function captureImage(element, options) {
+  async function captureImage(element, options, ignoredNodes) {
     options.slug = ensureUniqueSlug(options.slug);
-    await updateLoadingMessage(`Capturing ${options.slug}`, options.loaderEnabled);
     let dataURL = "";
     let htmlToImageOptions = {
       // Ensure quality is a number
-      quality: parseFloat(options.quality),
+      quality: options.quality,
       // Ensure scale is a number
       pixelRatio: parseFloat(options.scale),
       // Nodes to not capture
-      filter: nodesToIgnore
+      // filter: ignoredNodes,
+      filter: void 0
+      // TODO: why is this saying filter is not a function on my ignoredNodes array?
     };
     switch (options.format.toLowerCase()) {
       case "jpg":
@@ -3910,12 +3857,10 @@
     if (images.length === 1) {
       const [dataURL, fileName] = images[0];
       await download(dataURL, fileName);
-      await updateLoadingMessage("File downloaded!", options.loaderEnabled);
     } else if (images.length > 1) {
       const zipName = parseZipLabel(options);
       const zipBlob = await zipUpImages(images);
       await download(zipBlob, zipName);
-      await updateLoadingMessage("Zip downloaded!", options.loaderEnabled);
     }
   }
   async function zipUpImages(images) {
@@ -3932,42 +3877,71 @@
       throw error;
     }
   }
-  async function gennyFlow(userOptions = {}) {
-    const defaultOptions = {
-      // capture options
-      format: "png",
-      quality: 1,
-      scale: 1,
-      inlineSVGs: true,
-      // zip label options
-      zipName: "images",
-      includeDateZip: false,
-      includeScaleZip: false,
-      // image label options
-      includeDateImg: false,
-      includeScaleImg: true,
-      wrapperSelector: '[gf="wrapper"]',
-      captureSelector: '[gf="capture"]',
-      corsProxyBaseURL: "",
-      loaderEnabled: false
-    };
-    let options = { ...defaultOptions, ...userOptions };
-    try {
-      options.loaderEnabled = await initLoader();
-      options = await determineOptions(options);
-      const captureElements = await getCaptureElements(options);
-      const images = await captureImages(options, captureElements);
-      await downloadImages(images, options);
-      await closeLoader();
-    } catch (error) {
-      console.error(error);
-      await closeLoader();
+  class ImageExporter {
+    constructor({ options: userOptions = {} }) {
+      const defaultOptions = {
+        format: "png",
+        quality: 1,
+        scale: 1,
+        zipLabel: "images",
+        zipLabelDate: true,
+        zipLabelScale: true,
+        imgLabelDate: true,
+        imgLabelScale: true,
+        corsProxyBaseUrl: "",
+        downloadImages: true,
+        prefix: "ie",
+        attributes: {
+          wrapperSelector: `[ie="wrapper"]`,
+          captureSelector: '[ie="capture"]',
+          triggerSelector: '[ie="trigger"]',
+          scale: "ie-scale",
+          quality: "ie-quality",
+          format: "ie-format",
+          zipLabel: "ie-zip-label",
+          zipLabelDate: "ie-zip-label-date",
+          zipLabelScale: "ie-zip-label-scale",
+          imgLabelDate: "ie-img-label-date",
+          imgLabelScale: "ie-img-label-scale",
+          corsProxyBaseUrl: "ie-cors-proxy-base-url"
+        }
+      };
+      this.options = { ...defaultOptions, ...userOptions };
     }
+    /**
+     * Captures images from all elements specified in the options.
+     * If downloadImages is set to true, the images will be downloaded.
+     *
+     * @returns {Array} An array of captured images.
+     */
+    async captureAll() {
+      this.options = determineOptions(this.options);
+      const captureElements = getCaptureElements(this.options);
+      const images = await captureImages(this.options, captureElements);
+      if (this.options.downloadImages)
+        downloadImages(images, this.options);
+      return images;
+    }
+    async captureElement(element) {
+      this.options = determineOptions(this.options);
+      await runCorsProxy(this.options);
+      getIgnoredNodes(this.options);
+      const image = await captureImage(
+        element,
+        getItemOptions(element, this.options, 1)
+      );
+      if (this.options.downloadImages)
+        downloadImages([image], this.options);
+      return image;
+    }
+    // insertImage() {}
+    // returnImage() {}
+    // addTrigger(triggerElement: Element) {}
   }
   if (typeof window !== "undefined") {
-    window.gennyFlow = gennyFlow;
+    window.ImageExporter = ImageExporter;
   }
-  exports2.gennyFlow = gennyFlow;
+  exports2.ImageExporter = ImageExporter;
   Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
 });
 })()

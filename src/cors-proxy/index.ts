@@ -13,8 +13,8 @@ import { Options } from "../options-interface";
  * @returns {void}
  */
 
-export async function runCorsProxy(options: Partial<Options>): Promise<void> {
-  const proxyBaseURL = options.corsProxyBaseURL;
+export async function runCorsProxy(options: Options): Promise<void> {
+  const proxyBaseURL = options.corsProxyBaseUrl;
   if (!isValidUrl(proxyBaseURL)) {
     return;
   }

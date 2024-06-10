@@ -1,3 +1,4 @@
+import { Options } from "../options-interface";
 import { getUserValue } from "../utils";
 
 /**
@@ -18,11 +19,15 @@ import { getUserValue } from "../utils";
  * - The function waits for all user inputs to be processed (using Promise.all) before returning the updated options.
  *
  */
-export async function getUserOptions(options, attributesToCheck) {
-  await Promise.all(
-    Object.keys(attributesToCheck).map(async (key) => {
-      const attributeName = attributesToCheck[key];
-      const userInputValue = await getUserValue(attributeName);
+export function getUserOptions(options: Options): Options {
+  Promise.all(
+    Object.keys(options.attributes).map(async (key) => {
+      const attributeName = options.attributes[key];
+
+      //if attribute name starts with [ then skip
+      if (attributeName.startsWith("[")) return null;
+
+      const userInputValue = await getUserValue(options, attributeName);
       if (userInputValue) {
         options[key] = userInputValue;
       }

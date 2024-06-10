@@ -1,7 +1,8 @@
 import download from "downloadjs";
 import JSZip from "jszip";
 
-import { parseZipLabel, updateLoadingMessage } from "./utils";
+import { parseZipLabel } from "./utils";
+import { Options } from "./options-interface";
 
 /**
  * Downloads images based on the provided array of images and options.
@@ -12,17 +13,16 @@ import { parseZipLabel, updateLoadingMessage } from "./utils";
  * @param options - Additional options for downloading the images.
  * @returns A promise that resolves when all the images are downloaded.
  */
-export async function downloadImages(images, options) {
+export async function downloadImages(images, options: Options) {
   if (images.length === 1) {
     const [dataURL, fileName] = images[0];
+
     await download(dataURL, fileName);
-    await updateLoadingMessage("File downloaded!", options.loaderEnabled);
   } else if (images.length > 1) {
     const zipName = parseZipLabel(options);
     const zipBlob = await zipUpImages(images);
+
     await download(zipBlob, zipName);
-    await updateLoadingMessage("Zip downloaded!", options.loaderEnabled);
-    
   }
 }
 

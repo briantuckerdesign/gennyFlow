@@ -1,22 +1,7 @@
-import { updateLoadingMessage } from "../utils";
 import { getWrapperOptions } from "./get-wrapper-options";
 import { getUserOptions } from "./get-user-options";
 import { getItemOptions } from "./get-item-options";
-
-export const attributesToCheck = {
-  format: "gf-format",
-  quality: "gf-quality",
-  scale: "gf-scale",
-  inlineSVGs: "gf-inline-svgs",
-  zipName: "gf-zip-name",
-  includeDateZip: "gf-include-date-zip",
-  includeScaleZip: "gf-include-scale-zip",
-  includeDateImg: "gf-include-date-img",
-  includeScaleImg: "gf-include-scale-img",
-  captureSelector: "gf-capture-selector",
-  triggerSelector: "gf-trigger-selector",
-  corsProxyBaseURL: "gf-cors-proxy-base-url",
-};
+import { Options } from "../options-interface";
 
 /**
  * Asynchronously determines and finalizes settings by aggregating them from multiple sources.
@@ -30,17 +15,12 @@ export const attributesToCheck = {
  * @returns {Promise<Object>} A promise that resolves to the fully determined settings object.
  *
  */
-async function determineOptions(options) {
-  await updateLoadingMessage(
-    "Settings magic happening...",
-    options.loaderEnabled
-  );
-
+function determineOptions(options): Options {
   // If settings exist on the wrapper, overwrite the default options
-  options = await getWrapperOptions(options, attributesToCheck);
+  options = getWrapperOptions(options);
 
   // If settings exist via user input, overwrite the default/wrapper options
-  options = await getUserOptions(options, attributesToCheck);
+  options = getUserOptions(options);
 
   return options;
 }

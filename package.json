@@ -1,7 +1,7 @@
 {
-  "name": "gennyflow",
-  "version": "6.1.1",
-  "description": "Easily download one or more DOM elements as images in Webflow",
+  "name": "image-exporter",
+  "version": "7.0.0",
+  "description": "Easily download one or more DOM elements as images",
   "main": "src/index.ts",
   "type": "module",
   "directories": {
@@ -11,8 +11,8 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/gennyFlow.es.js",
-      "require": "./dist/gennyFlow.umd.js"
+      "import": "./dist/image-exporter.es.js",
+      "require": "./dist/image-exporter.umd.js"
     }
   },
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/briantuckerdesign/GennyFlow.git"
+    "url": "git+https://github.com/briantuckerdesign/image-exporter.git"
   },
   "keywords": [
     "webflow",
@@ -35,9 +35,9 @@
   "author": "Brian Tucker",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/briantuckerdesign/GennyFlow/issues"
+    "url": "https://github.com/briantuckerdesign/image-exporter/issues"
   },
-  "homepage": "https://github.com/briantuckerdesign/GennyFlow#readme",
+  "homepage": "https://github.com/briantuckerdesign/image-exporter#readme",
   "dependencies": {
     "downloadjs": "^1.4.7",
     "html-to-image": "^1.11.11",

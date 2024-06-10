@@ -8,12 +8,40 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
     />
-    <script src="/dist/gennyFlow.umd.js"></script>
+    <script src="/dist/image-exporter.umd.js"></script>
     <script>
+      let options = {
+        format: "jpg",
+        quality: 1,
+        scale: 2,
+        defaultZipLabel: "images",
+        zipLabelDate: true,
+        zipLabelScale: true,
+        imgLabelDate: true,
+        imgLabelScale: true,
+        corsProxyBaseUrl: "",
+        downloadImages: true,
+        prefix: "gf",
+        attributes: {
+          wrapperSelector: `[gf="wrapper"]`,
+          captureSelector: '[gf="capture"]',
+          triggerSelector: '[gf="trigger"]',
+          scale: "gf-scale",
+          quality: "gf-quality",
+          format: "gf-format",
+          zipLabelDate: "gf-zip-label-date",
+          zipLabelScale: "gf-zip-label-scale",
+          imgLabelDate: "gf-img-label-date",
+          imgLabelScale: "gf-img-label-scale",
+          corsProxyBaseUrl: "gf-cors-proxy-base-url",
+        },
+      };
+
+      let imageExporter = new ImageExporter({ options });
+
       document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("[gf=trigger]")?.addEventListener("click", () => {
-          const options = {};
-          gennyFlow(options);
+          imageExporter.captureAll();
         });
       });
     </script>

@@ -1,4 +1,4 @@
-import { attributesToCheck } from ".";
+import { Options, ItemOptions } from "../options-interface";
 import { parseImageLabel } from "../utils";
 
 /**
@@ -17,12 +17,22 @@ import { parseImageLabel } from "../utils";
  * @returns {Object} An object containing the customized settings for the element.
  *
  */
-export function getItemOptions(element, options, index) {
-  let itemOptions = { ...options };
+export function getItemOptions(
+  element: HTMLElement,
+  options: Options,
+  index: number
+): ItemOptions {
+  let itemOptions: ItemOptions = {
+    ...options,
+    id: index,
+    userSlug: "",
+    slug: "",
+    fileName: "",
+  };
 
   // Assuming attributesToCheck is defined globally or within scope
-  Object.keys(attributesToCheck).forEach((key) => {
-    const attributeName = attributesToCheck[key];
+  Object.keys(options.attributes).forEach((key) => {
+    const attributeName = options.attributes[key];
     const attributeValue = element.getAttribute(attributeName);
 
     if (attributeValue !== null) {
@@ -31,7 +41,7 @@ export function getItemOptions(element, options, index) {
   });
   itemOptions.id = index;
   itemOptions.userSlug =
-    element.querySelector('[gf="slug"]')?.textContent || null;
+    element.querySelector(`[${options.prefix}="slug"]`)?.textContent || "";
   itemOptions.slug = parseImageLabel(itemOptions);
 
   return itemOptions;

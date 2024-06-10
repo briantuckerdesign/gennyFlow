@@ -12,17 +12,19 @@ import { Options } from "../options-interface";
  *     - corsProxyBaseURL: String - The base URL of the CORS proxy server.
  * @returns {Promise<number>} - Returns the number of times the proxy server was pinged.
  */
-export async function proxyImages(options, proxyPings): Promise<number> {
+export async function proxyImages(options: Options, proxyPings): Promise<number> {
   // find all link tags in head and add crossorigin="anonymous"
   const links = document.querySelectorAll("link");
   links.forEach((link) => {
     link.setAttribute("crossorigin", "anonymous");
   });
 
-  const wrapper = document.querySelector(options.wrapperSelector);
-  const images = Array.from(
-    wrapper.querySelectorAll("img")
-  ) as HTMLImageElement[];
+  const wrapper = document.querySelector(options.attributes.wrapperSelector);
+  if (!wrapper) {
+    console.error("ImageExporter: Wrapper element not found.");
+    return proxyPings;
+  }
+  const images = Array.from(wrapper.querySelectorAll("img")) as HTMLImageElement[];
 
   const srcMap = new Map<string, HTMLImageElement[]>();
 
@@ -38,15 +40,13 @@ export async function proxyImages(options, proxyPings): Promise<number> {
   let imagesEmbedded = 0;
 
   for (const [src, duplicates] of srcMap) {
-    if (!isValidUrl(src)) {
+    if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseUrl)) {
       continue;
     }
     if (duplicates.length > 1) {
       // Fetch and replace src for duplicate images
       try {
-        const response = await fetch(
-          options.corsProxyBaseURL + encodeURIComponent(src)
-        );
+        const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
         proxyPings++; // Increment proxy pings for the fetch call
 
         const blob = await response.blob();
@@ -65,7 +65,7 @@ export async function proxyImages(options, proxyPings): Promise<number> {
       // Prefix src for unique images
       images.forEach((img) => {
         if (img.src === src) {
-          img.src = options.corsProxyBaseURL + encodeURIComponent(src);
+          img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
           imagesProxied++;
         }
       });

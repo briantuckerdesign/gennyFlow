@@ -19,7 +19,7 @@ const newFileName = `${packageJson.name}-${packageJson.version}.txt`;
 
 // Read main.js
 const mainJsContent = fs.readFileSync(
-  path.resolve(__dirname, "dist", "gennyFlow.es.js"),
+  path.resolve(__dirname, "dist", "image-exporter.umd.js"),
   "utf8"
 );
 
