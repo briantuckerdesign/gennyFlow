@@ -1,6 +1,5 @@
 import { isValidUrl } from "../utils";
-import { Options } from "../options-interface";
-
+import * as types from "../types";
 /**
  * proxyCSS - Processes CSS stylesheets linked in the document to use the CORS proxy.
  * Each valid and non-data URL stylesheet's href attribute is updated with the proxy URL.
@@ -12,7 +11,7 @@ import { Options } from "../options-interface";
  * @returns {Promise<number>} - Returns the updated count of proxy server pings after processing stylesheets.
  */
 
-export async function proxyCSS(options: Options): Promise<number> {
+export async function proxyCSS(options: types.Options) {
   let cssPings = 0;
   let proxyPings = 0;
   const css = document.querySelectorAll('link[rel="stylesheet"]');
@@ -50,7 +49,4 @@ export async function proxyCSS(options: Options): Promise<number> {
       }
     }
   }
-
-  console.log(`Stylesheets proxied: ${cssPings}`);
-  return proxyPings;
 }

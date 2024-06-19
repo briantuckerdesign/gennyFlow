@@ -1,8 +1,7 @@
+import * as types from "./types";
 import download from "downloadjs";
 import JSZip from "jszip";
-
 import { parseZipLabel } from "./utils";
-import { Options } from "./options-interface";
 
 /**
  * Downloads images based on the provided array of images and options.
@@ -13,7 +12,7 @@ import { Options } from "./options-interface";
  * @param options - Additional options for downloading the images.
  * @returns A promise that resolves when all the images are downloaded.
  */
-export async function downloadImages(images, options: Options) {
+export async function downloadImages(images: types.Image[], options: types.Options) {
   if (images.length === 1) {
     const [dataURL, fileName] = images[0];
 
@@ -33,7 +32,7 @@ export async function downloadImages(images, options: Options) {
  * @returns A Promise that resolves to the generated ZIP file as a Blob.
  * @throws If there is an error creating the ZIP file.
  */
-async function zipUpImages(images) {
+async function zipUpImages(images: types.Image[]) {
   const zip = new JSZip();
   // Loop through each image tuple and add to the zip
   images.forEach(([dataURL, filename]) => {
@@ -48,6 +47,6 @@ async function zipUpImages(images) {
     return zipBlob;
   } catch (error) {
     console.error("Error creating ZIP:", error);
-    throw error; // Or handle it as needed
+    throw error;
   }
 }

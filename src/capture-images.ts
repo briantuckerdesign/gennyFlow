@@ -1,9 +1,8 @@
-import { runCorsProxy } from "./cors-proxy";
-import { getIgnoredNodes } from "./utils/ignore-items";
-import { getItemOptions } from "./get-options";
+import * as types from "./types";
 import * as htmlToImage from "html-to-image";
-import { updateLoadingMessage } from "./utils";
-import { Options, ItemOptions } from "./options-interface";
+import { runCorsProxy } from "./cors-proxy";
+import { ignoreFilter } from "./utils/ignore-items";
+import { getItemOptions } from "./get-options";
 
 /**
  * Asynchronously captures images from a set of DOM elements using specified options.
@@ -21,19 +20,20 @@ import { Options, ItemOptions } from "./options-interface";
  *
  */
 export async function captureImages(
-  options: Options,
+  options: types.Options,
   captureElements
-): Promise<[string, string][]> {
+): Promise<types.Image[]> {
   // When enabled, replaces urls with proxied ones to bypass CORS errors.
   await runCorsProxy(options);
-
-  // Backwards compatible node ignoring from html2canvas
-  const ignoredNodes = getIgnoredNodes(options);
 
   // Gets array of tuples representing images, see captureImage() documentation for more info
   const images = await Promise.all(
     captureElements.map((element, index) =>
-      captureImage(element, getItemOptions(element, options, index + 1), ignoredNodes)
+      captureImage(
+        element,
+        getItemOptions(element, options, index + 1),
+        ignoreFilter(options)
+      )
     )
   );
 
@@ -57,25 +57,27 @@ export async function captureImages(
  *
  */
 
-export async function captureImage(element, options: ItemOptions, ignoredNodes) {
+export async function captureImage(
+  element,
+  options: types.ItemOptions,
+  ignoreFilter
+): Promise<types.Image> {
   options.slug = ensureUniqueSlug(options.slug);
 
   let dataURL = "";
   // Final settings for capturing images.
   let htmlToImageOptions = {
     // Ensure quality is a number
-    quality: options.quality,
+    quality: options.image.quality,
     // Ensure scale is a number
-    pixelRatio: parseFloat(options.scale),
-    // Nodes to not capture
-    // filter: ignoredNodes,
-    filter: undefined, // TODO: why is this saying filter is not a function on my ignoredNodes array?
+    pixelRatio: parseFloat(options.image.scale),
+    // Function that returns false if the element should be ignored
+    // filter: ignoreFilter,
   };
 
   // Captures image based on format
-  switch (options.format.toLowerCase()) {
+  switch (options.image.format.toLowerCase()) {
     case "jpg":
-    case "jpeg":
       dataURL = await htmlToImage.toJpeg(element, htmlToImageOptions);
       options.fileName = `${options.slug}.jpg`;
       break;
@@ -85,7 +87,7 @@ export async function captureImage(element, options: ItemOptions, ignoredNodes) 
       options.fileName = `${options.slug}.png`;
       break;
   }
-  const image: [string, string] = [dataURL, options.fileName];
+  const image: types.Image = [dataURL, options.fileName];
 
   // returns image stored in tuple. [dataURL, fileName]
   return image;

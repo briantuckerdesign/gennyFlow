@@ -1,4 +1,4 @@
-import { Options } from "../options-interface";
+import * as types from "../types";
 
 /**
  * Asynchronously retrieves specific attributes from a DOM element and updates the provided options object.
@@ -12,7 +12,7 @@ import { Options } from "../options-interface";
  * - The function is asynchronous and returns a Promise.
  * - Only attributes present in the 'attributesToCheck' object and found in the element will update the options object.
  */
-export function getWrapperOptions(options: Options): Options {
+export function getWrapperOptions(options: types.Options): types.Options {
   const wrapper = document.querySelector(options.attributes.wrapperSelector);
 
   if (!wrapper) {
@@ -26,5 +26,6 @@ export function getWrapperOptions(options: Options): Options {
       options[key] = attrValue;
     }
   });
+
   return options;
 }

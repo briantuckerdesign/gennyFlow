@@ -10,32 +10,7 @@
     />
     <script src="/dist/image-exporter.umd.js"></script>
     <script>
-      let options = {
-        format: "jpg",
-        quality: 1,
-        scale: 2,
-        defaultZipLabel: "images",
-        zipLabelDate: true,
-        zipLabelScale: true,
-        imgLabelDate: true,
-        imgLabelScale: true,
-        corsProxyBaseUrl: "",
-        downloadImages: true,
-        prefix: "gf",
-        attributes: {
-          wrapperSelector: `[gf="wrapper"]`,
-          captureSelector: '[gf="capture"]',
-          triggerSelector: '[gf="trigger"]',
-          scale: "gf-scale",
-          quality: "gf-quality",
-          format: "gf-format",
-          zipLabelDate: "gf-zip-label-date",
-          zipLabelScale: "gf-zip-label-scale",
-          imgLabelDate: "gf-img-label-date",
-          imgLabelScale: "gf-img-label-scale",
-          corsProxyBaseUrl: "gf-cors-proxy-base-url",
-        },
-      };
+      let options = {};
 
       let imageExporter = new ImageExporter({ options });
 
@@ -81,15 +56,15 @@
       <p>Check each export on build.</p>
       <button gf="trigger">Run</button>
     </header>
-    <main gf="wrapper" gf-scale="4">
+    <main ie="wrapper" ie-scale="4">
       <section>
         <h2>Test 1</h2>
-        <artboard gf="capture" class="test-1">
-          <slug gf="slug">test</slug>
+        <artboard ie="capture" class="test-1">
+          <slug ie="slug">test</slug>
           <div>This is the headline</div>
         </artboard>
-        <artboard gf="capture" class="test-1">
-          <slug gf="slug">test</slug>
+        <artboard ie="capture" class="test-1">
+          <slug ie="slug">test</slug>
           <div>This is the headline</div>
         </artboard>
       </section>

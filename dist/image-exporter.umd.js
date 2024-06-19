@@ -17,13 +17,12 @@
     });
     return options;
   }
-  const getUserValue = (options, attribute) => {
-    attribute = attribute.slice(3);
-    const selector = `[${options.prefix}="${attribute}-input"]`;
+  const getUserInputValue = (options, attribute) => {
+    const prefixEndIndex = attribute.indexOf("-") + 1;
+    attribute = attribute.slice(prefixEndIndex);
+    const selector = `[${options.inputPrefix}-input="${attribute}"]`;
     const inputElement = document.querySelector(selector);
-    console.log("📣 - getUserValue - selector:", selector);
     if (inputElement) {
-      console.log("📣 - getUserValue - inputElement.value:", inputElement.value);
       return inputElement.value;
     } else
       return null;
@@ -50,16 +49,16 @@
   }
   function parseZipLabel(options) {
     const date = getDateMMDDYY();
-    const zipScale = convertStringToBoolean(options.zipLabelScale) ? `_@${options.scale}x` : "";
-    const zipDate = convertStringToBoolean(options.zipLabelDate) ? `_${date}` : "";
-    const zipNameSlug = convertToSlug(options.zipLabel);
+    const zipScale = convertStringToBoolean(options.zip.scaleInLabel) ? `_@${options.image.scale}x` : "";
+    const zipDate = convertStringToBoolean(options.zip.dateInLabel) ? `_${date}` : "";
+    const zipNameSlug = convertToSlug(options.zip.label);
     const zipLabel = `${zipNameSlug}${zipDate}${zipScale}.zip`;
     return zipLabel;
   }
   function parseImageLabel(options) {
     const date = getDateMMDDYY();
-    const imgScale = convertStringToBoolean(options.imgLabelScale) ? `_@${options.scale}x` : "";
-    const imgDate = convertStringToBoolean(options.imgLabelDate) ? `_${date}` : "";
+    const imgScale = convertStringToBoolean(options.image.scaleInLabel) ? `_@${options.image.scale}x` : "";
+    const imgDate = convertStringToBoolean(options.image.dateInLabel) ? `_${date}` : "";
     const imgNameSlug = convertToSlug(options.userSlug) || `img-${options.id}`;
     const imgLabel = `${imgNameSlug}${imgDate}${imgScale}`;
     return imgLabel;
@@ -100,7 +99,7 @@
         const attributeName = options.attributes[key];
         if (attributeName.startsWith("["))
           return null;
-        const userInputValue = await getUserValue(options, attributeName);
+        const userInputValue = await getUserInputValue(options, attributeName);
         if (userInputValue) {
           options[key] = userInputValue;
         }
@@ -125,7 +124,7 @@
       }
     });
     itemOptions.id = index;
-    itemOptions.userSlug = ((_a = element.querySelector(`[${options.prefix}="slug"]`)) == null ? void 0 : _a.textContent) || "";
+    itemOptions.userSlug = ((_a = element.querySelector(options.attributes.slugSelector)) == null ? void 0 : _a.textContent) || "";
     itemOptions.slug = parseImageLabel(itemOptions);
     return itemOptions;
   }
@@ -169,7 +168,7 @@
     element.setAttribute(options.attributes.scale, scaleArray[0].toString());
     element.setAttribute(options.attributes.imgLabelScale, "true");
     for (let i = 1; i < scaleArray.length; i++) {
-      const newElement = cloneElementWithPrefix(options, element);
+      const newElement = cloneElementAttributes(options, element);
       newElement.setAttribute(options.attributes.scale, scaleArray[i].toString());
       newElement.setAttribute(options.attributes.imgLabelScale, "true");
       if (element.parentNode) {
@@ -178,114 +177,14 @@
       }
     }
   }
-  function cloneElementWithPrefix(options, originalElement) {
+  function cloneElementAttributes(options, originalElement) {
     const clonedElement = document.createElement("div");
     Array.from(originalElement.attributes).forEach((attr) => {
-      if (attr.name.startsWith(options.attributes.prefix)) {
+      if (attr.name in options.attributes) {
         clonedElement.setAttribute(attr.name, attr.value);
       }
     });
     return clonedElement;
-  }
-  async function proxyCSS(options) {
-    let cssPings = 0;
-    let proxyPings = 0;
-    const css = document.querySelectorAll('link[rel="stylesheet"]');
-    for (let stylesheet of css) {
-      let stylesheetURL = stylesheet.getAttribute("href");
-      if (stylesheetURL && !stylesheetURL.startsWith("data:") && isValidUrl(stylesheetURL)) {
-        const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
-        try {
-          const response = await fetch(url);
-          const cssText = await response.text();
-          const styleEl = document.createElement("style");
-          styleEl.textContent = cssText;
-          document.head.appendChild(styleEl);
-          stylesheet.remove();
-          proxyPings++;
-          cssPings++;
-        } catch (error) {
-          console.error("Error fetching CSS:", error);
-        }
-      }
-    }
-    console.log(`Stylesheets proxied: ${cssPings}`);
-    return proxyPings;
-  }
-  async function proxyImages(options, proxyPings) {
-    const links = document.querySelectorAll("link");
-    links.forEach((link) => {
-      link.setAttribute("crossorigin", "anonymous");
-    });
-    const wrapper = document.querySelector(options.attributes.wrapperSelector);
-    if (!wrapper) {
-      console.error("ImageExporter: Wrapper element not found.");
-      return proxyPings;
-    }
-    const images = Array.from(wrapper.querySelectorAll("img"));
-    const srcMap = /* @__PURE__ */ new Map();
-    images.forEach((img) => {
-      const srcs = srcMap.get(img.src) || [];
-      srcs.push(img);
-      srcMap.set(img.src, srcs);
-    });
-    let callsSaved = 0;
-    let imagesProxied = 0;
-    let imagesEmbedded = 0;
-    for (const [src, duplicates] of srcMap) {
-      if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseUrl)) {
-        continue;
-      }
-      if (duplicates.length > 1) {
-        try {
-          const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
-          proxyPings++;
-          const blob = await response.blob();
-          const dataURL = await blobToDataURL(blob);
-          duplicates.forEach((dupImg) => {
-            if (dupImg.src === src) {
-              dupImg.src = dataURL;
-              imagesEmbedded++;
-            }
-          });
-          callsSaved += duplicates.length - 1;
-        } catch (error) {
-          console.error("Error fetching image:", error);
-        }
-      } else {
-        images.forEach((img) => {
-          if (img.src === src) {
-            img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
-            imagesProxied++;
-          }
-        });
-        proxyPings++;
-      }
-    }
-    console.log(`
-    Images:
-    Number of images proxied: ${imagesProxied}
-    Number of images embedded: ${imagesEmbedded}
-    Number of fetch calls saved: ${callsSaved}`);
-    return proxyPings;
-  }
-  async function runCorsProxy(options) {
-    const proxyBaseURL = options.corsProxyBaseUrl;
-    if (!isValidUrl(proxyBaseURL)) {
-      return;
-    }
-    console.groupCollapsed("CORS Proxy");
-    let proxyPings = await proxyCSS(options);
-    proxyPings = await proxyImages(options, proxyPings);
-    console.log(`
-    Total calls made to proxy server: ${proxyPings}`);
-    console.groupEnd();
-    return;
-  }
-  function getIgnoredNodes(options) {
-    return document.querySelectorAll(
-      `[${options.prefix}=ignore], [${options.prefix}-ignore=true], [data-html2canvas-ignore=true]`
-    ) || [];
   }
   function resolveUrl(url, baseUrl) {
     if (url.match(/^[a-z]+:\/\//i)) {
@@ -1024,32 +923,118 @@
     const canvas = await toCanvas(node, options);
     return canvas.toDataURL("image/jpeg", options.quality || 1);
   }
+  async function proxyCSS(options) {
+    let cssPings = 0;
+    let proxyPings = 0;
+    const css = document.querySelectorAll('link[rel="stylesheet"]');
+    for (let stylesheet of css) {
+      let stylesheetURL = stylesheet.getAttribute("href");
+      if (stylesheetURL && !stylesheetURL.startsWith("data:") && isValidUrl(stylesheetURL)) {
+        const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
+        try {
+          const response = await fetch(url);
+          const cssText = await response.text();
+          const styleEl = document.createElement("style");
+          styleEl.textContent = cssText;
+          document.head.appendChild(styleEl);
+          stylesheet.remove();
+          proxyPings++;
+          cssPings++;
+        } catch (error) {
+          console.error("Error fetching CSS:", error);
+        }
+      }
+    }
+  }
+  async function proxyImages(options) {
+    const links = document.querySelectorAll("link");
+    links.forEach((link) => {
+      link.setAttribute("crossorigin", "anonymous");
+    });
+    const wrapper = document.querySelector(options.attributes.wrapperSelector);
+    if (!wrapper) {
+      console.error("ImageExporter: Wrapper element not found.");
+      return;
+    }
+    const images = Array.from(wrapper.querySelectorAll("img"));
+    const srcMap = /* @__PURE__ */ new Map();
+    images.forEach((img) => {
+      const srcs = srcMap.get(img.src) || [];
+      srcs.push(img);
+      srcMap.set(img.src, srcs);
+    });
+    let callsSaved = 0;
+    let imagesEmbedded = 0;
+    for (const [src, duplicates] of srcMap) {
+      if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseUrl)) {
+        continue;
+      }
+      if (duplicates.length > 1) {
+        try {
+          const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
+          const blob = await response.blob();
+          const dataURL = await blobToDataURL(blob);
+          duplicates.forEach((dupImg) => {
+            if (dupImg.src === src) {
+              dupImg.src = dataURL;
+              imagesEmbedded++;
+            }
+          });
+          callsSaved += duplicates.length - 1;
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      } else {
+        images.forEach((img) => {
+          if (img.src === src) {
+            img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
+          }
+        });
+      }
+    }
+  }
+  async function runCorsProxy(options) {
+    const proxyBaseURL = options.corsProxyBaseUrl;
+    if (!isValidUrl(proxyBaseURL)) {
+      return;
+    }
+    await proxyCSS(options);
+    await proxyImages(options);
+    return;
+  }
+  function ignoreFilter(options) {
+    return (node) => {
+      if (!(node instanceof HTMLElement)) {
+        throw new Error("The provided node is not an HTMLElement");
+      }
+      return !node.matches(options.attributes.ignoreSelector);
+    };
+  }
   async function captureImages(options, captureElements) {
     await runCorsProxy(options);
-    getIgnoredNodes(options);
     const images = await Promise.all(
       captureElements.map(
-        (element, index) => captureImage(element, getItemOptions(element, options, index + 1))
+        (element, index) => captureImage(
+          element,
+          getItemOptions(element, options, index + 1)
+        )
       )
     );
     return images;
   }
-  async function captureImage(element, options, ignoredNodes) {
+  async function captureImage(element, options, ignoreFilter2) {
     options.slug = ensureUniqueSlug(options.slug);
     let dataURL = "";
     let htmlToImageOptions = {
       // Ensure quality is a number
-      quality: options.quality,
+      quality: options.image.quality,
       // Ensure scale is a number
-      pixelRatio: parseFloat(options.scale),
-      // Nodes to not capture
-      // filter: ignoredNodes,
-      filter: void 0
-      // TODO: why is this saying filter is not a function on my ignoredNodes array?
+      pixelRatio: parseFloat(options.image.scale)
+      // Function that returns false if the element should be ignored
+      // filter: ignoreFilter,
     };
-    switch (options.format.toLowerCase()) {
+    switch (options.image.format.toLowerCase()) {
       case "jpg":
-      case "jpeg":
         dataURL = await toJpeg(element, htmlToImageOptions);
         options.fileName = `${options.slug}.jpg`;
         break;
@@ -3877,42 +3862,48 @@
       throw error;
     }
   }
+  const defaultOptions = {
+    image: {
+      format: "png",
+      quality: 1,
+      scale: 1,
+      dateInLabel: true,
+      scaleInLabel: true
+    },
+    zip: {
+      label: "images",
+      dateInLabel: true,
+      scaleInLabel: true
+    },
+    attributes: {
+      wrapperSelector: `[ie="wrapper"]`,
+      captureSelector: '[ie="capture"]',
+      triggerSelector: '[ie="trigger"]',
+      slugSelector: '[ie="slug"]',
+      ignoreSelector: '[ie="ignore"]',
+      scale: "ie-scale",
+      quality: "ie-quality",
+      format: "ie-format",
+      zipLabel: "ie-zip-label",
+      zipLabelDate: "ie-zip-label-date",
+      zipLabelScale: "ie-zip-label-scale",
+      imgLabelDate: "ie-img-label-date",
+      imgLabelScale: "ie-img-label-scale",
+      corsProxyBaseUrl: "ie-cors-proxy-base-url"
+    },
+    corsProxyBaseUrl: "",
+    downloadImages: true,
+    inputPrefix: "ie"
+  };
   class ImageExporter {
     constructor({ options: userOptions = {} }) {
-      const defaultOptions = {
-        format: "png",
-        quality: 1,
-        scale: 1,
-        zipLabel: "images",
-        zipLabelDate: true,
-        zipLabelScale: true,
-        imgLabelDate: true,
-        imgLabelScale: true,
-        corsProxyBaseUrl: "",
-        downloadImages: true,
-        prefix: "ie",
-        attributes: {
-          wrapperSelector: `[ie="wrapper"]`,
-          captureSelector: '[ie="capture"]',
-          triggerSelector: '[ie="trigger"]',
-          scale: "ie-scale",
-          quality: "ie-quality",
-          format: "ie-format",
-          zipLabel: "ie-zip-label",
-          zipLabelDate: "ie-zip-label-date",
-          zipLabelScale: "ie-zip-label-scale",
-          imgLabelDate: "ie-img-label-date",
-          imgLabelScale: "ie-img-label-scale",
-          corsProxyBaseUrl: "ie-cors-proxy-base-url"
-        }
-      };
       this.options = { ...defaultOptions, ...userOptions };
     }
     /**
      * Captures images from all elements specified in the options.
      * If downloadImages is set to true, the images will be downloaded.
      *
-     * @returns {Array} An array of captured images.
+     * @returns {types.Image[]} An array of captured images.
      */
     async captureAll() {
       this.options = determineOptions(this.options);
@@ -3922,10 +3913,17 @@
         downloadImages(images, this.options);
       return images;
     }
+    /**
+     * Captures an image from a single element.
+     * If downloadImages is set to true, the image will be downloaded.
+     *
+     * @param {Element} element - The element to capture the image from.
+     * @returns {Promise<types.Image>} A promise that resolves to the captured image.
+     */
     async captureElement(element) {
       this.options = determineOptions(this.options);
       await runCorsProxy(this.options);
-      getIgnoredNodes(this.options);
+      ignoreFilter(this.options);
       const image = await captureImage(
         element,
         getItemOptions(element, this.options, 1)
@@ -3934,8 +3932,6 @@
         downloadImages([image], this.options);
       return image;
     }
-    // insertImage() {}
-    // returnImage() {}
     // addTrigger(triggerElement: Element) {}
   }
   if (typeof window !== "undefined") {

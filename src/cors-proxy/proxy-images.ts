@@ -1,6 +1,5 @@
 import { blobToDataURL, isValidUrl } from "../utils";
-import { Options } from "../options-interface";
-
+import * as types from "../types";
 /**
  * proxyImages - Processes images within a specified wrapper element to use the CORS proxy.
  * Groups images by their source, fetches and replaces the src with a data URL for duplicates,
@@ -12,7 +11,7 @@ import { Options } from "../options-interface";
  *     - corsProxyBaseURL: String - The base URL of the CORS proxy server.
  * @returns {Promise<number>} - Returns the number of times the proxy server was pinged.
  */
-export async function proxyImages(options: Options, proxyPings): Promise<number> {
+export async function proxyImages(options: types.Options) {
   // find all link tags in head and add crossorigin="anonymous"
   const links = document.querySelectorAll("link");
   links.forEach((link) => {
@@ -22,7 +21,7 @@ export async function proxyImages(options: Options, proxyPings): Promise<number>
   const wrapper = document.querySelector(options.attributes.wrapperSelector);
   if (!wrapper) {
     console.error("ImageExporter: Wrapper element not found.");
-    return proxyPings;
+    return;
   }
   const images = Array.from(wrapper.querySelectorAll("img")) as HTMLImageElement[];
 
@@ -47,7 +46,6 @@ export async function proxyImages(options: Options, proxyPings): Promise<number>
       // Fetch and replace src for duplicate images
       try {
         const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
-        proxyPings++; // Increment proxy pings for the fetch call
 
         const blob = await response.blob();
         const dataURL = await blobToDataURL(blob);
@@ -69,13 +67,6 @@ export async function proxyImages(options: Options, proxyPings): Promise<number>
           imagesProxied++;
         }
       });
-      proxyPings++; // Increment proxy pings for each unique image URL replacement
     }
   }
-  console.log(`
-    Images:
-    Number of images proxied: ${imagesProxied}
-    Number of images embedded: ${imagesEmbedded}
-    Number of fetch calls saved: ${callsSaved}`);
-  return proxyPings;
 }

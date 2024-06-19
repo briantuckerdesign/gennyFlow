@@ -1,4 +1,4 @@
-import { Options } from "../options-interface";
+import * as types from "../types";
 import { getUserValue } from "../utils";
 
 /**
@@ -19,7 +19,7 @@ import { getUserValue } from "../utils";
  * - The function waits for all user inputs to be processed (using Promise.all) before returning the updated options.
  *
  */
-export function getUserOptions(options: Options): Options {
+export function getUserOptions(options: types.Options): types.Options {
   Promise.all(
     Object.keys(options.attributes).map(async (key) => {
       const attributeName = options.attributes[key];

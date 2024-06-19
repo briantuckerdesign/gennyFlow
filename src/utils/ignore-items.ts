@@ -1,10 +1,16 @@
-import { Options } from "../options-interface";
+import * as types from "../types";
 
-// Find elements with the specified attributes and add the class to them
-export function getIgnoredNodes(options: Options) {
-  return (
-    document.querySelectorAll(
-      `[${options.prefix}=ignore], [${options.prefix}-ignore=true], [data-html2canvas-ignore=true]`
-    ) || []
-  );
+// Return a function that checks if a node does not match the ignore selector
+// export function ignoreFilter(options: types.Options) {
+//   return (node: HTMLElement) => {
+//     return !node.matches(options.attributes.ignoreSelector);
+//   };
+// }
+export function ignoreFilter(options: types.Options) {
+  return (node: HTMLElement) => {
+    if (!(node instanceof HTMLElement)) {
+      throw new Error("The provided node is not an HTMLElement");
+    }
+    return !node.matches(options.attributes.ignoreSelector);
+  };
 }

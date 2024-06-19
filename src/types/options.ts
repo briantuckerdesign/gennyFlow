@@ -1,31 +1,41 @@
 export interface Options {
-  format: string;
-  quality: number;
-  scale: any;
-  zipLabel: string;
-  zipLabelDate: boolean;
-  zipLabelScale: boolean;
-  imgLabelDate: boolean;
-  imgLabelScale: boolean;
+  image: ImageOptions;
+  zip: ZipOptions;
+  attributes: Attributes;
   corsProxyBaseUrl: string;
   downloadImages: boolean;
-  prefix: string;
-  attributes: Attributes;
+  inputPrefix: string;
 }
 
 export interface Attributes {
   wrapperSelector: string;
   captureSelector: string;
   triggerSelector: string;
+  slugSelector: string;
+  ignoreSelector: string;
+  format: string;
   scale: string;
   quality: string;
-  format: string;
   zipLabel: string;
   zipLabelDate: string;
   zipLabelScale: string;
   imgLabelDate: string;
   imgLabelScale: string;
   corsProxyBaseUrl: string;
+}
+
+export interface ImageOptions {
+  format: "jpg" | "png";
+  quality: number;
+  scale: any;
+  dateInLabel: boolean;
+  scaleInLabel: boolean;
+}
+
+export interface ZipOptions {
+  label: string;
+  dateInLabel: boolean;
+  scaleInLabel: boolean;
 }
 
 export interface ItemOptions extends Options {

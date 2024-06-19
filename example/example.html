@@ -69,22 +69,14 @@
     <script src="../dist/image-exporter.umd.js" type="text/javascript"></script>
     <script>
       let options = {
-        // format: "jpg",
-        // quality: 1,
-        // scale: 2,
-        // defaultZipLabel: "images",
-        zipLabelDate: true,
-        // zipLabelScale: true,
-        // imgLabelDate: true,
-        // imgLabelScale: true,
-        // corsProxyBaseUrl: "",
-        // downloadImages: true,
-        prefix: "gf",
+        inputPrefix: "gf",
         attributes: {
           slugSelector: "[gf='slug']",
           wrapperSelector: '[gf="wrapper"]',
           captureSelector: '[gf="capture"]',
           triggerSelector: '[gf="trigger"]',
+          slugSelector: '[gf="slug"]',
+          ignoreSelector: '[gf="ignore"]',
           scale: "gf-scale",
           quality: "gf-quality",
           format: "gf-format",

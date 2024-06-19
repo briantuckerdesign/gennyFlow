@@ -1,14 +1,14 @@
-import { Options } from "./options-interface";
+import * as types from "./types";
 import { isVisible } from "./utils/is-visible";
 
 // Finds all elements to be captured and returns them in an array
-export function getCaptureElements(options: Options): Element[] {
+export function getCaptureElements(options: types.Options): Element[] {
   if (!document.querySelector(options.attributes.wrapperSelector)) {
     console.error("ImageExporter: No capture items found in the wrapper.");
     return [];
   }
 
-  // If CSV values found in gf-scale, encapsulate elements until all scales are accounted for
+  // If CSV values found in scale attribute, encapsulate elements until all scales are accounted for
   findMultiScaleElements(options);
 
   // Find all elements to be captured (which includes the multi-scale elements)
@@ -25,7 +25,7 @@ export function getCaptureElements(options: Options): Element[] {
 }
 
 // If CSV values found in ${prefix}-scale, encapsulate elements until all scales are accounted for
-function findMultiScaleElements(options: Options) {
+function findMultiScaleElements(options: types.Options) {
   const elements = Array.from(
     document.querySelectorAll(
       `${options.attributes.wrapperSelector} ${options.attributes.captureSelector}`
@@ -52,7 +52,7 @@ function findMultiScaleElements(options: Options) {
 }
 
 function encapsulateMultiScaleElements(
-  options: Options,
+  options: types.Options,
   element: Element,
   scaleArray: Array<Number>
 ) {
@@ -63,7 +63,7 @@ function encapsulateMultiScaleElements(
 
   // iterate through array and wrap the element in a new element for each scale
   for (let i = 1; i < scaleArray.length; i++) {
-    const newElement = cloneElementWithPrefix(options, element);
+    const newElement = cloneElementAttributes(options, element);
     // Set scale attribute
     newElement.setAttribute(options.attributes.scale, scaleArray[i].toString());
     // Force include scale img attribute
@@ -83,14 +83,17 @@ function encapsulateMultiScaleElements(
  * that start with 'gf'. This is useful for duplicating elements while retaining only a specific subset
  * of their attributes, particularly those that are relevant to a certain functionality denoted by the 'gf' prefix.
  */
-function cloneElementWithPrefix(options: Options, originalElement: Element) {
+function cloneElementAttributes(
+  options: types.Options,
+  originalElement: Element
+): Element {
   // Create a new div element
   const clonedElement = document.createElement("div");
 
   // Iterate over all attributes of the original element
   Array.from(originalElement.attributes).forEach((attr: any) => {
-    // Check if the attribute name starts with 'gf'
-    if (attr.name.startsWith(options.attributes.prefix)) {
+    // Check if the attribute name exists in types.Attributes
+    if (attr.name in options.attributes) {
       // Copy the attribute to the cloned element
       clonedElement.setAttribute(attr.name, attr.value);
     }

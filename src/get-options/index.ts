@@ -1,7 +1,7 @@
 import { getWrapperOptions } from "./get-wrapper-options";
 import { getUserOptions } from "./get-user-options";
 import { getItemOptions } from "./get-item-options";
-import { Options } from "../options-interface";
+import * as types from "../types";
 
 /**
  * Asynchronously determines and finalizes settings by aggregating them from multiple sources.
@@ -15,7 +15,7 @@ import { Options } from "../options-interface";
  * @returns {Promise<Object>} A promise that resolves to the fully determined settings object.
  *
  */
-function determineOptions(options): Options {
+function determineOptions(options: types.Options): types.Options {
   // If settings exist on the wrapper, overwrite the default options
   options = getWrapperOptions(options);
 

@@ -1,5 +1,5 @@
 // Helper function to check if a URL is valid and not a data URL
-export function isValidUrl(string) {
+export function isValidUrl(string: string): boolean {
   try {
     const url = new URL(string);
 

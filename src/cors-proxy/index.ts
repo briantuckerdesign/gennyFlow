@@ -1,7 +1,7 @@
 import { isValidUrl } from "../utils";
 import { proxyCSS } from "./proxy-css";
 import { proxyImages } from "./proxy-images";
-import { Options } from "../options-interface";
+import { Options } from "../types/options";
 
 /**
  * runCorsProxy - Initializes a CORS proxy by processing image and CSS resources on a web page.
@@ -19,13 +19,8 @@ export async function runCorsProxy(options: Options): Promise<void> {
     return;
   }
 
-  console.groupCollapsed("CORS Proxy");
+  await proxyCSS(options);
+  await proxyImages(options);
 
-  let proxyPings: number = await proxyCSS(options);
-  proxyPings = await proxyImages(options, proxyPings);
-
-  console.log(`
-    Total calls made to proxy server: ${proxyPings}`);
-  console.groupEnd();
   return;
 }

@@ -1,4 +1,4 @@
-import { Options, ItemOptions } from "../options-interface";
+import * as types from "../types";
 import { convertToSlug } from "./convert-to-slug";
 import { getDateMMDDYY } from "./get-date-MMDDYY";
 
@@ -18,29 +18,31 @@ import { getDateMMDDYY } from "./get-date-MMDDYY";
  *
  */
 
-export function parseZipLabel(options: Options) {
+export function parseZipLabel(options: types.Options): string {
   const date = getDateMMDDYY();
-  const zipScale = convertStringToBoolean(options.zipLabelScale)
-    ? `_@${options.scale}x`
+  const zipScale = convertStringToBoolean(options.zip.scaleInLabel)
+    ? `_@${options.image.scale}x`
     : "";
-  const zipDate = convertStringToBoolean(options.zipLabelDate) ? `_${date}` : "";
-  const zipNameSlug = convertToSlug(options.zipLabel);
+  const zipDate = convertStringToBoolean(options.zip.dateInLabel) ? `_${date}` : "";
+  const zipNameSlug = convertToSlug(options.zip.label);
   const zipLabel = `${zipNameSlug}${zipDate}${zipScale}.zip`;
+
   return zipLabel;
 }
 
-export function parseImageLabel(options: ItemOptions): string {
+export function parseImageLabel(options: types.ItemOptions): string {
   const date = getDateMMDDYY();
-  const imgScale = convertStringToBoolean(options.imgLabelScale)
-    ? `_@${options.scale}x`
+  const imgScale = convertStringToBoolean(options.image.scaleInLabel)
+    ? `_@${options.image.scale}x`
     : "";
-  const imgDate = convertStringToBoolean(options.imgLabelDate) ? `_${date}` : "";
+  const imgDate = convertStringToBoolean(options.image.dateInLabel) ? `_${date}` : "";
   const imgNameSlug = convertToSlug(options.userSlug) || `img-${options.id}`;
   const imgLabel = `${imgNameSlug}${imgDate}${imgScale}`;
+
   return imgLabel;
 }
 
-function convertStringToBoolean(str) {
+function convertStringToBoolean(str: boolean | string): boolean | string {
   // Convert "true" or "false" to boolean
   if (str === "true") {
     return true;
