@@ -17,20 +17,21 @@
   },
   "scripts": {
     "dev": "vite",
-    "watch": "vite build --watch",
-    "build": "vite build && node js-to-txt-util.cjs"
+    "watch": "NODE_ENV=development vite build --watch",
+    "build": "NODE_ENV=production vite build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/briantuckerdesign/image-exporter.git"
   },
   "keywords": [
-    "webflow",
-    "image download",
+    "image exporter",
+    "image downloader",
     "html-to-image",
-    "low code",
-    "no code",
-    "div to image"
+    "webflow",
+    "attributes",
+    "div to image",
+    "gennyflow"
   ],
   "author": "Brian Tucker",
   "license": "ISC",
@@ -44,12 +45,7 @@
     "jszip": "^3.10.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.5",
-    "@babel/preset-env": "^7.22.5",
-    "@babel/preset-typescript": "^7.23.3",
-    "babel-loader": "^9.1.2",
-    "terser-webpack-plugin": "^5.3.9",
-    "ts-loader": "^9.5.1",
+    "@rollup/plugin-strip": "^3.0.4",
     "typescript": "^5.3.3",
     "vite": "^5.2.4"
   }

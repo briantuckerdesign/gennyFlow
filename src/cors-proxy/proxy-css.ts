@@ -12,41 +12,45 @@ import * as types from "../types";
  */
 
 export async function proxyCSS(options: types.Options) {
-  let cssPings = 0;
-  let proxyPings = 0;
-  const css = document.querySelectorAll('link[rel="stylesheet"]');
+  try {
+    let cssPings = 0;
+    let proxyPings = 0;
+    const css = document.querySelectorAll('link[rel="stylesheet"]');
 
-  for (let stylesheet of css) {
-    let stylesheetURL = stylesheet.getAttribute("href");
+    for (let stylesheet of css) {
+      let stylesheetURL = stylesheet.getAttribute("href");
 
-    // Check if the URL is valid and not a base64 encoded string
-    if (
-      stylesheetURL &&
-      !stylesheetURL.startsWith("data:") &&
-      isValidUrl(stylesheetURL)
-    ) {
-      const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
+      // Check if the URL is valid and not a base64 encoded string
+      if (
+        stylesheetURL &&
+        !stylesheetURL.startsWith("data:") &&
+        isValidUrl(stylesheetURL)
+      ) {
+        const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
 
-      try {
-        // Fetch the CSS content
-        const response = await fetch(url);
-        const cssText = await response.text();
+        try {
+          // Fetch the CSS content
+          const response = await fetch(url);
+          const cssText = await response.text();
 
-        // Create a <style> element and set its content
-        const styleEl = document.createElement("style");
-        styleEl.textContent = cssText;
+          // Create a <style> element and set its content
+          const styleEl = document.createElement("style");
+          styleEl.textContent = cssText;
 
-        // Append the <style> element to the document's <head>
-        document.head.appendChild(styleEl);
+          // Append the <style> element to the document's <head>
+          document.head.appendChild(styleEl);
 
-        // Remove the original <link> element
-        stylesheet.remove();
+          // Remove the original <link> element
+          stylesheet.remove();
 
-        proxyPings++;
-        cssPings++;
-      } catch (error) {
-        console.error("Error fetching CSS:", error);
+          proxyPings++;
+          cssPings++;
+        } catch (error) {
+          console.error("Error fetching CSS:", error);
+        }
       }
     }
+  } catch (e) {
+    console.error("ImageExporter: Error in proxyCSS", e);
   }
 }

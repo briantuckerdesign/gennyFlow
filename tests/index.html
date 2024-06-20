@@ -10,7 +10,9 @@
     />
     <script src="/dist/image-exporter.umd.js"></script>
     <script>
-      let options = {};
+      let options = {
+        corsProxyBaseUrl: "http://localhost:8010/",
+      };
 
       let imageExporter = new ImageExporter({ options });
 
@@ -55,16 +57,29 @@
       <p>Exports a series of artboards simulating common scenarios.</p>
       <p>Check each export on build.</p>
       <button gf="trigger">Run</button>
+      <label for="format" class="input-label">File Format</label>
+      <select title="format" ie-format-input class="example-input">
+        <option value="png">PNG</option>
+        <option value="jpg">JPG</option>
+      </select>
+
+      <label for="scale" class="input-label">Scale</label>
+      <select title="scale" ie-scale-input class="example-input">
+        <option value="1">@1x</option>
+        <option value="2">@2x</option>
+        <option value="3">@3x</option>
+        <option value="4">@4x</option>
+      </select>
     </header>
     <main ie="wrapper" ie-scale="4">
       <section>
         <h2>Test 1</h2>
         <artboard ie="capture" class="test-1">
-          <slug ie="slug">test</slug>
+          <slug ie="slug">ping</slug>
           <div>This is the headline</div>
         </artboard>
-        <artboard ie="capture" class="test-1">
-          <slug ie="slug">test</slug>
+        <artboard ie="capture" class="test-1" ie-scale="1,2,3,4">
+          <slug ie="slug">pong</slug>
           <div>This is the headline</div>
         </artboard>
       </section>

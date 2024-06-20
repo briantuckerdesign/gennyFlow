@@ -30,18 +30,16 @@ export function getItemOptions(
     fileName: "",
   };
 
-  Object.keys(options.attributes).forEach((key) => {
-    const attributeName = options.attributes[key];
-    const attributeValue = element.getAttribute(attributeName);
-
+  Object.keys(options.image).forEach((key) => {
+    const attributeValue = element.getAttribute(options.image[key].attributeSelector);
     if (attributeValue !== null) {
-      itemOptions[key] = attributeValue;
+      console.log("Capture item option:", key, "=", attributeValue);
+      itemOptions.image[key].value = attributeValue;
     }
   });
 
   itemOptions.id = index;
-  itemOptions.userSlug =
-    element.querySelector(options.attributes.slugSelector)?.textContent || "";
+  itemOptions.userSlug = element.querySelector(options.selectors.slug)?.textContent || "";
   itemOptions.slug = parseImageLabel(itemOptions);
 
   return itemOptions;

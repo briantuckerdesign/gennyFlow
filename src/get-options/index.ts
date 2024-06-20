@@ -1,5 +1,5 @@
 import { getWrapperOptions } from "./get-wrapper-options";
-import { getUserOptions } from "./get-user-options";
+import { getInputOptions } from "./get-input-options";
 import { getItemOptions } from "./get-item-options";
 import * as types from "../types";
 
@@ -20,7 +20,10 @@ function determineOptions(options: types.Options): types.Options {
   options = getWrapperOptions(options);
 
   // If settings exist via user input, overwrite the default/wrapper options
-  options = getUserOptions(options);
+  options = getInputOptions(options);
+
+  console.log("determineOptions:");
+  console.log(options);
 
   return options;
 }

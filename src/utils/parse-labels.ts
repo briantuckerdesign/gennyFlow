@@ -20,23 +20,23 @@ import { getDateMMDDYY } from "./get-date-MMDDYY";
 
 export function parseZipLabel(options: types.Options): string {
   const date = getDateMMDDYY();
-  const zipScale = convertStringToBoolean(options.zip.scaleInLabel)
-    ? `_@${options.image.scale}x`
+  const zipScale = convertStringToBoolean(options.zip.scaleInLabel.value)
+    ? `_@${options.image.scale.value}x`
     : "";
-  const zipDate = convertStringToBoolean(options.zip.dateInLabel) ? `_${date}` : "";
-  const zipNameSlug = convertToSlug(options.zip.label);
+  const zipDate = convertStringToBoolean(options.zip.dateInLabel.value) ? `_${date}` : "";
+  const zipNameSlug = convertToSlug(options.zip.label.value);
   const zipLabel = `${zipNameSlug}${zipDate}${zipScale}.zip`;
 
   return zipLabel;
 }
 
-export function parseImageLabel(options: types.ItemOptions): string {
+export function parseImageLabel(itemOptions: types.ItemOptions): string {
   const date = getDateMMDDYY();
-  const imgScale = convertStringToBoolean(options.image.scaleInLabel)
-    ? `_@${options.image.scale}x`
+  const imgScale = itemOptions.image.scaleInLabel.value
+    ? `_@${itemOptions.image.scale.value}x`
     : "";
-  const imgDate = convertStringToBoolean(options.image.dateInLabel) ? `_${date}` : "";
-  const imgNameSlug = convertToSlug(options.userSlug) || `img-${options.id}`;
+  const imgDate = itemOptions.image.dateInLabel.value ? `_${date}` : "";
+  const imgNameSlug = convertToSlug(itemOptions.userSlug) || `img-${itemOptions.id}`;
   const imgLabel = `${imgNameSlug}${imgDate}${imgScale}`;
 
   return imgLabel;

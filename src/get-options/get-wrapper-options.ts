@@ -1,31 +1,30 @@
 import * as types from "../types";
+import { optionSafetyCheck } from "./safety-check";
 
-/**
- * Asynchronously retrieves specific attributes from a DOM element and updates the provided options object.
- *
- * This function checks the wrapper selector element for a predefined set of attributes. If these attributes
- * are found, their values are used to update the corresponding properties in the options object.
- *
- * @param {Object} options - The options object to be updated. Must contain a 'wrapperSelector' property.
- * @returns {Promise<Object>} A promise that resolves to the updated options object.
- *
- * - The function is asynchronous and returns a Promise.
- * - Only attributes present in the 'attributesToCheck' object and found in the element will update the options object.
- */
 export function getWrapperOptions(options: types.Options): types.Options {
-  const wrapper = document.querySelector(options.attributes.wrapperSelector);
+  try {
+    const wrapper = document.querySelector(options.selectors.wrapper);
 
-  if (!wrapper) {
-    console.error("ImageExporter: Wrapper element not found");
+    if (!wrapper) {
+      new Error("Wrapper element not found");
+      return options;
+    }
+
+    // For each image setting, see if value is provided in the wrapper element
+    // If so, update that setting with the new value
+    Object.keys(options.image).forEach((key) => {
+      const attrValue = wrapper.getAttribute(options.image[key].attributeSelector);
+      if (attrValue !== null) {
+        const safeValue = optionSafetyCheck(key, attrValue);
+        if (safeValue === null) return;
+        options.image[key].value = safeValue;
+        console.log("Wrapper option:", key, "=", safeValue);
+      }
+    });
+
+    return options;
+  } catch (e) {
+    console.error("ImageExporter: Error in getWrapperOptions", e);
     return options;
   }
-
-  Object.keys(options.attributes).forEach((key) => {
-    const attrValue = wrapper.getAttribute(options.attributes[key]);
-    if (attrValue !== null) {
-      options[key] = attrValue;
-    }
-  });
-
-  return options;
 }

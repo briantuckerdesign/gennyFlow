@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import strip from "@rollup/plugin-strip";
 
 export default defineConfig({
   build: {
@@ -26,6 +27,12 @@ export default defineConfig({
             }
           },
         },
+        strip({
+          include: "**/*.(js|ts)",
+          functions: ["console.log"],
+          // Only apply this plugin during build, not during watch
+          exclude: process.env.NODE_ENV === "development" ? "**/*" : "",
+        }),
       ],
     },
   },

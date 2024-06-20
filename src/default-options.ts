@@ -1,35 +1,57 @@
 import * as types from "./types";
 
 export const defaultOptions: types.Options = {
+  corsProxyBaseUrl: null,
+  downloadImages: true,
+  selectors: {
+    wrapper: "[ie='wrapper']",
+    capture: "[ie='capture']",
+    trigger: "[ie='trigger']",
+    slug: "[ie='slug']",
+    ignore: "[ie='ignore']",
+  },
   image: {
-    format: "png",
-    quality: 1,
-    scale: 1,
-    dateInLabel: true,
-    scaleInLabel: true,
+    scale: {
+      value: 1,
+      attributeSelector: "ie-scale",
+      inputSelector: "ie-scale-input",
+    },
+    quality: {
+      value: 1,
+      attributeSelector: "ie-quality",
+      inputSelector: "ie-quality-input",
+    },
+    format: {
+      value: "jpg",
+      attributeSelector: "ie-format",
+      inputSelector: "ie-format-input",
+    },
+    dateInLabel: {
+      value: true,
+      attributeSelector: "ie-img-label-date",
+      inputSelector: "ie-img-label-date-input",
+    },
+    scaleInLabel: {
+      value: true,
+      attributeSelector: "ie-img-label-scale",
+      inputSelector: "ie-img-label-scale-input",
+    },
   },
   zip: {
-    label: "images",
-    dateInLabel: true,
-    scaleInLabel: true,
+    label: {
+      value: "images",
+      attributeSelector: "ie-zip-label",
+      inputSelector: "ie-zip-label-input",
+    },
+    dateInLabel: {
+      value: true,
+      attributeSelector: "ie-zip-label-date",
+      inputSelector: "ie-zip-label-date-input",
+    },
+    scaleInLabel: {
+      value: true,
+      attributeSelector: "ie-zip-label-scale",
+      inputSelector: "ie-zip-label-scale-input",
+    },
   },
-  attributes: {
-    wrapperSelector: `[ie="wrapper"]`,
-    captureSelector: '[ie="capture"]',
-    triggerSelector: '[ie="trigger"]',
-    slugSelector: '[ie="slug"]',
-    ignoreSelector: '[ie="ignore"]',
-    scale: "ie-scale",
-    quality: "ie-quality",
-    format: "ie-format",
-    zipLabel: "ie-zip-label",
-    zipLabelDate: "ie-zip-label-date",
-    zipLabelScale: "ie-zip-label-scale",
-    imgLabelDate: "ie-img-label-date",
-    imgLabelScale: "ie-img-label-scale",
-    corsProxyBaseUrl: "ie-cors-proxy-base-url",
-  },
-  corsProxyBaseUrl: "",
-  downloadImages: true,
-  inputPrefix: "ie",
 };

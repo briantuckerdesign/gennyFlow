@@ -3,30 +3,76 @@
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["image-exporter"] = {}));
 })(this, function(exports2) {
   "use strict";
+  function optionSafetyCheck(key, value) {
+    if (key === "scale" || key === "quality") {
+      if (typeof value === "number")
+        return value;
+      value = value.trim();
+      value = parseFloat(value);
+      if (isNaN(value))
+        return null;
+      return value;
+    }
+    if (key === "dateInLabel" || key === "scaleInLabel") {
+      if (typeof value === "boolean")
+        return value;
+      value = value.trim();
+      return value === "true";
+    }
+    if (key === "format") {
+      value = value.trim();
+      if (value === "jpg" || value === "png")
+        return value;
+      return null;
+    }
+    return null;
+  }
   function getWrapperOptions(options) {
-    const wrapper = document.querySelector(options.attributes.wrapperSelector);
-    if (!wrapper) {
-      console.error("ImageExporter: Wrapper element not found");
+    try {
+      const wrapper = document.querySelector(options.selectors.wrapper);
+      if (!wrapper) {
+        new Error("Wrapper element not found");
+        return options;
+      }
+      Object.keys(options.image).forEach((key) => {
+        const attrValue = wrapper.getAttribute(options.image[key].attributeSelector);
+        if (attrValue !== null) {
+          const safeValue = optionSafetyCheck(key, attrValue);
+          if (safeValue === null)
+            return;
+          options.image[key].value = safeValue;
+          console.log("Wrapper option:", key, "=", safeValue);
+        }
+      });
+      return options;
+    } catch (e) {
+      console.error("ImageExporter: Error in getWrapperOptions", e);
       return options;
     }
-    Object.keys(options.attributes).forEach((key) => {
-      const attrValue = wrapper.getAttribute(options.attributes[key]);
-      if (attrValue !== null) {
-        options[key] = attrValue;
-      }
-    });
-    return options;
   }
-  const getUserInputValue = (options, attribute) => {
-    const prefixEndIndex = attribute.indexOf("-") + 1;
-    attribute = attribute.slice(prefixEndIndex);
-    const selector = `[${options.inputPrefix}-input="${attribute}"]`;
-    const inputElement = document.querySelector(selector);
-    if (inputElement) {
-      return inputElement.value;
-    } else
-      return null;
-  };
+  function getInputOptions(options) {
+    try {
+      Promise.all(
+        Object.keys(options.image).map(async (key) => {
+          const selector = options.image[key].inputSelector;
+          const inputElement = document.querySelector(
+            `[${selector}]`
+          );
+          if (inputElement && inputElement.value) {
+            const safeValue = optionSafetyCheck(key, inputElement.value);
+            if (safeValue === null)
+              return;
+            options.image[key].value = safeValue;
+            console.log("User input option:", key, "=", safeValue);
+          }
+        })
+      );
+      return options;
+    } catch (e) {
+      console.error("ImageExporter: Error in getUserOptions", e);
+      return options;
+    }
+  }
   function convertToSlug(input) {
     if (!input) {
       return null;
@@ -49,17 +95,17 @@
   }
   function parseZipLabel(options) {
     const date = getDateMMDDYY();
-    const zipScale = convertStringToBoolean(options.zip.scaleInLabel) ? `_@${options.image.scale}x` : "";
-    const zipDate = convertStringToBoolean(options.zip.dateInLabel) ? `_${date}` : "";
-    const zipNameSlug = convertToSlug(options.zip.label);
+    const zipScale = convertStringToBoolean(options.zip.scaleInLabel.value) ? `_@${options.image.scale.value}x` : "";
+    const zipDate = convertStringToBoolean(options.zip.dateInLabel.value) ? `_${date}` : "";
+    const zipNameSlug = convertToSlug(options.zip.label.value);
     const zipLabel = `${zipNameSlug}${zipDate}${zipScale}.zip`;
     return zipLabel;
   }
-  function parseImageLabel(options) {
+  function parseImageLabel(itemOptions) {
     const date = getDateMMDDYY();
-    const imgScale = convertStringToBoolean(options.image.scaleInLabel) ? `_@${options.image.scale}x` : "";
-    const imgDate = convertStringToBoolean(options.image.dateInLabel) ? `_${date}` : "";
-    const imgNameSlug = convertToSlug(options.userSlug) || `img-${options.id}`;
+    const imgScale = itemOptions.image.scaleInLabel.value ? `_@${itemOptions.image.scale.value}x` : "";
+    const imgDate = itemOptions.image.dateInLabel.value ? `_${date}` : "";
+    const imgNameSlug = convertToSlug(itemOptions.userSlug) || `img-${itemOptions.id}`;
     const imgLabel = `${imgNameSlug}${imgDate}${imgScale}`;
     return imgLabel;
   }
@@ -93,20 +139,6 @@
       reader.readAsDataURL(blob);
     });
   }
-  function getUserOptions(options) {
-    Promise.all(
-      Object.keys(options.attributes).map(async (key) => {
-        const attributeName = options.attributes[key];
-        if (attributeName.startsWith("["))
-          return null;
-        const userInputValue = await getUserInputValue(options, attributeName);
-        if (userInputValue) {
-          options[key] = userInputValue;
-        }
-      })
-    );
-    return options;
-  }
   function getItemOptions(element, options, index) {
     var _a;
     let itemOptions = {
@@ -116,75 +148,123 @@
       slug: "",
       fileName: ""
     };
-    Object.keys(options.attributes).forEach((key) => {
-      const attributeName = options.attributes[key];
-      const attributeValue = element.getAttribute(attributeName);
+    Object.keys(options.image).forEach((key) => {
+      const attributeValue = element.getAttribute(options.image[key].attributeSelector);
       if (attributeValue !== null) {
-        itemOptions[key] = attributeValue;
+        console.log("Capture item option:", key, "=", attributeValue);
+        itemOptions.image[key].value = attributeValue;
       }
     });
     itemOptions.id = index;
-    itemOptions.userSlug = ((_a = element.querySelector(options.attributes.slugSelector)) == null ? void 0 : _a.textContent) || "";
+    itemOptions.userSlug = ((_a = element.querySelector(options.selectors.slug)) == null ? void 0 : _a.textContent) || "";
     itemOptions.slug = parseImageLabel(itemOptions);
     return itemOptions;
   }
   function determineOptions(options) {
     options = getWrapperOptions(options);
-    options = getUserOptions(options);
+    options = getInputOptions(options);
+    console.log("determineOptions:");
+    console.log(options);
     return options;
   }
   function getCaptureElements(options) {
-    if (!document.querySelector(options.attributes.wrapperSelector)) {
-      console.error("ImageExporter: No capture items found in the wrapper.");
+    try {
+      if (!document.querySelector(options.selectors.capture)) {
+        console.error("ImageExporter: No capture items found in the wrapper.");
+        return [];
+      }
+      findMultiScaleElements(options);
+      const elements = Array.from(
+        document.querySelectorAll(
+          `${options.selectors.wrapper} ${options.selectors.capture}`
+        )
+      );
+      console.log("Elements to capture", elements.length);
+      const visibleElements = elements.filter((element) => isVisible(element));
+      return visibleElements;
+    } catch (e) {
+      console.error("ImageExporter: Error in getCaptureElements", e);
       return [];
     }
-    findMultiScaleElements(options);
-    const elements = Array.from(
-      document.querySelectorAll(
-        `${options.attributes.wrapperSelector} ${options.attributes.captureSelector}`
-      )
-    );
-    const visibleElements = elements.filter((element) => isVisible(element));
-    return visibleElements;
   }
   function findMultiScaleElements(options) {
-    const elements = Array.from(
-      document.querySelectorAll(
-        `${options.attributes.wrapperSelector} ${options.attributes.captureSelector}`
-      )
-    );
-    const elementsWithScaleAttribute = elements.filter(
-      (element) => element.hasAttribute(options.attributes.scale)
-    );
-    elementsWithScaleAttribute.forEach((element) => {
-      const scaleValue = element.getAttribute(options.attributes.scale);
-      if (scaleValue.includes(",")) {
-        const scaleArray = scaleValue.split(",").map(Number);
-        encapsulateMultiScaleElements(options, element, scaleArray);
-      }
-    });
+    try {
+      const elements = Array.from(
+        document.querySelectorAll(
+          `${options.selectors.wrapper} ${options.selectors.capture}`
+        )
+      );
+      const elementsWithScaleAttribute = elements.filter(
+        (element) => element.hasAttribute(options.image.scale.attributeSelector)
+      );
+      elementsWithScaleAttribute.forEach((element) => {
+        const scaleValue = element.getAttribute(options.image.scale.attributeSelector);
+        if (scaleValue.includes(",")) {
+          console.log("Multi-scale element found:", scaleValue);
+          const scaleArray = scaleValue.split(",").map(Number);
+          encapsulateMultiScaleElements(options, element, scaleArray);
+        }
+      });
+    } catch (e) {
+      console.error("ImageExporter: Error in findMultiScaleElements", e);
+      return;
+    }
   }
   function encapsulateMultiScaleElements(options, element, scaleArray) {
-    element.setAttribute(options.attributes.scale, scaleArray[0].toString());
-    element.setAttribute(options.attributes.imgLabelScale, "true");
-    for (let i = 1; i < scaleArray.length; i++) {
-      const newElement = cloneElementAttributes(options, element);
-      newElement.setAttribute(options.attributes.scale, scaleArray[i].toString());
-      newElement.setAttribute(options.attributes.imgLabelScale, "true");
-      if (element.parentNode) {
-        element.parentNode.insertBefore(newElement, element);
-        newElement.appendChild(element);
+    try {
+      element.setAttribute(options.image.scale.attributeSelector, scaleArray[0].toString());
+      element.setAttribute(options.image.scaleInLabel.attributeSelector, "true");
+      for (let i = 1; i < scaleArray.length; i++) {
+        const newElement = cloneElementAttributes(options, element);
+        newElement.setAttribute(
+          options.image.scale.attributeSelector,
+          scaleArray[i].toString()
+        );
+        newElement.setAttribute(options.image.scaleInLabel.attributeSelector, "true");
+        if (element.parentNode) {
+          element.parentNode.insertBefore(newElement, element);
+          newElement.appendChild(element);
+          console.log("Encapsulated element", element, "with scale", scaleArray[i]);
+        }
       }
+    } catch (e) {
+      console.error("ImageExporter: Error in encapsulateMultiScaleElements", e);
+      return;
     }
   }
   function cloneElementAttributes(options, originalElement) {
-    const clonedElement = document.createElement("div");
-    Array.from(originalElement.attributes).forEach((attr) => {
-      if (attr.name in options.attributes) {
-        clonedElement.setAttribute(attr.name, attr.value);
-      }
-    });
-    return clonedElement;
+    try {
+      const clonedElement = document.createElement("div");
+      const arrayOfPossibleAttributes = Object.keys(options.image).map(
+        (key) => options.image[key].attributeSelector
+      );
+      const { prefix, value } = parseStringAttribute(options.selectors.capture);
+      clonedElement.setAttribute(prefix, value);
+      Array.from(originalElement.attributes).forEach((attr) => {
+        if (attr.name in arrayOfPossibleAttributes) {
+          clonedElement.setAttribute(attr.name, attr.value);
+        }
+      });
+      return clonedElement;
+    } catch (e) {
+      console.error("ImageExporter: Error in cloneElementAttributes", e);
+      return originalElement;
+    }
+  }
+  function parseStringAttribute(attributeValue) {
+    if (!attributeValue.includes("=")) {
+      throw new Error("Invalid attribute format. Expected format: [prefix=value]");
+    }
+    const attributeArray = attributeValue.split("=");
+    if (attributeArray.length !== 2) {
+      throw new Error("Invalid attribute format. Expected format: [prefix=value]");
+    }
+    const prefix = attributeArray[0].trim().replace(/^\[|\]$/g, "");
+    const value = attributeArray[1].trim().replace(/^\[|\]$/g, "").replace(/^'|'$/g, "");
+    if (!prefix || !value) {
+      throw new Error("Invalid attribute format. Prefix or value is missing.");
+    }
+    return { prefix, value };
   }
   function resolveUrl(url, baseUrl) {
     if (url.match(/^[a-z]+:\/\//i)) {
@@ -924,83 +1004,98 @@
     return canvas.toDataURL("image/jpeg", options.quality || 1);
   }
   async function proxyCSS(options) {
-    let cssPings = 0;
-    let proxyPings = 0;
-    const css = document.querySelectorAll('link[rel="stylesheet"]');
-    for (let stylesheet of css) {
-      let stylesheetURL = stylesheet.getAttribute("href");
-      if (stylesheetURL && !stylesheetURL.startsWith("data:") && isValidUrl(stylesheetURL)) {
-        const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
-        try {
-          const response = await fetch(url);
-          const cssText = await response.text();
-          const styleEl = document.createElement("style");
-          styleEl.textContent = cssText;
-          document.head.appendChild(styleEl);
-          stylesheet.remove();
-          proxyPings++;
-          cssPings++;
-        } catch (error) {
-          console.error("Error fetching CSS:", error);
+    try {
+      let cssPings = 0;
+      let proxyPings = 0;
+      const css = document.querySelectorAll('link[rel="stylesheet"]');
+      for (let stylesheet of css) {
+        let stylesheetURL = stylesheet.getAttribute("href");
+        if (stylesheetURL && !stylesheetURL.startsWith("data:") && isValidUrl(stylesheetURL)) {
+          const url = options.corsProxyBaseUrl + encodeURIComponent(stylesheetURL);
+          try {
+            const response = await fetch(url);
+            const cssText = await response.text();
+            const styleEl = document.createElement("style");
+            styleEl.textContent = cssText;
+            document.head.appendChild(styleEl);
+            stylesheet.remove();
+            proxyPings++;
+            cssPings++;
+          } catch (error) {
+            console.error("Error fetching CSS:", error);
+          }
         }
       }
+    } catch (e) {
+      console.error("ImageExporter: Error in proxyCSS", e);
     }
   }
   async function proxyImages(options) {
-    const links = document.querySelectorAll("link");
-    links.forEach((link) => {
-      link.setAttribute("crossorigin", "anonymous");
-    });
-    const wrapper = document.querySelector(options.attributes.wrapperSelector);
-    if (!wrapper) {
-      console.error("ImageExporter: Wrapper element not found.");
-      return;
-    }
-    const images = Array.from(wrapper.querySelectorAll("img"));
-    const srcMap = /* @__PURE__ */ new Map();
-    images.forEach((img) => {
-      const srcs = srcMap.get(img.src) || [];
-      srcs.push(img);
-      srcMap.set(img.src, srcs);
-    });
-    let callsSaved = 0;
-    let imagesEmbedded = 0;
-    for (const [src, duplicates] of srcMap) {
-      if (!isValidUrl(src) || src.startsWith(options.corsProxyBaseUrl)) {
-        continue;
+    try {
+      const links = document.querySelectorAll("link");
+      links.forEach((link) => {
+        link.setAttribute("crossorigin", "anonymous");
+      });
+      const wrapper = document.querySelector(options.selectors.wrapper);
+      if (!wrapper) {
+        console.error("ImageExporter: Wrapper element not found.");
+        return;
       }
-      if (duplicates.length > 1) {
-        try {
-          const response = await fetch(options.corsProxyBaseUrl + encodeURIComponent(src));
-          const blob = await response.blob();
-          const dataURL = await blobToDataURL(blob);
-          duplicates.forEach((dupImg) => {
-            if (dupImg.src === src) {
-              dupImg.src = dataURL;
-              imagesEmbedded++;
+      const images = Array.from(wrapper.querySelectorAll("img"));
+      const srcMap = /* @__PURE__ */ new Map();
+      images.forEach((img) => {
+        const srcs = srcMap.get(img.src) || [];
+        srcs.push(img);
+        srcMap.set(img.src, srcs);
+      });
+      let callsSaved = 0;
+      let imagesProxied = 0;
+      let imagesEmbedded = 0;
+      for (const [src, duplicates] of srcMap) {
+        if (!isValidUrl(src) || options.corsProxyBaseUrl && src.startsWith(options.corsProxyBaseUrl)) {
+          continue;
+        }
+        if (duplicates.length > 1) {
+          try {
+            const response = await fetch(
+              options.corsProxyBaseUrl + encodeURIComponent(src)
+            );
+            const blob = await response.blob();
+            const dataURL = await blobToDataURL(blob);
+            duplicates.forEach((dupImg) => {
+              if (dupImg.src === src) {
+                dupImg.src = dataURL;
+                imagesEmbedded++;
+              }
+            });
+            callsSaved += duplicates.length - 1;
+          } catch (error) {
+            console.error("Error fetching image:", error);
+          }
+        } else {
+          images.forEach((img) => {
+            if (img.src === src) {
+              img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
+              imagesProxied++;
             }
           });
-          callsSaved += duplicates.length - 1;
-        } catch (error) {
-          console.error("Error fetching image:", error);
         }
-      } else {
-        images.forEach((img) => {
-          if (img.src === src) {
-            img.src = options.corsProxyBaseUrl + encodeURIComponent(src);
-          }
-        });
       }
+    } catch (e) {
+      console.error("ImageExporter: Error in proxyImages", e);
+      return;
     }
   }
   async function runCorsProxy(options) {
-    const proxyBaseURL = options.corsProxyBaseUrl;
-    if (!isValidUrl(proxyBaseURL)) {
+    try {
+      if (!options.corsProxyBaseUrl || !isValidUrl(options.corsProxyBaseUrl))
+        return;
+      await proxyCSS(options);
+      await proxyImages(options);
       return;
+    } catch (e) {
+      console.error("ImageExporter: Error in runCorsProxy", e);
     }
-    await proxyCSS(options);
-    await proxyImages(options);
-    return;
   }
   function ignoreFilter(options) {
     return (node) => {
@@ -1011,55 +1106,73 @@
     };
   }
   async function captureImages(options, captureElements) {
-    await runCorsProxy(options);
-    const images = await Promise.all(
-      captureElements.map(
-        (element, index) => captureImage(
-          element,
-          getItemOptions(element, options, index + 1)
+    try {
+      await runCorsProxy(options);
+      const images = await Promise.all(
+        captureElements.map(
+          (element, index) => captureImage(
+            element,
+            getItemOptions(element, options, index + 1),
+            ignoreFilter(options)
+          )
         )
-      )
-    );
-    return images;
-  }
-  async function captureImage(element, options, ignoreFilter2) {
-    options.slug = ensureUniqueSlug(options.slug);
-    let dataURL = "";
-    let htmlToImageOptions = {
-      // Ensure quality is a number
-      quality: options.image.quality,
-      // Ensure scale is a number
-      pixelRatio: parseFloat(options.image.scale)
-      // Function that returns false if the element should be ignored
-      // filter: ignoreFilter,
-    };
-    switch (options.image.format.toLowerCase()) {
-      case "jpg":
-        dataURL = await toJpeg(element, htmlToImageOptions);
-        options.fileName = `${options.slug}.jpg`;
-        break;
-      case "png":
-      default:
-        dataURL = await toPng(element, htmlToImageOptions);
-        options.fileName = `${options.slug}.png`;
-        break;
+      );
+      console.log(images);
+      return images;
+    } catch (e) {
+      console.error("ImageExporter: Error in captureImages", e);
+      return [];
     }
-    const image = [dataURL, options.fileName];
-    return image;
+  }
+  async function captureImage(element, itemOptions, ignoreFilter2) {
+    try {
+      itemOptions.slug = ensureUniqueSlug(itemOptions.slug);
+      let dataURL = "";
+      let htmlToImageOptions = {
+        // Ensure quality is a number
+        quality: itemOptions.image.quality.value,
+        // Ensure scale is a number
+        pixelRatio: itemOptions.image.scale.value
+        // Function that returns false if the element should be ignored
+        // filter: ignoreFilter,
+      };
+      switch (itemOptions.image.format.value.toLowerCase()) {
+        case "jpg":
+          dataURL = await toJpeg(element, htmlToImageOptions);
+          itemOptions.fileName = `${itemOptions.slug}.jpg`;
+          console.log("Captured image as jpg", itemOptions.fileName);
+          break;
+        case "png":
+        default:
+          dataURL = await toPng(element, htmlToImageOptions);
+          itemOptions.fileName = `${itemOptions.slug}.png`;
+          console.log("Captured image as png", itemOptions.fileName);
+          break;
+      }
+      return [dataURL, itemOptions.fileName];
+    } catch (e) {
+      console.error("ImageExporter: Error in captureImage", e);
+      return ["", ""];
+    }
   }
   let usedSlugs = [];
   function ensureUniqueSlug(slug) {
-    if (usedSlugs.includes(slug)) {
-      let counter = 1;
-      let newSlug = `${slug}-${counter}`;
-      while (usedSlugs.includes(newSlug)) {
-        counter++;
-        newSlug = `${slug}-${counter}`;
+    try {
+      if (usedSlugs.includes(slug)) {
+        let counter = 1;
+        let newSlug = `${slug}-${counter}`;
+        while (usedSlugs.includes(newSlug)) {
+          counter++;
+          newSlug = `${slug}-${counter}`;
+        }
+        usedSlugs.push(newSlug);
+        return newSlug;
+      } else {
+        usedSlugs.push(slug);
+        return slug;
       }
-      usedSlugs.push(newSlug);
-      return newSlug;
-    } else {
-      usedSlugs.push(slug);
+    } catch (e) {
+      console.error("ImageExporter: Error in ensureUniqueSlug", e);
       return slug;
     }
   }
@@ -3863,37 +3976,59 @@
     }
   }
   const defaultOptions = {
+    corsProxyBaseUrl: null,
+    downloadImages: true,
+    selectors: {
+      wrapper: "[ie='wrapper']",
+      capture: "[ie='capture']",
+      trigger: "[ie='trigger']",
+      slug: "[ie='slug']",
+      ignore: "[ie='ignore']"
+    },
     image: {
-      format: "png",
-      quality: 1,
-      scale: 1,
-      dateInLabel: true,
-      scaleInLabel: true
+      scale: {
+        value: 1,
+        attributeSelector: "ie-scale",
+        inputSelector: "ie-scale-input"
+      },
+      quality: {
+        value: 1,
+        attributeSelector: "ie-quality",
+        inputSelector: "ie-quality-input"
+      },
+      format: {
+        value: "jpg",
+        attributeSelector: "ie-format",
+        inputSelector: "ie-format-input"
+      },
+      dateInLabel: {
+        value: true,
+        attributeSelector: "ie-img-label-date",
+        inputSelector: "ie-img-label-date-input"
+      },
+      scaleInLabel: {
+        value: true,
+        attributeSelector: "ie-img-label-scale",
+        inputSelector: "ie-img-label-scale-input"
+      }
     },
     zip: {
-      label: "images",
-      dateInLabel: true,
-      scaleInLabel: true
-    },
-    attributes: {
-      wrapperSelector: `[ie="wrapper"]`,
-      captureSelector: '[ie="capture"]',
-      triggerSelector: '[ie="trigger"]',
-      slugSelector: '[ie="slug"]',
-      ignoreSelector: '[ie="ignore"]',
-      scale: "ie-scale",
-      quality: "ie-quality",
-      format: "ie-format",
-      zipLabel: "ie-zip-label",
-      zipLabelDate: "ie-zip-label-date",
-      zipLabelScale: "ie-zip-label-scale",
-      imgLabelDate: "ie-img-label-date",
-      imgLabelScale: "ie-img-label-scale",
-      corsProxyBaseUrl: "ie-cors-proxy-base-url"
-    },
-    corsProxyBaseUrl: "",
-    downloadImages: true,
-    inputPrefix: "ie"
+      label: {
+        value: "images",
+        attributeSelector: "ie-zip-label",
+        inputSelector: "ie-zip-label-input"
+      },
+      dateInLabel: {
+        value: true,
+        attributeSelector: "ie-zip-label-date",
+        inputSelector: "ie-zip-label-date-input"
+      },
+      scaleInLabel: {
+        value: true,
+        attributeSelector: "ie-zip-label-scale",
+        inputSelector: "ie-zip-label-scale-input"
+      }
+    }
   };
   class ImageExporter {
     constructor({ options: userOptions = {} }) {

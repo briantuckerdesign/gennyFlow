@@ -14,13 +14,14 @@ import { Options } from "../types/options";
  */
 
 export async function runCorsProxy(options: Options): Promise<void> {
-  const proxyBaseURL = options.corsProxyBaseUrl;
-  if (!isValidUrl(proxyBaseURL)) {
+  try {
+    if (!options.corsProxyBaseUrl || !isValidUrl(options.corsProxyBaseUrl)) return;
+
+    await proxyCSS(options);
+    await proxyImages(options);
+
     return;
+  } catch (e) {
+    console.error("ImageExporter: Error in runCorsProxy", e);
   }
-
-  await proxyCSS(options);
-  await proxyImages(options);
-
-  return;
 }

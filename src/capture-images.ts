@@ -23,21 +23,26 @@ export async function captureImages(
   options: types.Options,
   captureElements
 ): Promise<types.Image[]> {
-  // When enabled, replaces urls with proxied ones to bypass CORS errors.
-  await runCorsProxy(options);
+  try {
+    // When enabled, replaces urls with proxied ones to bypass CORS errors.
+    await runCorsProxy(options);
 
-  // Gets array of tuples representing images, see captureImage() documentation for more info
-  const images = await Promise.all(
-    captureElements.map((element, index) =>
-      captureImage(
-        element,
-        getItemOptions(element, options, index + 1),
-        ignoreFilter(options)
+    // Gets array of tuples representing images, see captureImage() documentation for more info
+    const images = await Promise.all(
+      captureElements.map((element, index) =>
+        captureImage(
+          element,
+          getItemOptions(element, options, index + 1),
+          ignoreFilter(options)
+        )
       )
-    )
-  );
-
-  return images;
+    );
+    console.log(images);
+    return images;
+  } catch (e) {
+    console.error("ImageExporter: Error in captureImages", e);
+    return [];
+  }
 }
 
 /**
@@ -50,7 +55,7 @@ export async function captureImages(
  * as a data URL along with its filename.
  *
  * @param {HTMLElement} element - The DOM element from which the image is to be captured.
- * @param {Object} options - An object containing options for the capture process. It includes properties
+ * @param {Object} itemOptions - An object containing options for the capture process. It includes properties
  *                           like 'slug', 'format', 'quality', 'scale', and 'loaderEnabled'.
  * @returns {Promise<[string, string]>} A promise that resolves to a tuple: [dataURL, fileName].
  *                                      'dataURL' is the base64 encoded image, and 'fileName' is the name of the image file.
@@ -59,54 +64,66 @@ export async function captureImages(
 
 export async function captureImage(
   element,
-  options: types.ItemOptions,
+  itemOptions: types.ItemOptions,
   ignoreFilter
 ): Promise<types.Image> {
-  options.slug = ensureUniqueSlug(options.slug);
+  try {
+    itemOptions.slug = ensureUniqueSlug(itemOptions.slug);
 
-  let dataURL = "";
-  // Final settings for capturing images.
-  let htmlToImageOptions = {
-    // Ensure quality is a number
-    quality: options.image.quality,
-    // Ensure scale is a number
-    pixelRatio: parseFloat(options.image.scale),
-    // Function that returns false if the element should be ignored
-    // filter: ignoreFilter,
-  };
+    let dataURL = "";
+    // Final settings for capturing images.
+    let htmlToImageOptions = {
+      // Ensure quality is a number
+      quality: itemOptions.image.quality.value,
+      // Ensure scale is a number
+      pixelRatio: itemOptions.image.scale.value,
+      // Function that returns false if the element should be ignored
+      // filter: ignoreFilter,
+    };
 
-  // Captures image based on format
-  switch (options.image.format.toLowerCase()) {
-    case "jpg":
-      dataURL = await htmlToImage.toJpeg(element, htmlToImageOptions);
-      options.fileName = `${options.slug}.jpg`;
-      break;
-    case "png":
-    default:
-      dataURL = await htmlToImage.toPng(element, htmlToImageOptions);
-      options.fileName = `${options.slug}.png`;
-      break;
+    // Captures image based on format
+    switch (itemOptions.image.format.value.toLowerCase()) {
+      case "jpg":
+        dataURL = await htmlToImage.toJpeg(element, htmlToImageOptions);
+        itemOptions.fileName = `${itemOptions.slug}.jpg`;
+        console.log("Captured image as jpg", itemOptions.fileName);
+        break;
+      case "png":
+      default:
+        dataURL = await htmlToImage.toPng(element, htmlToImageOptions);
+        itemOptions.fileName = `${itemOptions.slug}.png`;
+        console.log("Captured image as png", itemOptions.fileName);
+        break;
+    }
+    // const image: types.Image = [dataURL, itemOptions.fileName];
+
+    // returns image stored in tuple. [dataURL, fileName]
+    return [dataURL, itemOptions.fileName];
+  } catch (e) {
+    console.error("ImageExporter: Error in captureImage", e);
+    return ["", ""];
   }
-  const image: types.Image = [dataURL, options.fileName];
-
-  // returns image stored in tuple. [dataURL, fileName]
-  return image;
 }
 
 let usedSlugs: any = [];
 
 function ensureUniqueSlug(slug: string): string {
-  if (usedSlugs.includes(slug)) {
-    let counter = 1;
-    let newSlug = `${slug}-${counter}`;
-    while (usedSlugs.includes(newSlug)) {
-      counter++;
-      newSlug = `${slug}-${counter}`;
+  try {
+    if (usedSlugs.includes(slug)) {
+      let counter = 1;
+      let newSlug = `${slug}-${counter}`;
+      while (usedSlugs.includes(newSlug)) {
+        counter++;
+        newSlug = `${slug}-${counter}`;
+      }
+      usedSlugs.push(newSlug);
+      return newSlug;
+    } else {
+      usedSlugs.push(slug);
+      return slug;
     }
-    usedSlugs.push(newSlug);
-    return newSlug;
-  } else {
-    usedSlugs.push(slug);
+  } catch (e) {
+    console.error("ImageExporter: Error in ensureUniqueSlug", e);
     return slug;
   }
 }
