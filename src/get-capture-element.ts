@@ -31,32 +31,38 @@ export function getCaptureElements(options: types.Options): Element[] {
 }
 
 // If CSV values found in ${prefix}-scale, encapsulate elements until all scales are accounted for
-function findMultiScaleElements(options: types.Options) {
+export function findMultiScaleElements(options: types.Options) {
   try {
     const elements = Array.from(
       document.querySelectorAll(
         `${options.selectors.wrapper} ${options.selectors.capture}`
       )
     );
+    if (elements) {
+      const elementsWithScaleAttribute = elements.filter((element) =>
+        element.hasAttribute(options.image.scale.attributeSelector)
+      );
 
-    const elementsWithScaleAttribute = elements.filter((element) =>
-      element.hasAttribute(options.image.scale.attributeSelector)
-    );
+      // Check attribute value. It will be a string.
+      // If string successfully converts to a number, do nothing.
+      // If string is comma-separated, convert to array of numbers.
+      elementsWithScaleAttribute.forEach((element) => {
+        const scaleValue: any = element.getAttribute(
+          options.image.scale.attributeSelector
+        );
 
-    // Check attribute value. It will be a string.
-    // If string successfully converts to a number, do nothing.
-    // If string is comma-separated, convert to array of numbers.
-    elementsWithScaleAttribute.forEach((element) => {
-      const scaleValue: any = element.getAttribute(options.image.scale.attributeSelector);
+        if (scaleValue.includes(",")) {
+          console.log("Multi-scale element found:", scaleValue);
+          // If scaleValue is an array...
+          const scaleArray: Array<Number> = scaleValue.split(",").map(Number);
 
-      if (scaleValue.includes(",")) {
-        console.log("Multi-scale element found:", scaleValue);
-        // If scaleValue is an array...
-        const scaleArray: Array<Number> = scaleValue.split(",").map(Number);
-
-        encapsulateMultiScaleElements(options, element, scaleArray);
-      }
-    });
+          encapsulateMultiScaleElements(options, element, scaleArray, scaleValue);
+        }
+      });
+      return true;
+    } else {
+      return false;
+    }
   } catch (e) {
     console.error("ImageExporter: Error in findMultiScaleElements", e);
     return;
@@ -66,13 +72,15 @@ function findMultiScaleElements(options: types.Options) {
 function encapsulateMultiScaleElements(
   options: types.Options,
   element: Element,
-  scaleArray: Array<Number>
+  scaleArray: Array<Number>,
+  scaleValue: string
 ) {
   try {
     // Set scale attribute
     element.setAttribute(options.image.scale.attributeSelector, scaleArray[0].toString());
     // Force include scale img attribute
     element.setAttribute(options.image.scaleInLabel.attributeSelector, "true");
+    element.setAttribute("ie-clone-source", scaleValue);
 
     // iterate through array and wrap the element in a new element for each scale
     for (let i = 1; i < scaleArray.length; i++) {
@@ -113,6 +121,8 @@ function cloneElementAttributes(
     // Adds capture attribute to cloned element
     const { prefix, value } = parseStringAttribute(options.selectors.capture);
     clonedElement.setAttribute(prefix, value);
+    clonedElement.setAttribute("ie-clone", "true");
+    setExplicitDimensions(originalElement, clonedElement);
 
     // Iterate over all attributes of the original element
     Array.from(originalElement.attributes).forEach((attr: any) => {
@@ -151,4 +161,13 @@ function parseStringAttribute(attributeValue: string) {
   }
 
   return { prefix, value };
+}
+
+function setExplicitDimensions(originalElement: any, clonedElement: any) {
+  const originalElementStyle = window.getComputedStyle(originalElement);
+  const originalElementWidth = originalElementStyle.getPropertyValue("width");
+  const originalElementHeight = originalElementStyle.getPropertyValue("height");
+
+  clonedElement.style.width = originalElementWidth;
+  clonedElement.style.height = originalElementHeight;
 }

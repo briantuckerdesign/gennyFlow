@@ -9,19 +9,7 @@
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
     />
     <script src="/dist/image-exporter.umd.js"></script>
-    <script>
-      let options = {
-        corsProxyBaseUrl: "http://localhost:8010/",
-      };
 
-      let imageExporter = new ImageExporter({ options });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        document.querySelector("[gf=trigger]")?.addEventListener("click", () => {
-          imageExporter.captureAll();
-        });
-      });
-    </script>
     <style>
       slug {
         display: none;
@@ -73,16 +61,28 @@
     </header>
     <main ie="wrapper" ie-scale="4">
       <section>
-        <h2>Test 1</h2>
+        <h2 gf="test-trigger">Test 1</h2>
         <artboard ie="capture" class="test-1">
           <slug ie="slug">ping</slug>
           <div>This is the headline</div>
         </artboard>
-        <artboard ie="capture" class="test-1" ie-scale="1,2,3,4">
+        <artboard ie="capture" class="test-1" ie-scale="1,2,3,4" test="test">
           <slug ie="slug">pong</slug>
           <div>This is the headline</div>
         </artboard>
       </section>
     </main>
+    <script>
+      let options = {
+        corsProxyBaseUrl: "http://localhost:8010/",
+      };
+
+      let imageExporter = new ImageExporter({ options });
+      imageExporter.addTrigger(document.querySelector("[gf=trigger]"));
+      imageExporter.addTrigger(
+        document.querySelector("[gf=test-trigger]"),
+        document.querySelector("[test=test]")
+      );
+    </script>
   </body>
 </html>

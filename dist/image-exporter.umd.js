@@ -194,26 +194,34 @@
           `${options.selectors.wrapper} ${options.selectors.capture}`
         )
       );
-      const elementsWithScaleAttribute = elements.filter(
-        (element) => element.hasAttribute(options.image.scale.attributeSelector)
-      );
-      elementsWithScaleAttribute.forEach((element) => {
-        const scaleValue = element.getAttribute(options.image.scale.attributeSelector);
-        if (scaleValue.includes(",")) {
-          console.log("Multi-scale element found:", scaleValue);
-          const scaleArray = scaleValue.split(",").map(Number);
-          encapsulateMultiScaleElements(options, element, scaleArray);
-        }
-      });
+      if (elements) {
+        const elementsWithScaleAttribute = elements.filter(
+          (element) => element.hasAttribute(options.image.scale.attributeSelector)
+        );
+        elementsWithScaleAttribute.forEach((element) => {
+          const scaleValue = element.getAttribute(
+            options.image.scale.attributeSelector
+          );
+          if (scaleValue.includes(",")) {
+            console.log("Multi-scale element found:", scaleValue);
+            const scaleArray = scaleValue.split(",").map(Number);
+            encapsulateMultiScaleElements(options, element, scaleArray, scaleValue);
+          }
+        });
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
       console.error("ImageExporter: Error in findMultiScaleElements", e);
       return;
     }
   }
-  function encapsulateMultiScaleElements(options, element, scaleArray) {
+  function encapsulateMultiScaleElements(options, element, scaleArray, scaleValue) {
     try {
       element.setAttribute(options.image.scale.attributeSelector, scaleArray[0].toString());
       element.setAttribute(options.image.scaleInLabel.attributeSelector, "true");
+      element.setAttribute("ie-clone-source", scaleValue);
       for (let i = 1; i < scaleArray.length; i++) {
         const newElement = cloneElementAttributes(options, element);
         newElement.setAttribute(
@@ -240,6 +248,8 @@
       );
       const { prefix, value } = parseStringAttribute(options.selectors.capture);
       clonedElement.setAttribute(prefix, value);
+      clonedElement.setAttribute("ie-clone", "true");
+      setExplicitDimensions(originalElement, clonedElement);
       Array.from(originalElement.attributes).forEach((attr) => {
         if (attr.name in arrayOfPossibleAttributes) {
           clonedElement.setAttribute(attr.name, attr.value);
@@ -265,6 +275,13 @@
       throw new Error("Invalid attribute format. Prefix or value is missing.");
     }
     return { prefix, value };
+  }
+  function setExplicitDimensions(originalElement, clonedElement) {
+    const originalElementStyle = window.getComputedStyle(originalElement);
+    const originalElementWidth = originalElementStyle.getPropertyValue("width");
+    const originalElementHeight = originalElementStyle.getPropertyValue("height");
+    clonedElement.style.width = originalElementWidth;
+    clonedElement.style.height = originalElementHeight;
   }
   function resolveUrl(url, baseUrl) {
     if (url.match(/^[a-z]+:\/\//i)) {
@@ -4030,6 +4047,37 @@
       }
     }
   };
+  function cleanUp(options, captureElements) {
+    const sourceElements = document.querySelectorAll("[ie-clone-source]");
+    if (sourceElements) {
+      console.log("ping");
+      sourceElements.forEach((sourceElement) => {
+        const attributeValue = sourceElement.getAttribute("ie-clone-source");
+        sourceElement.removeAttribute("ie-clone-source");
+        if (attributeValue) {
+          console.log("pong");
+          sourceElement.setAttribute(options.image.scale.attributeSelector, attributeValue);
+        }
+        let parentElement = sourceElement.parentElement;
+        let lastCloneParent = null;
+        while (parentElement) {
+          if (parentElement.hasAttribute("ie-clone")) {
+            lastCloneParent = parentElement;
+          }
+          parentElement = parentElement.parentElement;
+        }
+        if (lastCloneParent) {
+          const nextSibling = lastCloneParent.nextElementSibling;
+          if (nextSibling) {
+            nextSibling.parentNode.insertBefore(sourceElement, nextSibling);
+          } else {
+            lastCloneParent.parentNode.appendChild(sourceElement);
+          }
+          lastCloneParent.remove();
+        }
+      });
+    }
+  }
   class ImageExporter {
     constructor({ options: userOptions = {} }) {
       this.options = { ...defaultOptions, ...userOptions };
@@ -4046,11 +4094,15 @@
       const images = await captureImages(this.options, captureElements);
       if (this.options.downloadImages)
         downloadImages(images, this.options);
+      cleanUp(this.options);
       return images;
     }
     /**
      * Captures an image from a single element.
      * If downloadImages is set to true, the image will be downloaded.
+     *
+     * If multiscale elements are found,
+     * the element will be cloned and captured at each scale.
      *
      * @param {Element} element - The element to capture the image from.
      * @returns {Promise<types.Image>} A promise that resolves to the captured image.
@@ -4059,15 +4111,42 @@
       this.options = determineOptions(this.options);
       await runCorsProxy(this.options);
       ignoreFilter(this.options);
+      const multiScale = findMultiScaleElements(this.options);
+      if (multiScale) {
+        const elements = Array.from(
+          document.querySelectorAll("[ie-clone], [ie-clone-source]")
+        );
+        const images = await captureImages(this.options, elements);
+        if (this.options.downloadImages)
+          downloadImages(images, this.options);
+        cleanUp(this.options);
+        return images;
+      }
       const image = await captureImage(
         element,
         getItemOptions(element, this.options, 1)
       );
       if (this.options.downloadImages)
         downloadImages([image], this.options);
+      cleanUp(this.options);
       return image;
     }
-    // addTrigger(triggerElement: Element) {}
+    /**
+     * Adds a click event listener to the trigger element.
+     * If no element is provided, the captureAll method will be run on click.
+     * If an element is provided, provided element will be captured on click.
+     */
+    addTrigger(triggerElement, element = null) {
+      if (!element) {
+        triggerElement.addEventListener("click", () => {
+          this.captureAll();
+        });
+      } else {
+        triggerElement.addEventListener("click", () => {
+          this.captureElement(element);
+        });
+      }
+    }
   }
   if (typeof window !== "undefined") {
     window.ImageExporter = ImageExporter;
